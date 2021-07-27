@@ -1,18 +1,18 @@
 package com.miaxis.attendance.ui.main;
 
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import com.miaxis.attendance.R;
+import com.miaxis.attendance.databinding.FragmentMainBinding;
+import com.miaxis.attendance.ui.bar.BarFragment;
+import com.miaxis.attendance.ui.preview.PreviewFragment;
+import com.miaxis.common.activity.BaseBindingFragment;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-public class MainFragment extends Fragment {
+public class MainFragment extends BaseBindingFragment<FragmentMainBinding> {
 
     private MainViewModel mViewModel;
 
@@ -20,18 +20,20 @@ public class MainFragment extends Fragment {
         return new MainFragment();
     }
 
-    @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.main_fragment, container, false);
+    protected int initLayout() {
+        return R.layout.fragment_main;
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    protected void initView(@NonNull FragmentMainBinding binding, @Nullable Bundle savedInstanceState) {
         mViewModel = new ViewModelProvider(this).get(MainViewModel.class);
-        // TODO: Use the ViewModel
+        replaceChild(R.id.fl_preview, PreviewFragment.newInstance());
+
+        replaceChild(R.id.fl_content, BarFragment.newInstance());
+
+
+
     }
 
 }

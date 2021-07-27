@@ -1,21 +1,28 @@
 package com.miaxis.attendance;
 
-import androidx.appcompat.app.AppCompatActivity;
-
+import android.Manifest;
 import android.os.Bundle;
+import com.miaxis.attendance.databinding.ActivityMainBinding;
+import com.miaxis.attendance.ui.permission.PermissionFragment;
+import com.miaxis.common.activity.BaseBindingFragmentActivity;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
-import com.miaxis.attendance.ui.main.MainFragment;
-
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseBindingFragmentActivity<ActivityMainBinding> {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.main_activity);
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.container, MainFragment.newInstance())
-                    .commitNow();
-        }
+    protected int initLayout() {
+        return R.layout.activity_main;
     }
+
+    @Override
+    protected void initView(@NonNull ActivityMainBinding binding, @Nullable Bundle savedInstanceState) {
+        String[] permissions = {
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.CAMERA,
+                Manifest.permission.READ_PHONE_STATE};
+        replace(R.id.container, PermissionFragment.newInstance(permissions));
+    }
+
 }

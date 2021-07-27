@@ -1,30 +1,57 @@
 plugins {
     id 'com.android.application'
 }
+apply plugin: 'android-aspectjx'
 
 android {
-    compileSdkVersion 30
-    buildToolsVersion "30.0.3"
+    compileSdkVersion 28
+    buildToolsVersion "28.0.3"
 
     defaultConfig {
         applicationId "com.miaxis.attendance"
         minSdkVersion 23
-        targetSdkVersion 30
+        //noinspection ExpiredTargetSdkVersion
+        targetSdkVersion 28
         versionCode 1
-        versionName "1.0"
-
+        versionName "0.0.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        ndk {
+            abiFilters 'armeabi-v7a'// 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64', 'mips', 'mips64'
+        }
     }
 
+    signingConfigs {
+        debug {
+            storeFile file('../sign.keystore')
+            storePassword "163.com"
+            keyAlias "miaxis"
+            keyPassword "163.com"
+        }
+        release {
+            storeFile file('../sign.keystore')
+            storePassword "163.com"
+            keyAlias "miaxis"
+            keyPassword "163.com"
+        }
+    }
     buildTypes {
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+    buildFeatures {
+        dataBinding = true
     }
 }
 
@@ -35,7 +62,27 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.2.0'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
-    testImplementation 'junit:junit:4.+'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+
+    implementation 'io.reactivex.rxjava3:rxjava:3.0.4'
+    implementation 'com.jakewharton.rxbinding4:rxbinding:4.0.0'
+    implementation 'com.github.tbruyelle:rxpermissions:0.12'
+
+    implementation 'org.aspectj:aspectjrt:1.9.7.M3'
+
+    implementation project(path: ':device_MR990')
+
+
+//    def work_version = "2.5.0"
+//    // (Java only)
+//    implementation "androidx.work:work-runtime:$work_version"
+//    // Kotlin + coroutines
+//    implementation "androidx.work:work-runtime-ktx:$work_version"
+//    // optional - RxJava2 support
+//    implementation "androidx.work:work-rxjava2:$work_version"
+//    // optional - GCMNetworkManager support
+//    implementation "androidx.work:work-gcm:$work_version"
+//    // optional - Test helpers
+//    androidTestImplementation "androidx.work:work-testing:$work_version"
+//    // optional - Multiprocess support
+//    implementation "androidx.work:work-multiprocess:$work_version"
 }
