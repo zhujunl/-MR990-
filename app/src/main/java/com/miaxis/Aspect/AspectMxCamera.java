@@ -1,13 +1,11 @@
 package com.miaxis.Aspect;
 
-import android.os.SystemClock;
 import android.util.Log;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.zz.mr990Driver;
 
 /**
  * @author Tank
@@ -27,9 +25,9 @@ public class AspectMxCamera {
         String className = joinPoint.getThis().getClass().getSimpleName();
         Log.e(TAG, "before class:" + className);
         Log.e(TAG, "before method:" + methodSignature.getName());
-        int zzCamControl = mr990Driver.zzCamControl(1);
-        Log.e(TAG, "before zzCamControl:" + zzCamControl);
-        SystemClock.sleep(600);
+        //        int zzCamControl = mr990Driver.zzCamControl(1);
+        //        Log.e(TAG, "before zzCamControl:" + zzCamControl);
+        //        SystemClock.sleep(600);
     }
 
     //    @Around("execution(* *..MainActivity+.test**(..))")
@@ -64,8 +62,6 @@ public class AspectMxCamera {
     //
     ////        Class returnType = methodSignature.getReturnType();
     ////        Log.e(TAG, "AfterReturning returnType:" + returnType);
-    //
-    //
     //
     //    }
     //

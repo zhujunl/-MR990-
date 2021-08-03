@@ -1,6 +1,11 @@
 package com.miaxis.attendance.ui.bar;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.miaxis.attendance.R;
 import com.miaxis.attendance.databinding.FragmentBarBinding;
@@ -10,6 +15,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 public class BarFragment extends BaseBindingFragment<FragmentBarBinding> {
+
+    private final NetworkChangeReceiver networkChangeReceiver = new NetworkChangeReceiver();
 
     public static BarFragment newInstance() {
         return new BarFragment();
@@ -22,8 +29,22 @@ public class BarFragment extends BaseBindingFragment<FragmentBarBinding> {
 
     @Override
     protected void initView(@NonNull FragmentBarBinding binding, @Nullable Bundle savedInstanceState) {
-        
-
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
+        getActivity().registerReceiver(networkChangeReceiver, intentFilter);
     }
 
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        getActivity().unregisterReceiver(networkChangeReceiver);
+    }
+
+    static class NetworkChangeReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Toast.makeText(context, "网络状态改变", Toast.LENGTH_SHORT).show();
+        }
+    }
 }

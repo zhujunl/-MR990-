@@ -11,6 +11,7 @@
         android:id="@+id/ttv_preview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:keepScreenOn="true"
         tools:background="@color/black"
         tools:context=".ui.preview.PreviewFragment" />
 

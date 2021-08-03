@@ -2,9 +2,11 @@ package com.miaxis.attendance;
 
 import android.Manifest;
 import android.os.Bundle;
+
 import com.miaxis.attendance.databinding.ActivityMainBinding;
 import com.miaxis.attendance.ui.permission.PermissionFragment;
 import com.miaxis.common.activity.BaseBindingFragmentActivity;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -23,6 +25,7 @@ public class MainActivity extends BaseBindingFragmentActivity<ActivityMainBindin
                 Manifest.permission.CAMERA,
                 Manifest.permission.READ_PHONE_STATE};
         replace(R.id.container, PermissionFragment.newInstance(permissions));
+        //MyMqttService.startService(this);
     }
 
 }
