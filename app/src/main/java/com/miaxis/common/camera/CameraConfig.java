@@ -9,21 +9,24 @@ package com.miaxis.common.camera;
  */
 public enum CameraConfig {
 
-    Camera_RGB(0, 640, 480, 270, 90),
-    Camera_NIR(1, 640, 480, 0, 90);
+    //    Camera_RGB(1, 640, 480, 90, 90, false),
+    Camera_RGB(0, 640, 480, 270, 90, true),
+    Camera_NIR(1, 640, 480, 90, 90, false);
 
     public int CameraId;
     public int width;
     public int height;
     public int previewOrientation;
     public int bufferOrientation;
+    public boolean mirror;
 
-    CameraConfig(int cameraId, int width, int height, int previewOrientation, int bufferOrientation) {
+    CameraConfig(int cameraId, int width, int height, int previewOrientation, int bufferOrientation, boolean mirror) {
         this.CameraId = cameraId;
         this.width = width;
         this.height = height;
         this.previewOrientation = previewOrientation;
         this.bufferOrientation = bufferOrientation;
+        this.mirror = mirror;
     }
 
     @Override

@@ -13,6 +13,7 @@ import android.view.TextureView;
  */
 public class CameraTextureView extends TextureView {
 
+    private static final String TAG = "CameraTextureView";
     //宽高比列
     private float mRatio = 1F;
 
@@ -26,10 +27,10 @@ public class CameraTextureView extends TextureView {
 
     public CameraTextureView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-//        @SuppressLint("CustomViewStyleable")
-//        TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.preview_view);
-//        this.mRatio = array.getFloat(R.styleable.preview_view_ratio, 1F);
-//        array.recycle();
+        //        @SuppressLint("CustomViewStyleable")
+        //        TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.preview_view);
+        //        this.mRatio = array.getFloat(R.styleable.preview_view_ratio, 1F);
+        //        array.recycle();
     }
 
     public void setRawPreviewSize(CameraTextureView.Size size) {
@@ -44,18 +45,12 @@ public class CameraTextureView extends TextureView {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         int width = MeasureSpec.getSize(widthMeasureSpec);
         int height = MeasureSpec.getSize(heightMeasureSpec);
-        //        setMeasuredDimension(width, width * 4 / 3);
-        //        setTranslationY(-(width / 3F / 2F));
-
-        //        setMeasuredDimension(width, width * 16 / 9);
-        //        setTranslationY(-(width * 7 / 9F / 2F));
-
         if (this.mRatio <= 1) {
             setMeasuredDimension(width, (int) (width * (1 / this.mRatio)));
-            setTranslationY(-(width * ((1 / this.mRatio) - 1) / 2F));
+            setTranslationY(-(width * (1 / this.mRatio) - height) / 2F);
         } else {
             setMeasuredDimension((int) (height * this.mRatio), height);
-            setTranslationX(-(height * (this.mRatio - 1) / 2F));
+            setTranslationX(-((height * this.mRatio) - width) / 2F);
         }
     }
 
@@ -64,6 +59,10 @@ public class CameraTextureView extends TextureView {
         public final int width;
         public final int height;
 
+        /**
+         * @param width  水平方向长度
+         * @param height 竖直方向长度
+         */
         public Size(int width, int height) {
             this.width = width;
             this.height = height;

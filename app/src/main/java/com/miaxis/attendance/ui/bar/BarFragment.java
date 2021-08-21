@@ -10,6 +10,7 @@ import android.widget.Toast;
 import com.miaxis.attendance.R;
 import com.miaxis.attendance.databinding.FragmentBarBinding;
 import com.miaxis.common.activity.BaseBindingFragment;
+import com.miaxis.common.utils.HardWareUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -32,8 +33,8 @@ public class BarFragment extends BaseBindingFragment<FragmentBarBinding> {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
         getActivity().registerReceiver(networkChangeReceiver, intentFilter);
+        binding.tvIp.setText(HardWareUtils.getHostIP());
     }
-
 
     @Override
     public void onDestroyView() {

@@ -5,6 +5,7 @@
         <attr name="time_format" format="enum">
             <enum name="time" value="0" />
             <enum name="date" value="1" />
+            <enum name="week" value="2" />
         </attr>
     </declare-styleable>
 </resources>

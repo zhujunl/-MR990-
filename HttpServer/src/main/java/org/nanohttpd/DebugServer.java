@@ -20,7 +20,7 @@ public class DebugServer extends NanoHTTPD {
     private Gson mGson = new Gson();
 
     public DebugServer() {
-        super(8080);
+        super(8081);
     }
 
     @Override

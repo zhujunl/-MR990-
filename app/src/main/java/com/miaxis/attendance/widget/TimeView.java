@@ -27,11 +27,13 @@ import androidx.appcompat.widget.AppCompatTextView;
 public class TimeView extends AppCompatTextView {
 
     //private String strDateFormat = "yyyy-MM-dd HH:mm:ss";
-    private int format;
+    private int format;//0 time    1 date   3 week
     @SuppressLint("SimpleDateFormat")
     private final SimpleDateFormat simpleTimeFormat = new SimpleDateFormat("HH:mm");
     @SuppressLint("SimpleDateFormat")
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    @SuppressLint("SimpleDateFormat")
+    private final SimpleDateFormat simpleWeekFormat = new SimpleDateFormat("E");
 
     private BroadcastReceiver broadcastReceiver;
 
@@ -75,8 +77,10 @@ public class TimeView extends AppCompatTextView {
         Date date = new Date();
         if (this.format == 0) {
             setText(this.simpleTimeFormat.format(date));
-        } else {
+        } else if (this.format == 1) {
             setText(this.simpleDateFormat.format(date));
+        } else {
+            setText(this.simpleWeekFormat.format(date));
         }
     }
 

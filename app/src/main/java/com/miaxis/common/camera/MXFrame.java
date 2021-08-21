@@ -43,7 +43,7 @@ public class MXFrame {
                 "width=" + width +
                 ", height=" + height +
                 ", orientation=" + orientation +
-                ", buffer=" + (buffer == null ? null : "...") +
+                ", buffer=" + (buffer == null ? null : buffer.length) +
                 '}';
     }
 }

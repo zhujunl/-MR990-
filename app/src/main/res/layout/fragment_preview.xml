@@ -7,12 +7,24 @@
 
     </data>
 
-    <com.miaxis.attendance.widget.CameraTextureView
-        android:id="@+id/ttv_preview"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:keepScreenOn="true"
         tools:background="@color/black"
-        tools:context=".ui.preview.PreviewFragment" />
+        tools:context=".ui.preview.PreviewFragment">
+
+        <com.miaxis.attendance.widget.CameraTextureView
+            android:id="@+id/ttv_preview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:keepScreenOn="true" />
+
+        <org.zz.widget.FaceRectView
+            android:id="@+id/frv_rect"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </FrameLayout>
+
 
 </layout>
