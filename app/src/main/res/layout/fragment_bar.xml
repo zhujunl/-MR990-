@@ -90,6 +90,13 @@
             tools:text="@string/text_ip" />
 
 
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/iv_cloud"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

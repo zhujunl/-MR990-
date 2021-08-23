@@ -1,22 +1,19 @@
 package com.miaxis.attendance.api;
 
 
-public class ResponseEntity<T> {
-    private String code;
-    private String message;
-    private T data;
+public class HttpResponse<T> {
+    public String code;
+    public String message;
+    public T data;
 
-    public ResponseEntity() {
+    public HttpResponse() {
     }
 
-    public ResponseEntity(String code, String message, T data) {
+    public HttpResponse(String code, String message, T data) {
         this.code = code;
         this.message = message;
         this.data = data;
     }
-
-
-
 
     @Override
     public String toString() {

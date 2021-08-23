@@ -42,12 +42,11 @@ public class SSLSocketClient {
 
     //获取HostnameVerifier  
     public static HostnameVerifier getHostnameVerifier() {
-        HostnameVerifier hostnameVerifier = new HostnameVerifier() {
+        return new HostnameVerifier() {
             @Override
             public boolean verify(String s, SSLSession sslSession) {
                 return true;
             }
         };
-        return hostnameVerifier;
     }
 }

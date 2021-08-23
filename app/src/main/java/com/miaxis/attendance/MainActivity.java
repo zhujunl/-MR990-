@@ -23,7 +23,8 @@ public class MainActivity extends BaseBindingFragmentActivity<ActivityMainBindin
                 Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 Manifest.permission.CAMERA,
-                Manifest.permission.READ_PHONE_STATE};
+                Manifest.permission.READ_PHONE_STATE,
+                Manifest.permission.ACCESS_WIFI_STATE};
         replace(R.id.container, PermissionFragment.newInstance(permissions));
         //MyMqttService.startService(this);
     }

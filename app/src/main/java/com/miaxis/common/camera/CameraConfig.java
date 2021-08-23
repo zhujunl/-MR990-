@@ -9,7 +9,7 @@ package com.miaxis.common.camera;
  */
 public enum CameraConfig {
 
-    //    Camera_RGB(1, 640, 480, 90, 90, false),
+    //Camera_RGB(1, 640, 480, 90, 90, false),
     Camera_RGB(0, 640, 480, 270, 90, true),
     Camera_NIR(1, 640, 480, 90, 90, false);
 

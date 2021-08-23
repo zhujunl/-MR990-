@@ -7,7 +7,7 @@ android {
     compileSdkVersion 30
     defaultConfig {
         applicationId "com.miaxis.attendance"
-        minSdkVersion 23
+        minSdkVersion 24
         targetSdkVersion 29
         versionCode 1
         versionName "0.0.1"
@@ -15,8 +15,19 @@ android {
         ndk {
             abiFilters 'armeabi-v7a'// 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64', 'mips', 'mips64'
         }
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [
+                        "room.schemaLocation":"$projectDir/schemas".toString(),
+                        "room.incremental":"true",
+                        "room.expandProjection":"true"]
+            }
+        }
     }
-
+    sourceSets {
+        //数据库概要、记录存放位置
+        androidTest.assets.srcDirs += files("$projectDir/schemas".toString())
+    }
     signingConfigs {
         debug {
             storeFile file('../sign.keystore')
@@ -125,4 +136,8 @@ dependencies {
     implementation "androidx.room:room-runtime:$room_version"
     annotationProcessor "androidx.room:room-compiler:$room_version"
     implementation "androidx.room:room-rxjava2:$room_version"
+
+    //httpd
+    implementation 'org.nanohttpd:nanohttpd:2.3.1'
+
 }
