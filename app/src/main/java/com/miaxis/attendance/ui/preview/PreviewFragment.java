@@ -1,9 +1,8 @@
 package com.miaxis.attendance.ui.preview;
 
-import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.SurfaceHolder;
 import android.view.TextureView;
 
 import com.miaxis.attendance.R;
@@ -12,17 +11,15 @@ import com.miaxis.attendance.widget.CameraTextureView;
 import com.miaxis.common.activity.BaseBindingFragment;
 import com.miaxis.common.camera.CameraConfig;
 import com.miaxis.common.camera.CameraHelper;
-import com.miaxis.common.camera.CameraPreviewCallback;
-import com.miaxis.common.camera.MXCamera;
-import com.miaxis.common.camera.MXFrame;
 import com.miaxis.common.response.ZZResponse;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-public class PreviewFragment extends BaseBindingFragment<FragmentPreviewBinding> implements TextureView.SurfaceTextureListener, CameraPreviewCallback {
+public class PreviewFragment extends BaseBindingFragment<FragmentPreviewBinding> implements TextureView.SurfaceTextureListener {
 
     private static final String TAG = "PreviewFragment";
     private PreviewViewModel mViewModel;
@@ -42,34 +39,48 @@ public class PreviewFragment extends BaseBindingFragment<FragmentPreviewBinding>
         binding.ttvPreview.setSurfaceTextureListener(this);
         binding.ttvPreview.setRotationY(CameraConfig.Camera_RGB.mirror ? 180 : 0); // 镜面对称
         binding.ttvPreview.setRawPreviewSize(new CameraTextureView.Size(CameraConfig.Camera_RGB.height, CameraConfig.Camera_RGB.width));
-        mViewModel.faceRect.observe(this, new Observer<RectF>() {
+        Observer<ZZResponse<?>> observer = response -> {
+            if (!ZZResponse.isSuccess(response)) {
+                new AlertDialog.Builder(getContext()).setTitle("错误")
+                        .setMessage("摄像头打开失败，是否重试？\n" + response.getCode() + "," + response.getMsg())
+                        .setPositiveButton("重试", (dialog, which) -> {
+                            dialog.dismiss();
+                            showCameraPreview(binding.ttvPreview.getSurfaceTexture());
+                        }).setNegativeButton("退出", (dialog, which) -> {
+                    dialog.dismiss();
+                    finish();
+                }).create().show();
+            }
+        };
+        mViewModel.IsCameraEnable_Rgb.observe(this, observer);
+        mViewModel.IsCameraEnable_Nir.observe(this, observer);
+
+        mViewModel.faceRect.observe(this, rectF -> binding.frvRect.setRect(rectF, false));
+        binding.svPreviewNir.getHolder().addCallback(new SurfaceHolder.Callback() {
             @Override
-            public void onChanged(RectF rectF) {
-                binding.frvRect.setRect(rectF, false);
+            public void surfaceCreated(@NonNull SurfaceHolder holder) {
+                mViewModel.SurfaceHolder_Nir.set(holder);
+            }
+
+            @Override
+            public void surfaceChanged(@NonNull SurfaceHolder holder, int format, int width, int height) {
+
+            }
+
+            @Override
+            public void surfaceDestroyed(@NonNull SurfaceHolder holder) {
+
             }
         });
     }
 
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-        Log.e(TAG, "onSurfaceTextureAvailable:   " + width + "X" + height);
-        ZZResponse<?> init = CameraHelper.getInstance().init(2);
-        Log.e(TAG, "init:" + init);
-        ZZResponse<MXCamera> mxCamera = CameraHelper.getInstance().createMXCamera(CameraConfig.Camera_RGB);
-        Log.e(TAG, "createMXCamera:" + mxCamera);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                ZZResponse<MXCamera> mxCameraZZResponse = CameraHelper.getInstance().find(CameraConfig.Camera_RGB);
-                Log.e(TAG, "find:" + mxCameraZZResponse);
-                if (ZZResponse.isSuccess(mxCameraZZResponse)) {
-                    int startTexture = mxCameraZZResponse.getData().startTexture(surface);
-                    Log.e(TAG, "startTexture:" + startTexture);
-                    mxCameraZZResponse.getData().setPreviewCallback(PreviewFragment.this);
-                    mxCameraZZResponse.getData().setNextFrameEnable();
-                }
-            }
-        }).start();
+        showCameraPreview(surface);
+    }
+
+    private void showCameraPreview(SurfaceTexture surface) {
+        mViewModel.showRgbCameraPreview(surface);
     }
 
     @Override
@@ -87,10 +98,16 @@ public class PreviewFragment extends BaseBindingFragment<FragmentPreviewBinding>
     }
 
     @Override
-    public void onPreview(MXCamera camera, MXFrame frame) {
-        mViewModel.Process(camera, frame);
+    public void onResume() {
+        super.onResume();
+        mViewModel.resume();
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        mViewModel.pause();
+    }
 
 }
 

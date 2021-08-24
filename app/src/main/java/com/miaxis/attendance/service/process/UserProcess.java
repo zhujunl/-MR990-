@@ -9,10 +9,11 @@ import com.miaxis.attendance.service.bean.User;
 import com.miaxis.attendance.service.transform.PersonTransform;
 import com.miaxis.common.utils.MapUtils;
 
+import org.nanohttpd.NanoHTTPD;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import fi.iki.elonen.NanoHTTPD;
 
 /**
  * @author Tank
@@ -51,9 +52,6 @@ public class UserProcess {
 
         @Override
         public NanoHTTPD.Response onProcess(NanoHTTPD.IHTTPSession session) throws Exception {
-            String remoteIpAddress = session.getRemoteIpAddress();
-
-
             if (NanoHTTPD.Method.POST != session.getMethod()) {
                 return NanoHTTPD.newFixedLengthResponse(
                         NanoHTTPD.Response.Status.METHOD_NOT_ALLOWED, NanoHTTPD.MIME_PLAINTEXT, null);
@@ -79,7 +77,6 @@ public class UserProcess {
             return NanoHTTPD.newFixedLengthResponse(HttpServer.Gson.toJson(MxResponse.CreateSuccess(insert)));
         }
     }
-
 
     public static class UpdateUser implements BaseProcess {
 

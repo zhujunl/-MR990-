@@ -39,7 +39,6 @@ public class BarFragment extends BaseBindingFragment<FragmentBarBinding> {
         getActivity().registerReceiver(networkChangeReceiver, intentFilter);
         binding.tvIp.setText(HardWareUtils.getHostIP());
 
-
         mViewModel.startHttpServer(8090);
         mViewModel.httpServerStatus.observe(this, integer -> {
             switch (integer) {
@@ -62,6 +61,7 @@ public class BarFragment extends BaseBindingFragment<FragmentBarBinding> {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        mViewModel.stopHttpServer();
         getActivity().unregisterReceiver(networkChangeReceiver);
     }
 

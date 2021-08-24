@@ -28,7 +28,9 @@ public class PersonTransform {
             return MxResponse.CreateFail(MxResponseCode.CODE_ILLEGAL_PARAMETER, MxResponseCode.MSG_ILLEGAL_PARAMETER);
         }
         //byte[] decode = Base64.getDecoder().decode(user.base_pic);
-        byte[] decode = Base64.decode(user.base_pic, Base64.DEFAULT);
+        //        java.util.Base64.Decoder decoder = java.util.Base64.getDecoder();
+        //        byte[] decode = decoder.decode(user.base_pic);
+        byte[] decode = android.util.Base64.decode(user.base_pic, Base64.URL_SAFE);
         String savePath = HttpServer.FilePath_Face + System.currentTimeMillis() + ".jpeg";
         boolean b = FileUtils.writeFile(savePath, decode);
         Log.e(TAG, "writeFile: " + b);
@@ -39,6 +41,10 @@ public class PersonTransform {
         localImage.Type = 1;
         localImage.ImagePath = savePath;
         long insert = LocalImageModel.insert(localImage);
+        //        List<LocalImage> byID = LocalImageModel.findByID(user.base_pic);
+        //        if (ListUtils.isNullOrEmpty(byID)) {
+        //            return MxResponse.CreateFail(MxResponseCode.CODE_ILLEGAL_PARAMETER, MxResponseCode.MSG_ILLEGAL_PARAMETER);
+        //        }
         Person person = new Person();
         //        public long id;
         //        public String name;//姓名（唯一，汉字）

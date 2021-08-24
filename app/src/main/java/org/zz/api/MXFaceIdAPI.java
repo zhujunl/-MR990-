@@ -3,6 +3,8 @@ package org.zz.api;
 
 import android.content.Context;
 
+import com.miaxis.common.utils.ListUtils;
+
 import org.zz.jni.JustouchFaceApi;
 
 import java.util.ArrayList;
@@ -16,6 +18,13 @@ public class MXFaceIdAPI {
     private final JustouchFaceApi mJustouchFaceApi = new JustouchFaceApi();
     private int[] FaceData;
     private MXFaceInfoEx[] FaceInfo;
+
+    private int[] FaceData_Nir;
+    private MXFaceInfoEx[] FaceInfo_Nir;
+    public final int FaceQuality = 80;
+    public final int FaceLive = 60;
+    public final float FaceMatch = 0.75F;
+
 
     private MXFaceIdAPI() {
     }
@@ -60,9 +69,26 @@ public class MXFaceIdAPI {
         for (int i = 0; i < MXFaceInfoEx.iMaxFaceNum; i++) {
             this.FaceInfo[i] = new MXFaceInfoEx();
         }
+        this.FaceData_Nir = new int[MXFaceInfoEx.SIZE * MXFaceInfoEx.iMaxFaceNum];
+        this.FaceInfo_Nir = new MXFaceInfoEx[MXFaceInfoEx.iMaxFaceNum];
+        for (int i = 0; i < MXFaceInfoEx.iMaxFaceNum; i++) {
+            this.FaceInfo_Nir[i] = new MXFaceInfoEx();
+        }
         this.m_bInit = true;
         return MXResult.CreateSuccess();
     }
+
+    public MXFace getMaxFace(List<MXFace> list) {
+        if (ListUtils.isNullOrEmpty(list)) {
+            return null;
+        }
+        MXFace temp = null;
+        for (MXFace face : list) {
+            temp = temp == null ? face : (face != null && (temp.getFaceRect().width() * temp.getFaceRect().height() > face.getFaceRect().width() * face.getFaceRect().height()) ? temp : face);
+        }
+        return temp;
+    }
+
 
     /**
      * @param
@@ -76,6 +102,8 @@ public class MXFaceIdAPI {
         }
         this.FaceData = null;
         this.FaceInfo = null;
+        this.FaceData_Nir = null;
+        this.FaceInfo_Nir = null;
         this.m_bInit = false;
     }
 
@@ -105,6 +133,26 @@ public class MXFaceIdAPI {
             int[] info = new int[MXFaceInfoEx.SIZE];
             System.arraycopy(this.FaceData, MXFaceInfoEx.SIZE * i, info, 0, MXFaceInfoEx.SIZE);
             infoList.add(new MXFace(info, this.FaceInfo[i]));
+        }
+        return MXResult.CreateSuccess(infoList);
+    }
+
+    public synchronized MXResult<List<MXFace>> mxDetectFaceNir(byte[] pImage, int nWidth, int nHeight) {
+        if (!this.m_bInit) {
+            return MXResult.CreateFail(MXErrorCode.ERR_NO_INIT, "未初始化");
+        }
+        int[] pFaceNum = new int[1];
+        int nRet = this.mJustouchFaceApi.detectFace(pImage, nWidth, nHeight, pFaceNum, this.FaceData_Nir);
+        if (nRet != 0) {
+            pFaceNum[0] = 0;
+            return MXResult.CreateFail(nRet, "人脸检测失败");
+        }
+        MXFaceInfoEx.Ints2MXFaceInfoExs(pFaceNum[0], this.FaceData_Nir, this.FaceInfo_Nir);
+        List<MXFace> infoList = new ArrayList<>();
+        for (int i = 0; i < pFaceNum[0]; i++) {
+            int[] info = new int[MXFaceInfoEx.SIZE];
+            System.arraycopy(this.FaceData_Nir, MXFaceInfoEx.SIZE * i, info, 0, MXFaceInfoEx.SIZE);
+            infoList.add(new MXFace(info, this.FaceInfo_Nir[i]));
         }
         return MXResult.CreateSuccess(infoList);
     }
@@ -194,6 +242,49 @@ public class MXFaceIdAPI {
         }
         MXFaceInfoEx.Int2MXFaceInfoEx(mxFace.getFaceData(), mxFace.getFaceInfo());
         return MXResult.CreateSuccess(mxFace.getFaceInfo().liveness);
+    }
+
+    public MXResult<?> mxRGBLiveDetect(byte[] pImage, int nWidth, int nHeight, MXFace mxFace) {
+        if (!this.m_bInit) {
+            return MXResult.CreateFail(MXErrorCode.ERR_NO_INIT, "未初始化");
+        }
+        MXResult<Integer> rgbResult = this.mxFaceQuality(pImage, nWidth, nHeight, mxFace);
+        if (!MXResult.isSuccess(rgbResult)) {
+            return MXResult.CreateFail(rgbResult.getCode(), rgbResult.getMsg());
+        }
+        //2.可见光质量评价
+        if (rgbResult.getData() < this.FaceQuality) {
+            return MXResult.CreateFail(-70, "人脸质量过低，值:" + rgbResult.getData());
+        }
+        //2.1 大姿态
+        MXFaceInfoEx rgbFaceInfo = mxFace.getFaceInfo();
+        if (rgbFaceInfo.pitch > 20 || rgbFaceInfo.roll > 20 || rgbFaceInfo.yaw > 20) {
+            return MXResult.CreateFail(-71, "姿态过大");
+        }
+        //2.2 距离
+        if (rgbFaceInfo.eyeDistance < 15) {
+            return MXResult.CreateFail(-72, "请不要离镜头太远");
+        }
+        if (rgbFaceInfo.eyeDistance > 150) {
+            return MXResult.CreateFail(-73, "请不要离镜头太近");
+        }
+        //2.3 眼睛遮挡
+        int max_eye_occlusion = 0;
+        int occlusion_lefteye = rgbFaceInfo.keypt_x[112];
+        int occlusion_righteye = rgbFaceInfo.keypt_x[113];
+        max_eye_occlusion = occlusion_lefteye;
+        if (max_eye_occlusion < occlusion_righteye) {
+            max_eye_occlusion = occlusion_righteye;
+        }
+        if (max_eye_occlusion > 60) {
+            return MXResult.CreateFail(-74, "请勿遮挡");
+        }
+        //2.5 肤色
+        int skin = rgbFaceInfo.keypt_y[113];
+        if (skin < 36) {
+            return MXResult.CreateFail(-75, "肤色检测不通过");
+        }
+        return MXResult.CreateSuccess();
     }
 
     /**

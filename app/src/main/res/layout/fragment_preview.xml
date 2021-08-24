@@ -19,6 +19,13 @@
             android:layout_height="match_parent"
             android:keepScreenOn="true" />
 
+        <SurfaceView
+            android:id="@+id/sv_preview_nir"
+            android:layout_width="120px"
+            android:layout_height="160px"
+            android:layout_gravity="bottom|end"
+            android:keepScreenOn="true" />
+
         <org.zz.widget.FaceRectView
             android:id="@+id/frv_rect"
             android:layout_width="match_parent"

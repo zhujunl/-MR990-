@@ -5,6 +5,7 @@ import android.os.Bundle;
 import com.miaxis.attendance.R;
 import com.miaxis.attendance.databinding.FragmentMainBinding;
 import com.miaxis.attendance.ui.bar.BarFragment;
+import com.miaxis.attendance.ui.preview.PreviewFragment;
 import com.miaxis.common.activity.BaseBindingFragment;
 
 import androidx.annotation.NonNull;
@@ -27,10 +28,8 @@ public class MainFragment extends BaseBindingFragment<FragmentMainBinding> {
     @Override
     protected void initView(@NonNull FragmentMainBinding binding, @Nullable Bundle savedInstanceState) {
         mViewModel = new ViewModelProvider(this).get(MainViewModel.class);
-//        replaceChild(R.id.fl_preview, PreviewFragment.newInstance());
+        replaceChild(R.id.fl_preview, PreviewFragment.newInstance());
         replaceChild(R.id.fl_content, BarFragment.newInstance());
-
-
     }
 
 }

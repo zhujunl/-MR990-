@@ -5,6 +5,9 @@ import android.app.Application;
 import com.miaxis.attendance.api.HttpApi;
 import com.miaxis.attendance.data.AppDataBase;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 /**
  * @author Tank
  * @date 2021/8/19 5:39 下午
@@ -15,6 +18,7 @@ import com.miaxis.attendance.data.AppDataBase;
 public class App extends Application {
 
     private static App context;
+    public ExecutorService threadExecutor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
 
     @Override
     public void onCreate() {

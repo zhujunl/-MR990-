@@ -6,6 +6,7 @@ import android.os.Bundle;
 import com.miaxis.attendance.databinding.ActivityMainBinding;
 import com.miaxis.attendance.ui.permission.PermissionFragment;
 import com.miaxis.common.activity.BaseBindingFragmentActivity;
+import com.miaxis.common.camera.CameraHelper;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -29,4 +30,10 @@ public class MainActivity extends BaseBindingFragmentActivity<ActivityMainBindin
         //MyMqttService.startService(this);
     }
 
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        CameraHelper.getInstance().free();
+    }
 }

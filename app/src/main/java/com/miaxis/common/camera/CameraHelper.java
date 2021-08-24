@@ -42,15 +42,13 @@ public class CameraHelper {
     }
 
     public void free() {
-        if (!this.mMXCameras.isEmpty()) {
-            for (MXCamera camera : this.mMXCameras) {
-                camera.stop();
-            }
-            this.mMXCameras.clear();
+        for (MXCamera camera : this.mMXCameras) {
+            camera.stop();
         }
+        this.mMXCameras.clear();
     }
 
-    public ZZResponse<MXCamera> createMXCamera(CameraConfig cameraConfig) {
+    public ZZResponse<MXCamera> createOrFindMXCamera(CameraConfig cameraConfig) {
         if (cameraConfig == null) {
             return ZZResponse.CreateFail(-90, "config error");
         }
@@ -107,33 +105,27 @@ public class CameraHelper {
     }
 
     public synchronized int resume() {
-        if (!this.mMXCameras.isEmpty()) {
-            for (MXCamera mxCamera : this.mMXCameras) {
-                if (mxCamera != null) {
-                    mxCamera.resume();
-                }
+        for (MXCamera mxCamera : this.mMXCameras) {
+            if (mxCamera != null) {
+                mxCamera.resume();
             }
         }
         return 0;
     }
 
     public synchronized int pause() {
-        if (!this.mMXCameras.isEmpty()) {
-            for (MXCamera mxCamera : this.mMXCameras) {
-                if (mxCamera != null) {
-                    mxCamera.pause();
-                }
+        for (MXCamera mxCamera : this.mMXCameras) {
+            if (mxCamera != null) {
+                mxCamera.pause();
             }
         }
         return 0;
     }
 
     public synchronized int stop() {
-        if (!this.mMXCameras.isEmpty()) {
-            for (MXCamera mxCamera : this.mMXCameras) {
-                if (mxCamera != null) {
-                    mxCamera.stop();
-                }
+        for (MXCamera mxCamera : this.mMXCameras) {
+            if (mxCamera != null) {
+                mxCamera.stop();
             }
         }
         return 0;

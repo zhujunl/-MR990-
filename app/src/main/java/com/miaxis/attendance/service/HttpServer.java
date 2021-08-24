@@ -6,11 +6,13 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.miaxis.attendance.service.process.BaseProcess;
+import com.miaxis.attendance.service.process.FileProcess;
 import com.miaxis.attendance.service.process.UserProcess;
+
+import org.nanohttpd.NanoHTTPD;
 
 import java.io.File;
 
-import fi.iki.elonen.NanoHTTPD;
 
 /**
  * @author Tank
@@ -41,9 +43,9 @@ public class HttpServer extends NanoHTTPD {
                 try {
                     return process.onProcess(session);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    //e.printStackTrace();
                     return NanoHTTPD.newFixedLengthResponse(
-                            Response.Status.INTERNAL_ERROR, NanoHTTPD.MIME_PLAINTEXT, "" + e);
+                            Response.Status.INTERNAL_ERROR, NanoHTTPD.MIME_PLAINTEXT, "" + e.getMessage());
                 }
             }
             return NanoHTTPD.newFixedLengthResponse(
@@ -70,6 +72,8 @@ public class HttpServer extends NanoHTTPD {
                 return new UserProcess.AddUser();
             case "/api/user/update":
                 return new UserProcess.UpdateUser();
+            case "/api/file/add":
+                return new FileProcess.AddFile();
             default:
                 return null;
         }

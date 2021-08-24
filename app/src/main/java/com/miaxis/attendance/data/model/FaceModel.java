@@ -8,8 +8,10 @@ import java.util.List;
 
 public class FaceModel {
 
+    //private static CopyOnWriteArrayList<Face> FaceCache = new CopyOnWriteArrayList<>();
+
     public static long insert(Face face) {
-       return AppDataBase.getInstance().FaceDao().insert(face);
+        return AppDataBase.getInstance().FaceDao().insert(face);
     }
 
     public static void update(Face face) {
@@ -20,8 +22,8 @@ public class FaceModel {
         AppDataBase.getInstance().FaceDao().delete(face);
     }
 
-    public static void delete(String userId) {
-        AppDataBase.getInstance().FaceDao().delete(userId);
+    public static int delete(String userId) {
+        return AppDataBase.getInstance().FaceDao().delete(userId);
     }
 
     public static void deleteAll() {

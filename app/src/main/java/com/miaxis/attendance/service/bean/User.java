@@ -32,8 +32,8 @@ public class User {
         return this.id <= 0 ||
                 StringUtils.isNullOrEmpty(this.name) ||
                 StringUtils.isNullOrEmpty(this.job_no) ||
-                StringUtils.isNullOrEmpty(this.id_number) ||
-                StringUtils.isNullOrEmpty(this.base_pic);
+                StringUtils.isNullOrEmpty(this.base_pic) ||
+                StringUtils.isNullOrEmpty(this.id_number);
     }
 
     @Override
