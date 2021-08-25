@@ -5,7 +5,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.gson.Gson;
-import com.miaxis.attendance.service.process.BaseProcess;
+import com.miaxis.attendance.service.process.base.BaseProcess;
 import com.miaxis.attendance.service.process.FileProcess;
 import com.miaxis.attendance.service.process.UserProcess;
 
@@ -41,7 +41,7 @@ public class HttpServer extends NanoHTTPD {
             BaseProcess process = getProcess(session);
             if (process != null) {
                 try {
-                    return process.onProcess(session);
+                    return process.process(session);
                 } catch (Exception e) {
                     //e.printStackTrace();
                     return NanoHTTPD.newFixedLengthResponse(

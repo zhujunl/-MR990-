@@ -46,7 +46,7 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
 
     private static final String TAG = "PreviewViewModel";
     private Handler mHandler = new Handler();
-    private long timeOut = 1000 * 5L;
+    private long timeOut = 1000 * 4L;
 
     /**
      * 人脸框
@@ -69,7 +69,7 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
     /**
      * 是否启用近红外帧
      */
-    AtomicBoolean IsNirEnable = new AtomicBoolean(false);
+    AtomicBoolean IsNirEnable = new AtomicBoolean(true);
 
 
     /**
@@ -78,6 +78,9 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
     AtomicReference<Map.Entry<MxImage, MXFace>> CurrentMxImage_Rgb = new AtomicReference<>();
     AtomicReference<Map.Entry<MxImage, MXFace>> CurrentMxImage_Nir = new AtomicReference<>();
 
+    //MutableLiveData<Boolean> HaveFace = new MutableLiveData<>(false);
+
+    MutableLiveData<Boolean> StartCountdown = new MutableLiveData<>(true);
 
     public PreviewViewModel() {
     }
@@ -103,7 +106,8 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
                             for (MXFace mxFace : data) {
                                 list.add(mxFace.getFaceRectF());
                             }
-                            this.CurrentMxImage_Rgb.compareAndSet(null, new AbstractMap.SimpleEntry<>(mxImage, MXFaceIdAPI.getInstance().getMaxFace(data)));
+                            boolean b = this.CurrentMxImage_Rgb.compareAndSet(null, new AbstractMap.SimpleEntry<>(mxImage, MXFaceIdAPI.getInstance().getMaxFace(data)));
+                            Log.e(TAG, "Process_Rgb: compareAndSet:" + b);
                             emitter.onNext(list);
                             return;
                         }
@@ -127,6 +131,7 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
                 }, throwable -> {
                     this.CurrentMxImage_Rgb.compareAndSet(null, null);
                     this.faceRect.postValue(null);
+                    this.StartCountdown.setValue(false);
                     startRgbFrame();
                 });
     }
@@ -139,9 +144,16 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
         if (ZZResponse.isSuccess(mxCamera)) {
             int enable = mxCamera.getData().setNextFrameEnable();
             this.mHandler.removeCallbacksAndMessages(null);
-            this.mHandler.postDelayed(() -> IsCameraEnable_Rgb.setValue(ZZResponse.CreateFail(-98, "Camera is error")), this.timeOut);
+            if (this.StartCountdown.getValue() != null && !this.StartCountdown.getValue()) {
+                this.StartCountdown.setValue(true);
+            }
+            this.mHandler.postDelayed(() -> {
+                StartCountdown.setValue(false);
+                IsCameraEnable_Rgb.setValue(ZZResponse.CreateFail(-98, "Camera is error"));
+            }, this.timeOut);
             this.IsCameraEnable_Rgb.setValue(ZZResponse.CreateSuccess());
         } else {
+            StartCountdown.setValue(false);
             this.IsCameraEnable_Rgb.setValue(ZZResponse.CreateFail(mxCamera.getCode(), "Can not found rgb camera"));
         }
     }
@@ -156,8 +168,10 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
             if (ZZResponse.isSuccess(mxCamera)) {
                 int enable = mxCamera.getData().setNextFrameEnable();
                 this.IsNirFrameProcessing.set(true);
+                this.StartCountdown.setValue(false);
                 this.IsCameraEnable_Nir.setValue(ZZResponse.CreateSuccess());
             } else {
+                this.StartCountdown.setValue(false);
                 this.IsCameraEnable_Nir.setValue(ZZResponse.CreateFail(mxCamera.getCode(), "Can not found nir camera"));
             }
         }
@@ -179,15 +193,16 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
                         MXResult<List<MXFace>> detectFace = MXFaceIdAPI.getInstance().mxDetectFaceNir(
                                 mxImage.buffer, mxImage.width, mxImage.height);//MR90 40--100ms
                         if (MXResult.isSuccess(detectFace)) {
-                            //                            String path = "/sdcard/1/" + System.currentTimeMillis() + ".jpeg";
-                            //                            MXResult<?> imageSave = MXImageToolsAPI.getInstance().ImageSave(path, mxImage.buffer, mxImage.width, mxImage.height, 3);
-                            //                            Log.e(TAG, "imageSave: " + imageSave);
+                            //String path = "/sdcard/1/" + System.currentTimeMillis() + ".jpeg";
+                            //MXResult<?> imageSave = MXImageToolsAPI.getInstance().ImageSave(path, mxImage.buffer, mxImage.width, mxImage.height, 3);
+                            //Log.e(TAG, "imageSave: " + imageSave);
                             List<RectF> list = new ArrayList<>();
                             List<MXFace> data = detectFace.getData();
                             for (MXFace mxFace : data) {
                                 list.add(mxFace.getFaceRectF());
                             }
-                            this.CurrentMxImage_Rgb.compareAndSet(null, new AbstractMap.SimpleEntry<>(mxImage, MXFaceIdAPI.getInstance().getMaxFace(data)));
+                            boolean b = this.CurrentMxImage_Nir.compareAndSet(null, new AbstractMap.SimpleEntry<>(mxImage, MXFaceIdAPI.getInstance().getMaxFace(data)));
+                            Log.e(TAG, "Process_Nir:  compareAndSet:" + b);
                             emitter.onNext(list);
                             return;
                         }
@@ -209,6 +224,9 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
                 });
     }
 
+    /**
+     * 开启可见光预览
+     */
     public void showRgbCameraPreview(SurfaceTexture surface) {
         Disposable subscribe = Observable.create((ObservableOnSubscribe<ZZResponse<MXCamera>>) emitter -> {
             ZZResponse<?> init = CameraHelper.getInstance().init(2);
@@ -248,6 +266,9 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
      * 开启近红外预览
      */
     private void startNirPreview() {
+        if (!this.IsNirEnable.get()) {
+            return;
+        }
         Disposable subscribe = Observable.create((ObservableOnSubscribe<ZZResponse<MXCamera>>) emitter -> {
             ZZResponse<MXCamera> mxCamera = CameraHelper.getInstance().createOrFindMXCamera(CameraConfig.Camera_NIR);
             Log.e(TAG, "createMXCamera:" + mxCamera);
@@ -282,12 +303,11 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
         Disposable subscribe = Observable.create((ObservableOnSubscribe<ZZResponse<Person>>) emitter -> {
             Map.Entry<MxImage, MXFace> rgbEntry = this.CurrentMxImage_Rgb.get();
             Map.Entry<MxImage, MXFace> nirEntry = this.CurrentMxImage_Nir.get();
-
             if (rgbEntry == null || nirEntry == null
                     || rgbEntry.getKey() == null || nirEntry.getKey() == null
-                    || rgbEntry.getKey().isBufferEmpty() || rgbEntry.getKey().isSizeLegal()
+                    || rgbEntry.getKey().isBufferEmpty() || !rgbEntry.getKey().isSizeLegal()
                     || rgbEntry.getValue() == null || nirEntry.getValue() == null
-                    || rgbEntry.getKey().isBufferEmpty() || rgbEntry.getKey().isSizeLegal()) {
+                    || rgbEntry.getKey().isBufferEmpty() || !rgbEntry.getKey().isSizeLegal()) {
                 emitter.onNext(ZZResponse.CreateFail(ZZResponseCode.CODE_ILLEGAL_PARAMETER, ZZResponseCode.MSG_ILLEGAL_PARAMETER));
             } else {
                 MxImage rgbImage = rgbEntry.getKey();
@@ -353,12 +373,12 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
 
                     }
                     this.IsNirFrameProcessing.set(false);
-                    this.CurrentMxImage_Rgb.compareAndSet(null, null);
-                    this.CurrentMxImage_Nir.compareAndSet(null, null);
+                    this.CurrentMxImage_Rgb.set(null);
+                    this.CurrentMxImage_Nir.set(null);
                 }, throwable -> {
                     this.IsNirFrameProcessing.set(false);
-                    this.CurrentMxImage_Rgb.compareAndSet(null, null);
-                    this.CurrentMxImage_Nir.compareAndSet(null, null);
+                    this.CurrentMxImage_Rgb.set(null);
+                    this.CurrentMxImage_Nir.set(null);
                 });
     }
 

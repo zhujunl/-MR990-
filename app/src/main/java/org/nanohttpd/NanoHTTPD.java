@@ -408,27 +408,16 @@ public abstract class NanoHTTPD {
                 //                while (!this.acceptSocket.isClosed() && this.inputStream.available() > 0) {
                 session.execute();
                 //                }
-
-                safeClose(outputStream);
-                safeClose(this.inputStream);
-                safeClose(this.acceptSocket);
-                NanoHTTPD.this.asyncRunner.closed(this);
             } catch (Exception e) {
                 if ((!(e instanceof SocketException) || !"NanoHttpd Shutdown".equals(e.getMessage())) && !(e instanceof SocketTimeoutException)) {
                     NanoHTTPD.LOG.log(Level.SEVERE, "Communication with the client broken, or an bug in the handler code", e);
                 }
-
+            } finally {
                 safeClose(outputStream);
                 safeClose(this.inputStream);
                 safeClose(this.acceptSocket);
                 NanoHTTPD.this.asyncRunner.closed(this);
             }
-            //            finally {
-            //                safeClose(outputStream);
-            //                safeClose(this.inputStream);
-            //                safeClose(this.acceptSocket);
-            //                NanoHTTPD.this.asyncRunner.closed(this);
-            //            }
         }
     }
 
@@ -939,7 +928,7 @@ public abstract class NanoHTTPD {
         public void execute() throws IOException {
             Response response = null;
             try {
-                int buffer_size = 1024 * 100;
+                int buffer_size = 1024 * 10;
                 final byte[] buf = new byte[buffer_size];
                 this.splitbyte = 0;
                 this.rlen = 0;

@@ -2,9 +2,11 @@ package com.miaxis.attendance.ui.preview;
 
 import android.graphics.SurfaceTexture;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.SurfaceHolder;
 import android.view.TextureView;
 
+import com.miaxis.attendance.MainViewModel;
 import com.miaxis.attendance.R;
 import com.miaxis.attendance.databinding.FragmentPreviewBinding;
 import com.miaxis.attendance.widget.CameraTextureView;
@@ -23,6 +25,8 @@ public class PreviewFragment extends BaseBindingFragment<FragmentPreviewBinding>
 
     private static final String TAG = "PreviewFragment";
     private PreviewViewModel mViewModel;
+    private long timeOut = 10 * 1000L;
+    private Handler mHandler = new Handler();
 
     public static PreviewFragment newInstance() {
         return new PreviewFragment();
@@ -36,6 +40,15 @@ public class PreviewFragment extends BaseBindingFragment<FragmentPreviewBinding>
     @Override
     protected void initView(@NonNull FragmentPreviewBinding binding, @Nullable Bundle savedInstanceState) {
         mViewModel = new ViewModelProvider(this).get(PreviewViewModel.class);
+
+        MainViewModel mainViewModel = new ViewModelProvider(getActivity()).get(MainViewModel.class);
+        mViewModel.StartCountdown.observe(this, start -> {
+            mHandler.removeCallbacksAndMessages(null);
+            if (start) {
+                mHandler.postDelayed(() -> mainViewModel.showAdvertising.setValue(true), timeOut);
+            }
+        });
+
         binding.ttvPreview.setSurfaceTextureListener(this);
         binding.ttvPreview.setRotationY(CameraConfig.Camera_RGB.mirror ? 180 : 0); // 镜面对称
         binding.ttvPreview.setRawPreviewSize(new CameraTextureView.Size(CameraConfig.Camera_RGB.height, CameraConfig.Camera_RGB.width));
@@ -101,6 +114,7 @@ public class PreviewFragment extends BaseBindingFragment<FragmentPreviewBinding>
     public void onResume() {
         super.onResume();
         mViewModel.resume();
+        mViewModel.StartCountdown.setValue(true);
     }
 
     @Override
@@ -109,5 +123,10 @@ public class PreviewFragment extends BaseBindingFragment<FragmentPreviewBinding>
         mViewModel.pause();
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mViewModel.destroy();
+    }
 }
 

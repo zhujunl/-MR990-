@@ -5,7 +5,7 @@ import android.util.Log;
 
 import com.miaxis.attendance.R;
 import com.miaxis.attendance.databinding.FragmentPermissionBinding;
-import com.miaxis.attendance.ui.main.MainFragment;
+import com.miaxis.attendance.ui.main.HomeFragment;
 import com.miaxis.common.activity.BaseBindingFragment;
 import com.tbruyelle.rxpermissions3.RxPermissions;
 
@@ -49,7 +49,14 @@ public class PermissionFragment extends BaseBindingFragment<FragmentPermissionBi
                     if (aBoolean) {
                         MXResult<?> initAlg = MXFaceIdAPI.getInstance().mxInitAlg(getContext(), null, null);
                         Log.e(TAG, "initAlg:" + initAlg);
-                        replaceParent(R.id.container, MainFragment.newInstance());
+                        if (MXResult.isSuccess(initAlg)) {
+                            replaceParent(R.id.container, HomeFragment.newInstance());
+                        } else {
+                            new AlertDialog.Builder(getContext()).setMessage("初始化失败。").setPositiveButton("退出", (dialog, which) -> {
+                                dialog.dismiss();
+                                finish();
+                            }).create().show();
+                        }
                     } else {
                         new AlertDialog.Builder(getContext()).setMessage("请授权后使用。").setPositiveButton("退出", (dialog, which) -> {
                             dialog.dismiss();

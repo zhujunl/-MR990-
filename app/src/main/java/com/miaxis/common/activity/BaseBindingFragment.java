@@ -95,6 +95,13 @@ public abstract class BaseBindingFragment<V extends ViewDataBinding> extends Fra
         }
     }
 
+//    protected void showParent(@IdRes int containerViewId, Fragment fragment) {
+//        FragmentActivity activity = getActivity();
+//        if (activity instanceof BaseBindingFragmentActivity) {
+//            ((BaseBindingFragmentActivity<?>) activity).show(containerViewId, fragment);
+//        }
+//    }
+
     protected void replaceChild(@IdRes int containerViewId, Fragment fragment) {
         getChildFragmentManager().beginTransaction().replace(containerViewId, fragment).commit();
     }

@@ -78,13 +78,18 @@ public class MXFaceIdAPI {
         return MXResult.CreateSuccess();
     }
 
+    /**
+     * 获取最大人脸
+     */
     public MXFace getMaxFace(List<MXFace> list) {
         if (ListUtils.isNullOrEmpty(list)) {
             return null;
         }
         MXFace temp = null;
         for (MXFace face : list) {
-            temp = temp == null ? face : (face != null && (temp.getFaceRect().width() * temp.getFaceRect().height() > face.getFaceRect().width() * face.getFaceRect().height()) ? temp : face);
+            temp = temp == null ? face : (face != null && (temp.getFaceRect().width()
+                    * temp.getFaceRect().height() > face.getFaceRect().width()
+                    * face.getFaceRect().height()) ? temp : face);
         }
         return temp;
     }
@@ -121,6 +126,10 @@ public class MXFaceIdAPI {
         if (!this.m_bInit) {
             return MXResult.CreateFail(MXErrorCode.ERR_NO_INIT, "未初始化");
         }
+        MXResult<?> parameter = checkParameter(pImage, nWidth, nHeight);
+        if (!MXResult.isSuccess(parameter)) {
+            return MXResult.CreateFail(parameter);
+        }
         int[] pFaceNum = new int[1];
         int nRet = this.mJustouchFaceApi.detectFace(pImage, nWidth, nHeight, pFaceNum, this.FaceData);
         if (nRet != 0) {
@@ -140,6 +149,10 @@ public class MXFaceIdAPI {
     public synchronized MXResult<List<MXFace>> mxDetectFaceNir(byte[] pImage, int nWidth, int nHeight) {
         if (!this.m_bInit) {
             return MXResult.CreateFail(MXErrorCode.ERR_NO_INIT, "未初始化");
+        }
+        MXResult<?> parameter = checkParameter(pImage, nWidth, nHeight);
+        if (!MXResult.isSuccess(parameter)) {
+            return MXResult.CreateFail(parameter);
         }
         int[] pFaceNum = new int[1];
         int nRet = this.mJustouchFaceApi.detectFace(pImage, nWidth, nHeight, pFaceNum, this.FaceData_Nir);
@@ -171,6 +184,10 @@ public class MXFaceIdAPI {
     public MXResult<byte[]> mxFeatureExtract(byte[] pImage, int nWidth, int nHeight, MXFace mxFace) {
         if (!this.m_bInit) {
             return MXResult.CreateFail(MXErrorCode.ERR_NO_INIT, "未初始化");
+        }
+        MXResult<?> parameter = checkParameter(pImage, nWidth, nHeight);
+        if (!MXResult.isSuccess(parameter)) {
+            return MXResult.CreateFail(parameter);
         }
         byte[] feature = new byte[mxGetFeatureSize()];
         int nRet = mJustouchFaceApi.featureExtract(pImage, nWidth, nHeight, 1, mxFace.getFaceData(), feature);
@@ -214,6 +231,10 @@ public class MXFaceIdAPI {
         if (!this.m_bInit) {
             return MXResult.CreateFail(MXErrorCode.ERR_NO_INIT, "未初始化");
         }
+        MXResult<?> parameter = checkParameter(pImage, nWidth, nHeight);
+        if (!MXResult.isSuccess(parameter)) {
+            return MXResult.CreateFail(parameter);
+        }
         int nRet = mJustouchFaceApi.faceQuality(pImage, nWidth, nHeight, 1, mxFace.getFaceData());
         if (nRet != 0) {
             return MXResult.CreateFail(MXErrorCode.ERR_QUALITY, "图像质量检测失败");
@@ -236,6 +257,10 @@ public class MXFaceIdAPI {
         if (!this.m_bInit) {
             return MXResult.CreateFail(MXErrorCode.ERR_NO_INIT, "未初始化");
         }
+        MXResult<?> parameter = checkParameter(pImage, nWidth, nHeight);
+        if (!MXResult.isSuccess(parameter)) {
+            return MXResult.CreateFail(parameter);
+        }
         int nRet = mJustouchFaceApi.nirLivenessDetect(pImage, nWidth, nHeight, 1, mxFace.getFaceData());
         if (nRet != 0) {
             return MXResult.CreateFail(MXErrorCode.ERR_FACE_LIV, "活体检测失败");
@@ -247,6 +272,10 @@ public class MXFaceIdAPI {
     public MXResult<?> mxRGBLiveDetect(byte[] pImage, int nWidth, int nHeight, MXFace mxFace) {
         if (!this.m_bInit) {
             return MXResult.CreateFail(MXErrorCode.ERR_NO_INIT, "未初始化");
+        }
+        MXResult<?> parameter = checkParameter(pImage, nWidth, nHeight);
+        if (!MXResult.isSuccess(parameter)) {
+            return MXResult.CreateFail(parameter);
         }
         MXResult<Integer> rgbResult = this.mxFaceQuality(pImage, nWidth, nHeight, mxFace);
         if (!MXResult.isSuccess(rgbResult)) {
@@ -301,6 +330,10 @@ public class MXFaceIdAPI {
         if (!this.m_bInit) {
             return MXResult.CreateFail(MXErrorCode.ERR_NO_INIT, "未初始化");
         }
+        MXResult<?> parameter = checkParameter(pImage, nWidth, nHeight);
+        if (!MXResult.isSuccess(parameter)) {
+            return MXResult.CreateFail(parameter);
+        }
         int nRet = mJustouchFaceApi.maskDetect(pImage, nWidth, nHeight, 1, mxFace.getFaceData());
         if (nRet != 0) {
             return MXResult.CreateFail(MXErrorCode.ERR_FACE_MASK, "口罩检测失败");
@@ -324,6 +357,10 @@ public class MXFaceIdAPI {
         if (!this.m_bInit) {
             return MXResult.CreateFail(MXErrorCode.ERR_NO_INIT, "未初始化");
         }
+        MXResult<?> parameter = checkParameter(pImage, nWidth, nHeight);
+        if (!MXResult.isSuccess(parameter)) {
+            return MXResult.CreateFail(parameter);
+        }
         byte[] feature = new byte[mxGetFeatureSize()];
         int nRet = mJustouchFaceApi.maskFeatureExtract(pImage, nWidth, nHeight, 1, mxFace.getFaceData(), feature);
         if (nRet != 0) {
@@ -346,6 +383,10 @@ public class MXFaceIdAPI {
     public MXResult<byte[]> mxMaskFeatureExtract4Reg(byte[] pImage, int nWidth, int nHeight, MXFace mxFace) {
         if (!this.m_bInit) {
             return MXResult.CreateFail(MXErrorCode.ERR_NO_INIT, "未初始化");
+        }
+        MXResult<?> parameter = checkParameter(pImage, nWidth, nHeight);
+        if (!MXResult.isSuccess(parameter)) {
+            return MXResult.CreateFail(parameter);
         }
         byte[] feature = new byte[mxGetFeatureSize()];
         int nRet = mJustouchFaceApi.maskFeatureExtract4Reg(pImage, nWidth, nHeight, 1, mxFace.getFaceData(), feature);
@@ -387,6 +428,19 @@ public class MXFaceIdAPI {
             iFeaLen = mJustouchFaceApi.getFeatureSize();
         }
         return iFeaLen;
+    }
+
+    /**
+     * 校验参数是否合法
+     */
+    private MXResult<?> checkParameter(byte[] pImage, int nWidth, int nHeight) {
+        if (pImage == null || pImage.length == 0) {
+            return MXResult.CreateFail(MXErrorCode.ERR_BUFFER_EMPTY, "数据为空");
+        }
+        if (nWidth <= 0 || nHeight <= 0) {
+            return MXResult.CreateFail(MXErrorCode.ERR_IMAGE_SIZE_ILLEGAL, "图像尺寸不合法");
+        }
+        return MXResult.CreateSuccess();
     }
 
 }

@@ -58,4 +58,7 @@ public class MXErrorCode {
     public static final int ERR_FACE_LIV_VIS_OCCLUSION = 10013;   //遮挡
 
 
+    public static final int ERR_BUFFER_EMPTY = 1001;//数据为空
+    public static final int ERR_IMAGE_SIZE_ILLEGAL = 1002;//图像尺寸不合法
+
 }

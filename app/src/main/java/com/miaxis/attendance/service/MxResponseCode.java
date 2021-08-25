@@ -24,4 +24,7 @@ public class MxResponseCode {
     public static String MSG_OPERATION_ERROR = "operation failed";
 
 
+    public static int CODE_ILLEGAL_IMAGE = -101;
+    public static String MSG_ILLEGAL_IMAGE = "illegal image";
+
 }

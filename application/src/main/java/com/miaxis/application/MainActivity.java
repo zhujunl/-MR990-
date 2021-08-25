@@ -1,10 +1,12 @@
 package com.miaxis.application;
 
 import android.os.Bundle;
+import android.util.Base64;
+import android.util.Log;
 
-import org.nanohttpd.webserver.SimpleWebServer;
-
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -15,18 +17,30 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Defaults
-        int port = 8080;
 
-        try {
-            SimpleWebServer aaa = new SimpleWebServer("aaa", 8080, new File("/sdcard/miaxis/"), false);
-            aaa.start();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+        byte[] bytes = File2Bytes(new File("/sdcard/1/11.jpeg"));
+        byte[] encode = Base64.encode(bytes, Base64.NO_WRAP);
+        Log.e("MainActivity", "onCreate: " + new String(encode));
 
     }
 
+
+    public static byte[] File2Bytes(File file) {
+        int byte_size = 1024;
+        byte[] b = new byte[byte_size];
+        try {
+            FileInputStream fileInputStream = new FileInputStream(file);
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream(byte_size);
+            for (int length; (length = fileInputStream.read(b)) != -1; ) {
+                outputStream.write(b, 0, length);
+            }
+            fileInputStream.close();
+            outputStream.close();
+            return outputStream.toByteArray();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
 }

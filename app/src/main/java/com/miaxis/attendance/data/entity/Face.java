@@ -9,7 +9,6 @@ public class Face {
     @PrimaryKey(autoGenerate = true)
     public long id;
     public String UserId;
-    public long FaceImage;//人脸图片ID
     public byte[] FaceFeature;//人脸特征
     public String create_time;//创建时间
     public String update_time;//修改时间
@@ -22,7 +21,6 @@ public class Face {
         return "Face{" +
                 "id=" + id +
                 ", UserId='" + UserId + '\'' +
-                ", FaceImage='" + FaceImage + '\'' +
                 ", FaceFeature=" + (FaceFeature == null ? null : FaceFeature.length) +
                 '}';
     }

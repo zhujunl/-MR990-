@@ -12,12 +12,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 
-public class MainFragment extends BaseBindingFragment<FragmentMainBinding> {
+public class HomeFragment extends BaseBindingFragment<FragmentMainBinding> {
 
-    private MainViewModel mViewModel;
+    private HomeViewModel mViewModel;
 
-    public static MainFragment newInstance() {
-        return new MainFragment();
+    public static HomeFragment newInstance() {
+        return new HomeFragment();
     }
 
     @Override
@@ -27,7 +27,7 @@ public class MainFragment extends BaseBindingFragment<FragmentMainBinding> {
 
     @Override
     protected void initView(@NonNull FragmentMainBinding binding, @Nullable Bundle savedInstanceState) {
-        mViewModel = new ViewModelProvider(this).get(MainViewModel.class);
+        mViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
         replaceChild(R.id.fl_preview, PreviewFragment.newInstance());
         replaceChild(R.id.fl_content, BarFragment.newInstance());
     }

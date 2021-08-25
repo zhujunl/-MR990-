@@ -1,16 +1,27 @@
 package com.miaxis.attendance.service.transform;
 
+import android.graphics.BitmapFactory;
 import android.util.Base64;
-import android.util.Log;
 
+import com.miaxis.attendance.data.entity.Face;
 import com.miaxis.attendance.data.entity.LocalImage;
 import com.miaxis.attendance.data.entity.Person;
+import com.miaxis.attendance.data.model.FaceModel;
 import com.miaxis.attendance.data.model.LocalImageModel;
+import com.miaxis.attendance.data.model.PersonModel;
 import com.miaxis.attendance.service.HttpServer;
 import com.miaxis.attendance.service.MxResponse;
 import com.miaxis.attendance.service.MxResponseCode;
 import com.miaxis.attendance.service.bean.User;
 import com.miaxis.common.utils.FileUtils;
+import com.miaxis.common.utils.ListUtils;
+
+import org.zz.api.MXFace;
+import org.zz.api.MXFaceIdAPI;
+import org.zz.api.MXResult;
+
+import java.util.List;
+import java.util.Random;
 
 /**
  * @author Tank
@@ -23,48 +34,75 @@ public class PersonTransform {
 
     private static final String TAG = "PersonTransform";
 
-    public static MxResponse<Person> transform(User user) {
+    private static final Random RANDOM = new Random();
+
+    public static MxResponse<?> transform(User user) {
         if (user == null) {
             return MxResponse.CreateFail(MxResponseCode.CODE_ILLEGAL_PARAMETER, MxResponseCode.MSG_ILLEGAL_PARAMETER);
         }
-        //byte[] decode = Base64.getDecoder().decode(user.base_pic);
-        //        java.util.Base64.Decoder decoder = java.util.Base64.getDecoder();
-        //        byte[] decode = decoder.decode(user.base_pic);
+        List<Person> byUserID = PersonModel.findByUserID(String.valueOf(user.id));
+        if (!ListUtils.isNullOrEmpty(byUserID)) {
+            return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_ERROR, "already exists");
+        }
         byte[] decode = android.util.Base64.decode(user.base_pic, Base64.URL_SAFE);
-        String savePath = HttpServer.FilePath_Face + System.currentTimeMillis() + ".jpeg";
+        String savePath = HttpServer.FilePath_Face + user.id + "_" + System.currentTimeMillis() + "_" + RANDOM.nextInt() + ".jpeg";
         boolean b = FileUtils.writeFile(savePath, decode);
-        Log.e(TAG, "writeFile: " + b);
         if (!b) {
             return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_ERROR, "save image failed");
+        }
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeByteArray(decode, 0, decode.length, options);
+        if (options.outWidth <= 0 || options.outHeight <= 0) {
+            FileUtils.delete(savePath);
+            return MxResponse.CreateFail(MxResponseCode.CODE_ILLEGAL_IMAGE, MxResponseCode.MSG_ILLEGAL_IMAGE);
+        }
+        MXResult<List<MXFace>> mxResult = MXFaceIdAPI.getInstance().mxDetectFace(decode, options.outWidth, options.outHeight);
+        if (!MXResult.isSuccess(mxResult)) {
+            FileUtils.delete(savePath);
+            return MxResponse.CreateFail(mxResult.getCode(), mxResult.getMsg());
+        }
+        MXFace maxFace = MXFaceIdAPI.getInstance().getMaxFace(mxResult.getData());
+        MXResult<Integer> faceQuality = MXFaceIdAPI.getInstance().mxFaceQuality(decode, options.outWidth, options.outHeight, maxFace);
+        if (!MXResult.isSuccess(faceQuality)) {
+            FileUtils.delete(savePath);
+            return MxResponse.CreateFail(faceQuality.getCode(), faceQuality.getMsg());
+        }
+        if (faceQuality.getData() < MXFaceIdAPI.getInstance().FaceQuality) {
+            FileUtils.delete(savePath);
+            return MxResponse.CreateFail(MxResponseCode.CODE_ILLEGAL_IMAGE, "low quality");
+        }
+        MXResult<byte[]> featureExtract = MXFaceIdAPI.getInstance().mxFeatureExtract(decode, options.outWidth, options.outHeight, maxFace);
+        if (!MXResult.isSuccess(featureExtract)) {
+            FileUtils.delete(savePath);
+            return MxResponse.CreateFail(featureExtract.getCode(), featureExtract.getMsg());
         }
         LocalImage localImage = new LocalImage();
         localImage.Type = 1;
         localImage.ImagePath = savePath;
         long insert = LocalImageModel.insert(localImage);
-        //        List<LocalImage> byID = LocalImageModel.findByID(user.base_pic);
-        //        if (ListUtils.isNullOrEmpty(byID)) {
-        //            return MxResponse.CreateFail(MxResponseCode.CODE_ILLEGAL_PARAMETER, MxResponseCode.MSG_ILLEGAL_PARAMETER);
-        //        }
+        if (insert <= 0) {
+            FileUtils.delete(savePath);
+            return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_ERROR, "insert image failed");
+        }
+        Face face = new Face();
+        face.UserId = "" + user.id;
+        long faceId = FaceModel.insert(face);
+        if (faceId <= 0) {
+            return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_ERROR, "insert face failed");
+        }
         Person person = new Person();
-        //        public long id;
-        //        public String name;//姓名（唯一，汉字）
-        //        public String job_no;//工号（唯一，大小写字母和数字）
-        //        public boolean ia_admin;//是否是管理员 0-否 1-是
-        //        public String department_id;//部门id
-        //        public String password;//密码（大小写字母，数字，特殊字符）
-        //        public String base_pic;//底图
-        //        public String pass_number;//当日通行次数（每日零点更新）
-        //        public String id_number;//身份证号
-        //        public String birthday;//生日
-        //        public String is_delete;//是否删除 0-否 1-是
-        //        public String create_time;//创建时间
-        //        public String update_time;//修改时间
         person.UserId = "" + user.id;
         person.IdCardNumber = user.id_number;
         person.Number = user.id_number;
         person.Name = user.name;
         person.FaceImage = insert;
-        return MxResponse.CreateSuccess(person);
+        person.FaceID = faceId;
+        long personId = PersonModel.insert(person);
+        if (personId <= 0) {
+            return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_ERROR, "insert person failed");
+        }
+        return MxResponse.CreateSuccess();
     }
 
 

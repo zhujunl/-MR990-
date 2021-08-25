@@ -1,5 +1,7 @@
 package com.miaxis.common.activity;
 
+import java.util.List;
+
 import androidx.annotation.IdRes;
 import androidx.databinding.ViewDataBinding;
 import androidx.fragment.app.Fragment;
@@ -13,10 +15,27 @@ import androidx.fragment.app.Fragment;
  */
 public abstract class BaseBindingFragmentActivity<V extends ViewDataBinding> extends BaseBindingActivity<V> {
 
+
+    private static final String TAG = "BaseBindingFragmentActivity";
+
     protected void replace(@IdRes int containerViewId, Fragment fragment) {
+        List<Fragment> fragments = getSupportFragmentManager().getFragments();
         getSupportFragmentManager().beginTransaction()
                 .replace(containerViewId, fragment)
                 .commit();
     }
+
+    //    protected void show(@IdRes int containerViewId, Fragment fragment) {
+    //        List<Fragment> fragments = getSupportFragmentManager().getFragments();
+    //        if (ListUtils.isNullOrEmpty(fragments)) {
+    //            return;
+    //        }
+    //        getSupportFragmentManager()
+    //                .beginTransaction()
+    //                .hide(fragments.get(0))
+    //                .add(containerViewId, fragment)
+    //                .show(fragment)
+    //                .commit();
+    //    }
 
 }

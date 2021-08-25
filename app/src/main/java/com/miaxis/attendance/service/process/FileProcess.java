@@ -26,7 +26,7 @@ import java.util.Map;
  */
 public class FileProcess {
 
-    public static class AddFile implements BaseProcess {
+    public static class AddFile extends PostProcess {
 
         private static final String TAG = "AddFile";
 
@@ -35,10 +35,6 @@ public class FileProcess {
 
         @Override
         public NanoHTTPD.Response onProcess(NanoHTTPD.IHTTPSession session) throws Exception {
-            if (NanoHTTPD.Method.POST != session.getMethod()) {
-                return NanoHTTPD.newFixedLengthResponse(
-                        NanoHTTPD.Response.Status.METHOD_NOT_ALLOWED, NanoHTTPD.MIME_PLAINTEXT, null);
-            }
             Map<String, String> parms = session.getParms();
             if (MapUtils.isNullOrEmpty(parms)) {
                 return NanoHTTPD.newFixedLengthResponse(
