@@ -13,6 +13,7 @@ import com.miaxis.attendance.widget.CameraTextureView;
 import com.miaxis.common.activity.BaseBindingFragment;
 import com.miaxis.common.camera.CameraConfig;
 import com.miaxis.common.camera.CameraHelper;
+import com.miaxis.common.camera.MXSurfaceCallback;
 import com.miaxis.common.response.ZZResponse;
 
 import androidx.annotation.NonNull;
@@ -49,6 +50,8 @@ public class PreviewFragment extends BaseBindingFragment<FragmentPreviewBinding>
             }
         });
 
+        mViewModel.AttendanceBean.observe(this, attendanceBean -> mainViewModel.mAttendance.setValue(attendanceBean));
+
         binding.ttvPreview.setSurfaceTextureListener(this);
         binding.ttvPreview.setRotationY(CameraConfig.Camera_RGB.mirror ? 180 : 0); // 镜面对称
         binding.ttvPreview.setRawPreviewSize(new CameraTextureView.Size(CameraConfig.Camera_RGB.height, CameraConfig.Camera_RGB.width));
@@ -69,20 +72,10 @@ public class PreviewFragment extends BaseBindingFragment<FragmentPreviewBinding>
         mViewModel.IsCameraEnable_Nir.observe(this, observer);
 
         mViewModel.faceRect.observe(this, rectF -> binding.frvRect.setRect(rectF, false));
-        binding.svPreviewNir.getHolder().addCallback(new SurfaceHolder.Callback() {
+        binding.svPreviewNir.getHolder().addCallback(new MXSurfaceCallback() {
             @Override
             public void surfaceCreated(@NonNull SurfaceHolder holder) {
                 mViewModel.SurfaceHolder_Nir.set(holder);
-            }
-
-            @Override
-            public void surfaceChanged(@NonNull SurfaceHolder holder, int format, int width, int height) {
-
-            }
-
-            @Override
-            public void surfaceDestroyed(@NonNull SurfaceHolder holder) {
-
             }
         });
     }
@@ -126,6 +119,7 @@ public class PreviewFragment extends BaseBindingFragment<FragmentPreviewBinding>
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        mViewModel.AttendanceBean.removeObservers(this);
         mViewModel.destroy();
     }
 }

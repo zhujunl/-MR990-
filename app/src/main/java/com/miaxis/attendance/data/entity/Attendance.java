@@ -20,6 +20,7 @@ public class Attendance {
     public String UserId;//用户ID(Person)
     public long BaseImage;//底图ID
     public long CaptureImage;//现场对比图ID
+    public long CutImage;//现场人脸图ID
     public int Status;//考勤状态  0无  1成功   2失败
     public int Upload;//上传状态  0无  1已上传   2未上传
     public String create_time;//创建时间
@@ -36,6 +37,7 @@ public class Attendance {
                 ", UserId='" + UserId + '\'' +
                 ", BaseImage=" + BaseImage +
                 ", CaptureImage=" + CaptureImage +
+                ", CutImage=" + CutImage +
                 ", Status=" + Status +
                 ", Upload=" + Upload +
                 ", create_time='" + create_time + '\'' +

@@ -60,5 +60,8 @@ public class MXErrorCode {
 
     public static final int ERR_BUFFER_EMPTY = 1001;//数据为空
     public static final int ERR_IMAGE_SIZE_ILLEGAL = 1002;//图像尺寸不合法
+    public static final int ERR_FEATURE_EMPTY = 1003;//特征为空
+    public static final int ERR_FEATURE_LENGTH = 1004;//特征长度非法
+
 
 }

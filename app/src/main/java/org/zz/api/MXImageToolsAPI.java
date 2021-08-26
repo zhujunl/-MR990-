@@ -5,6 +5,9 @@ package org.zz.api;
 import android.graphics.Rect;
 import android.text.TextUtils;
 
+import com.miaxis.common.utils.FileUtils;
+import com.miaxis.common.utils.StringUtils;
+
 import org.zz.jni.mxImageTool;
 
 public class MXImageToolsAPI {
@@ -56,12 +59,14 @@ public class MXImageToolsAPI {
         if (TextUtils.isEmpty(szSaveFilePath) || pImgBuf == null ||
                 pImgBuf.length == 0 || iImgWidth <= 0 || iImgHeight <= 0 ||
                 iChannels <= 0 || iChannels > 4) {
-            return MXResult.CreateFail(-1, "参数不合法");
+            return MXResult.CreateFail(-1, "图片保存参数不合法");
         }
-
+        if (!FileUtils.initFile(szSaveFilePath)) {
+            return MXResult.CreateFail(-2, "创建文件失败");
+        }
         int imageSave = this.mMxImageTool.ImageSave(szSaveFilePath, pImgBuf, iImgWidth, iImgHeight, iChannels);
         if (imageSave != 1) {
-            return MXResult.CreateFail(-2, "操作失败");
+            return MXResult.CreateFail(-2, "图片保存操作失败");
         }
         return MXResult.CreateSuccess();
     }
@@ -82,7 +87,7 @@ public class MXImageToolsAPI {
         if (input == null || input.isBufferEmpty() ||
                 !input.isSizeLegal() ||
                 !(iAngle == 90 || iAngle == 180 || iAngle == 270)) {
-            return MXResult.CreateFail(-1, "参数不合法");
+            return MXResult.CreateFail(-1, "图片旋转参数不合法");
         }
         byte[] out = new byte[input.width * input.height * 3];
         int[] width = new int[1];
@@ -90,7 +95,7 @@ public class MXImageToolsAPI {
         int imageRotate = this.mMxImageTool.ImageRotate(input.buffer, input.width, input.height,
                 iAngle, out, width, height);
         if (imageRotate != 1) {
-            return MXResult.CreateFail(-2, "操作失败");
+            return MXResult.CreateFail(-2, "图片旋转操作失败");
         }
         return MXResult.CreateSuccess(new MxImage(width[0], height[0], out));
     }
@@ -98,15 +103,15 @@ public class MXImageToolsAPI {
 
     /**
      * @param input - 输入	RGB图像缓冲区
-     *                   iImgWidth		- 输入	图像宽度
-     *                   iImgHeight		- 输入	图像高度
-     *                   iRect			- 输入	Rect[0]	=x;
-     *                   Rect[1]	=y;
-     *                   Rect[2]	=width;
-     *                   Rect[3]	=height;
-     *                   pDstImgBuf  	- 输出	RGB图像缓冲区
-     *                   iDstWidth		- 输出	图像宽度
-     *                   iDstHeight		- 输出	图像高度
+     *              iImgWidth		- 输入	图像宽度
+     *              iImgHeight		- 输入	图像高度
+     *              iRect			- 输入	Rect[0]	=x;
+     *              Rect[1]	=y;
+     *              Rect[2]	=width;
+     *              Rect[3]	=height;
+     *              pDstImgBuf  	- 输出	RGB图像缓冲区
+     *              iDstWidth		- 输出	图像宽度
+     *              iDstHeight		- 输出	图像高度
      * @return 1-成功，其他-失败
      * @author chen.gs
      * @category 在输入的RGB图像上根据输入的Rect, 进行裁剪
@@ -115,7 +120,7 @@ public class MXImageToolsAPI {
         if (input == null || input.isBufferEmpty() ||
                 !input.isSizeLegal() || rect == null || rect.isEmpty() ||
                 rect.top <= 0 || rect.left <= 0 || rect.right <= 0 || rect.bottom <= 0) {
-            return MXResult.CreateFail(-1, "参数不合法");
+            return MXResult.CreateFail(-1, "图片裁剪参数不合法");
         }
         int[] rects = new int[]{rect.left, rect.top, rect.width(), rect.height()};
         byte[] out = new byte[input.width * input.height * 3];
@@ -124,7 +129,32 @@ public class MXImageToolsAPI {
         int imageCutRect = this.mMxImageTool.ImageCutRect(input.buffer, input.width, input.height,
                 rects, out, width, height);
         if (imageCutRect != 1) {
-            return MXResult.CreateFail(-2, "操作失败");
+            return MXResult.CreateFail(-2, "图片裁剪操作失败");
+        }
+        return MXResult.CreateSuccess(new MxImage(width[0], height[0], out));
+    }
+
+
+    /**
+     * @param imagePath - 输入	图像路径
+     *                  iChannels			- 输入  图像通道数，1-加载为灰度图像，3-加载为RGB图像
+     *                  pImgBuf			- 输出	外部图像缓冲区,用于接收图像数据，如果为NULL，则不接收
+     *                  oImgWidth			- 输出	图像宽度
+     *                  oImgHeight			- 输出	图像高度
+     * @return 1-成功，其他-失败
+     * @author chen.gs
+     * @category 图像文件加载到内存
+     */
+    public MXResult<MxImage> ImageLoad(String imagePath, int input_width, int input_height) {
+        if (StringUtils.isNullOrEmpty(imagePath)) {
+            return MXResult.CreateFail(-1, "加载图片参数不合法");
+        }
+        byte[] out = new byte[input_width * input_height * 3];
+        int[] width = new int[1];
+        int[] height = new int[1];
+        int imageLoad = this.mMxImageTool.ImageLoad(imagePath, 3, out, width, height);
+        if (imageLoad != 1) {
+            return MXResult.CreateFail(-2, "加载图片操作失败");
         }
         return MXResult.CreateSuccess(new MxImage(width[0], height[0], out));
     }

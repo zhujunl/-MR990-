@@ -8,6 +8,7 @@ import java.util.List;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
@@ -24,10 +25,13 @@ public interface AttendanceDao {
     @Query("SELECT * FROM Attendance ORDER BY Attendance.id DESC")
     List<Attendance> findAll();
 
+    @Query("SELECT * FROM Attendance WHERE Attendance.Upload=2 ORDER BY Attendance.id DESC Limit 1")
+    List<Attendance> findNoUpload();
+
     @Query("SELECT * FROM Attendance WHERE Attendance.userID=:userID")
     List<Attendance> findByUserID(String userID);
 
-    @Insert()
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insert(Attendance attendance);
 
     @Update

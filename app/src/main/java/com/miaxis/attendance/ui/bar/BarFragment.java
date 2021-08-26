@@ -5,21 +5,28 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Handler;
+import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.miaxis.attendance.MainViewModel;
 import com.miaxis.attendance.R;
+import com.miaxis.attendance.config.AppConfig;
 import com.miaxis.attendance.data.bean.AttendanceBean;
 import com.miaxis.attendance.databinding.FragmentBarBinding;
 import com.miaxis.common.activity.BaseBindingFragment;
+import com.miaxis.common.response.ZZResponse;
 import com.miaxis.common.utils.HardWareUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 public class BarFragment extends BaseBindingFragment<FragmentBarBinding> {
 
+    private static final String TAG = "BarFragment";
+    private MainViewModel mainViewModel;
+    private Handler mHandler = new Handler();
     private final NetworkChangeReceiver networkChangeReceiver = new NetworkChangeReceiver();
 
     public static BarFragment newInstance() {
@@ -40,7 +47,7 @@ public class BarFragment extends BaseBindingFragment<FragmentBarBinding> {
         getActivity().registerReceiver(networkChangeReceiver, intentFilter);
         binding.tvIp.setText(HardWareUtils.getHostIP());
 
-        MainViewModel mainViewModel = new ViewModelProvider(getActivity()).get(MainViewModel.class);
+        mainViewModel = new ViewModelProvider(getActivity()).get(MainViewModel.class);
         mainViewModel.startService.setValue(true);
         mainViewModel.httpServerStatus.observe(this, integer -> {
             switch (integer) {
@@ -54,18 +61,37 @@ public class BarFragment extends BaseBindingFragment<FragmentBarBinding> {
                     binding.ivCloud.setImageResource(R.drawable.ic_baseline_cloud_off);
             }
         });
-        mainViewModel.mAttendance.observe(this, new Observer<AttendanceBean>() {
-            @Override
-            public void onChanged(AttendanceBean attendance) {
-//                Glide.with(binding.ivImage).load(attendance.BaseImage)
+
+        mainViewModel.mAttendance.observe(this, attendance -> {
+            if (attendance == null) {
+                return;
+            }
+            if (ZZResponse.isSuccess(attendance)) {
+                mainViewModel.openDoor();
+                AttendanceBean attendanceData = attendance.getData();
+                if (viewModel.isNewUser(attendance.getData())) {
+                    Glide.with(binding.ivImage).load(attendanceData.CutImage).into(binding.ivImage);
+                    binding.tvName.setText(String.valueOf(attendanceData.UserName));
+                    mHandler.removeCallbacksAndMessages(null);
+                    mHandler.postDelayed(() -> {
+                        Glide.with(binding.ivImage).load(R.drawable.logo).centerCrop().into(binding.ivImage);
+                        binding.tvName.setText(R.string.text_name);
+                        viewModel.setNewUserReset();
+                    }, AppConfig.CloseDoorDelay);
+                }
+            } else {
+                Toast.makeText(getContext(), "比对失败：" + attendance.getMsg(), Toast.LENGTH_SHORT).show();
             }
         });
-
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        mHandler.removeCallbacksAndMessages(null);
+        mainViewModel.httpServerStatus.removeObservers(this);
+        mainViewModel.mAttendance.removeObservers(this);
+        mainViewModel.mAttendance.setValue(null);
         getActivity().unregisterReceiver(networkChangeReceiver);
     }
 

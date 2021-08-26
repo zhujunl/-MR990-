@@ -1,9 +1,14 @@
 package com.miaxis.common.utils;
 
+import android.text.TextUtils;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URL;
 
 /**
  * @author Tank
@@ -22,7 +27,7 @@ public class FileUtils {
         File file = new File(path);
         if (!file.exists()) {
             File parentFile = file.getParentFile();
-            if (parentFile != null) {
+            if (parentFile != null && !parentFile.exists()) {
                 boolean mkdirs = parentFile.mkdirs();
             }
         }
@@ -40,9 +45,12 @@ public class FileUtils {
         if (bytes == null || bytes.length == 0) {
             return false;
         }
+        boolean b = initFile(path);
+        if (!b) {
+            return false;
+        }
         FileOutputStream out = null;
         try {
-            initFile(path);
             out = new FileOutputStream(path);//指定写到哪个路径中
             out.write(bytes);
             out.flush();
@@ -87,5 +95,54 @@ public class FileUtils {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+
+    /**
+     * 下载文件
+     *
+     * @param fileUrl 下载路径
+     */
+    public static boolean download(String fileUrl, String savePath) {
+        boolean b = initFile(savePath);
+        if (!b) {
+            return false;
+        }
+        if (TextUtils.isEmpty(fileUrl)) {
+            return false;
+        }
+        InputStream inputStream = null;
+        OutputStream outputStream = null;
+        try {
+            File temp = new File(savePath + ".temp"); // 下载文件路径
+            byte[] bs = new byte[1024];
+            int len;
+            URL url = new URL(fileUrl);
+            inputStream = url.openStream();
+            outputStream = new FileOutputStream(temp);
+            while ((len = inputStream.read(bs)) != -1) {
+                outputStream.write(bs, 0, len);
+                outputStream.flush();
+            }
+            return temp.renameTo(new File(savePath));
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (outputStream != null) {
+                    outputStream.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            try {
+                if (inputStream != null) {
+                    inputStream.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
     }
 }

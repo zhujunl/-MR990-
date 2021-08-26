@@ -3,6 +3,7 @@ package org.zz.api;
 
 import android.content.Context;
 
+import com.miaxis.common.utils.ArrayUtils;
 import com.miaxis.common.utils.ListUtils;
 
 import org.zz.jni.JustouchFaceApi;
@@ -23,7 +24,7 @@ public class MXFaceIdAPI {
     private MXFaceInfoEx[] FaceInfo_Nir;
     public final int FaceQuality = 80;
     public final int FaceLive = 60;
-    public final float FaceMatch = 0.75F;
+    public final float FaceMatch = 0.70F;
 
 
     private MXFaceIdAPI() {
@@ -208,6 +209,10 @@ public class MXFaceIdAPI {
     public MXResult<Float> mxFeatureMatch(byte[] pFaceFeatureA, byte[] pFaceFeatureB) {
         if (!this.m_bInit) {
             return MXResult.CreateFail(MXErrorCode.ERR_NO_INIT, "未初始化");
+        }
+        int featureSize = mxGetFeatureSize();
+        if (!ArrayUtils.isLength(pFaceFeatureA, featureSize) || !ArrayUtils.isLength(pFaceFeatureB, featureSize)) {
+            return MXResult.CreateFail(MXErrorCode.ERR_FEATURE_EMPTY, "特征长度非法");
         }
         float[] fScore = new float[1];
         int match = mJustouchFaceApi.featureMatch(pFaceFeatureA, pFaceFeatureB, fScore);

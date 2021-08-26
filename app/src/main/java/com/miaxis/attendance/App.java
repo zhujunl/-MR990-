@@ -3,7 +3,9 @@ package com.miaxis.attendance;
 import android.app.Application;
 
 import com.miaxis.attendance.api.HttpApi;
+import com.miaxis.attendance.config.AppConfig;
 import com.miaxis.attendance.data.AppDataBase;
+import com.miaxis.attendance.task.UploadAttendance;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -19,12 +21,13 @@ public class App extends Application {
 
     private static App context;
     public ExecutorService threadExecutor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
+    private UploadAttendance mUploadAttendance = new UploadAttendance();
 
     @Override
     public void onCreate() {
         super.onCreate();
         context = this;
-        AppDataBase.getInstance().init( "attendance.db",this);
+        AppDataBase.getInstance().init(AppConfig.Path_DataBase, this);
         HttpApi.init(this);
     }
 
@@ -33,6 +36,11 @@ public class App extends Application {
     }
 
 
+    public void startUploadAttendance() {
+        if (!this.mUploadAttendance.isRunning()) {
+            this.threadExecutor.execute(this.mUploadAttendance);
+        }
+    }
 }
 
 

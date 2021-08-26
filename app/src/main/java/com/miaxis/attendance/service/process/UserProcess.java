@@ -1,16 +1,13 @@
 package com.miaxis.attendance.service.process;
 
-import android.util.Log;
-
 import com.miaxis.attendance.data.model.PersonModel;
 import com.miaxis.attendance.service.HttpServer;
 import com.miaxis.attendance.service.MxResponse;
 import com.miaxis.attendance.service.MxResponseCode;
 import com.miaxis.attendance.service.bean.User;
+import com.miaxis.attendance.service.process.base.GetParamProcess;
+import com.miaxis.attendance.service.process.base.PostBodyProcess;
 import com.miaxis.attendance.service.transform.PersonTransform;
-import com.miaxis.common.utils.MapUtils;
-
-import org.nanohttpd.NanoHTTPD;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,57 +25,60 @@ public class UserProcess {
     private final ConcurrentHashMap<String, Integer> mAddUserProcess = new ConcurrentHashMap<>();
 
 
-    public static class QueryAllUser extends PostProcess {
+    public static class QueryAllUser extends GetParamProcess {
         public QueryAllUser() {
         }
 
         @Override
-        public NanoHTTPD.Response onProcess(NanoHTTPD.IHTTPSession session) throws Exception {
-            Map<String, String> parms = session.getParms();
-            if (!MapUtils.isNullOrEmpty(parms)) {
-                return NanoHTTPD.newFixedLengthResponse(
-                        NanoHTTPD.Response.Status.BAD_REQUEST, NanoHTTPD.MIME_PLAINTEXT, null);
-            }
-            return NanoHTTPD.newFixedLengthResponse(HttpServer.Gson.toJson(MxResponse.CreateSuccess(PersonModel.findAll())));
+        protected MxResponse<?> onPostParamProcess(Map<String, String> parameter) throws Exception {
+            return MxResponse.CreateSuccess(PersonModel.findAll());
         }
     }
 
-    public static class AddUser extends PostProcess {
+    public static class AddUser extends PostBodyProcess {
         public AddUser() {
         }
 
         @Override
-        public NanoHTTPD.Response onProcess(NanoHTTPD.IHTTPSession session) throws Exception {
-            Map<String, String> parms = session.getParms();
-            Log.e("AddUser", "onProcess: " + HttpServer.Gson.toJson(parms));
-            if (MapUtils.isNullOrEmpty(parms)) {
-                return NanoHTTPD.newFixedLengthResponse(
-                        NanoHTTPD.Response.Status.BAD_REQUEST, NanoHTTPD.MIME_PLAINTEXT, "Error parameter");
+        public MxResponse<?> onPostProcess(Map<String, String> param) throws Exception {
+            User user = HttpServer.Gson.fromJson(HttpServer.Gson.toJson(param), User.class);
+            if (user == null || user.isIllegal()) {
+                return MxResponse.CreateFail(MxResponseCode.CODE_ILLEGAL_PARAMETER, "param error");
             }
-            User user = HttpServer.Gson.fromJson(HttpServer.Gson.toJson(parms), User.class);
-            if (user == null) {
-                return NanoHTTPD.newFixedLengthResponse(
-                        NanoHTTPD.Response.Status.BAD_REQUEST, NanoHTTPD.MIME_PLAINTEXT, "Error format");
-            }
-            if (user.isIllegal()) {
-                return NanoHTTPD.newFixedLengthResponse(HttpServer.Gson.toJson(MxResponse.CreateFail(MxResponseCode.CODE_ILLEGAL_PARAMETER, user.toString())));
-            }
-            MxResponse<?> transform = PersonTransform.transform(user);
-            if (!MxResponse.isSuccess(transform)) {
-                return NanoHTTPD.newFixedLengthResponse(HttpServer.Gson.toJson(MxResponse.CreateFail(transform)));
-            }
-            return NanoHTTPD.newFixedLengthResponse(HttpServer.Gson.toJson(transform));
+            MxResponse<?> transform = PersonTransform.insert(user);
+            return MxResponse.Create(transform.getCode(), transform.getMessage(), transform.getData());
         }
     }
 
-    public static class UpdateUser extends PostProcess {
+    public static class UpdateUser extends PostBodyProcess {
 
         public UpdateUser() {
         }
 
         @Override
-        public NanoHTTPD.Response onProcess(NanoHTTPD.IHTTPSession session) throws Exception {
-            return null;
+        protected MxResponse<?> onPostProcess(Map<String, String> param) throws Exception {
+            User user = HttpServer.Gson.fromJson(HttpServer.Gson.toJson(param), User.class);
+            if (user == null || user.isIllegal()) {
+                return MxResponse.CreateFail(MxResponseCode.CODE_ILLEGAL_PARAMETER, "param error");
+            }
+            MxResponse<?> transform = PersonTransform.update(user);
+            return MxResponse.Create(transform.getCode(), transform.getMessage(), transform.getData());
+        }
+    }
+
+    public static class DeleteUser extends PostBodyProcess {
+
+        public DeleteUser() {
+        }
+
+        @Override
+        protected MxResponse<?> onPostProcess(Map<String, String> param) throws Exception {
+            User user = HttpServer.Gson.fromJson(HttpServer.Gson.toJson(param), User.class);
+            if (user == null || user.isIllegal()) {
+                return MxResponse.CreateFail(MxResponseCode.CODE_ILLEGAL_PARAMETER, "param error");
+            }
+            MxResponse<?> transform = PersonTransform.delete(user);
+            return MxResponse.Create(transform.getCode(), transform.getMessage(), transform.getData());
         }
     }
 }

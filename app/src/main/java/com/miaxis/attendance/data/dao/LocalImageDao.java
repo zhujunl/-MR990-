@@ -8,6 +8,7 @@ import java.util.List;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
@@ -27,7 +28,7 @@ public interface LocalImageDao {
     @Query("SELECT * FROM LocalImage WHERE LocalImage.id=:id")
     List<LocalImage> findByID(long id);
 
-    @Insert()
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insert(LocalImage localImage);
 
     @Update
@@ -37,7 +38,7 @@ public interface LocalImageDao {
     int delete(LocalImage localImage);
 
     @Query("DELETE FROM LocalImage WHERE LocalImage.id=:id")
-    int delete(String id);
+    int delete(long id);
 
     @Query("DELETE FROM LocalImage")
     int deleteAll();

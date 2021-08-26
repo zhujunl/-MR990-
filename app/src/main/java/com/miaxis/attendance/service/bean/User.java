@@ -17,7 +17,7 @@ public class User {
     public boolean ia_admin;//是否是管理员 0-否 1-是
     public String department_id;//部门id
     public String password;//密码（大小写字母，数字，特殊字符）
-    public String base_pic;//底图
+    public String base_pic;//底图(图片URL)
     public String pass_number;//当日通行次数（每日零点更新）
     public String id_number;//身份证号
     public String birthday;//生日

@@ -210,9 +210,9 @@ public class MXCamera implements Camera.AutoFocusCallback, Camera.PreviewCallbac
             return -1;
         }
         try {
+            this.mCamera.stopPreview();
             this.mCamera.setPreviewCallback(null);
             this.mCamera.setPreviewCallbackWithBuffer(null);
-            this.mCamera.stopPreview();
             this.mCamera.release();
             this.mCamera = null;
             this.isPreview = false;

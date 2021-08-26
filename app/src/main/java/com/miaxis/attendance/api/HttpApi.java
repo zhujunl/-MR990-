@@ -5,8 +5,12 @@ import android.content.Context;
 
 import com.miaxis.attendance.api.bean.UserBean;
 
+import java.io.File;
 import java.util.List;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 
 public class HttpApi {
@@ -21,10 +25,13 @@ public class HttpApi {
         return BaseAPI.getInstance().getHttpInterface(BaseUrl).getUserList();
     }
 
-
-
-
-
-
+    public static Call<HttpResponse<String>> uploadImage(File file) {
+        MultipartBody.Part fileBody = null;
+        if (file != null) {
+            RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+            fileBody = MultipartBody.Part.createFormData("file", file.getName(), requestBody);
+        }
+        return BaseAPI.getInstance().getHttpInterface(BaseUrl).uploadImage(fileBody);
+    }
 
 }

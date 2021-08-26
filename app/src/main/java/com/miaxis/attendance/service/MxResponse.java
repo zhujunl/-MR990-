@@ -48,6 +48,7 @@ public class MxResponse<T> implements Serializable {
     public static <T> MxResponse<T> CreateFail() {
         return Create();
     }
+
     public static <T> MxResponse<T> CreateFail(int code, String msg) {
         return Create(code, msg, null);
     }
@@ -92,10 +93,10 @@ public class MxResponse<T> implements Serializable {
 
     @Override
     public String toString() {
-        return "Response{" +
+        return "MxResponse{" +
                 "code=" + code +
                 ", msg='" + message + '\'' +
-                ", data=" + data +
+                (data == null ? "" : (", data=" + data)) +
                 '}';
     }
 

@@ -10,14 +10,9 @@ import org.nanohttpd.NanoHTTPD;
  * @updateAuthor
  * @updateDes
  */
-public abstract class BaseProcess {
+public interface BaseProcess {
 
-    public abstract NanoHTTPD.Response onProcess(NanoHTTPD.IHTTPSession session) throws Exception;
-
-
-    public NanoHTTPD.Response process(NanoHTTPD.IHTTPSession session) throws Exception {
-        return onProcess(session);
-    }
+    NanoHTTPD.Response process(NanoHTTPD.IHTTPSession session) throws Exception;
 
 }
 

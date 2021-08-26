@@ -20,8 +20,8 @@ public class LocalImageModel {
         AppDataBase.getInstance().LocalImageDao().delete(localImage);
     }
 
-    public static void delete(String userId) {
-        AppDataBase.getInstance().LocalImageDao().delete(userId);
+    public static void delete(long id) {
+        AppDataBase.getInstance().LocalImageDao().delete(id);
     }
 
     public static void deleteAll() {

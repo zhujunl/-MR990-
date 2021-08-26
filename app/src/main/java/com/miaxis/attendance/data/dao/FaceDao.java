@@ -8,6 +8,7 @@ import java.util.List;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
@@ -27,7 +28,7 @@ public interface FaceDao {
     @Query("SELECT * FROM Face WHERE Face.userID=:userID")
     List<Face> findByUserID(String userID);
 
-    @Insert()
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insert(Face face);
 
     @Update
@@ -38,6 +39,9 @@ public interface FaceDao {
 
     @Query("DELETE FROM Face WHERE Face.userID=:userId")
     int delete(String userId);
+
+    @Query("DELETE FROM Face WHERE Face.id=:id")
+    int delete(long id);
 
     @Query("DELETE FROM Face")
     int deleteAll();

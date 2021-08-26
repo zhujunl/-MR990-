@@ -8,6 +8,7 @@ import java.util.List;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
@@ -27,7 +28,7 @@ public interface PersonDao {
     @Query("SELECT * FROM Person WHERE Person.userID=:userID")
     List<Person> findByUserID(String userID);
 
-    @Insert()
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insert(Person face);
 
     @Update
@@ -38,6 +39,9 @@ public interface PersonDao {
 
     @Query("DELETE FROM Person WHERE Person.userID=:userId")
     int delete(String userId);
+
+    @Query("DELETE FROM Person WHERE Person.id=:id")
+    int delete(long id);
 
     @Query("DELETE FROM Person")
     int deleteAll();

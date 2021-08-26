@@ -7,9 +7,15 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 
 import com.miaxis.attendance.App;
+import com.miaxis.attendance.config.AppConfig;
+import com.miaxis.attendance.data.bean.AttendanceBean;
+import com.miaxis.attendance.data.entity.Attendance;
 import com.miaxis.attendance.data.entity.Face;
+import com.miaxis.attendance.data.entity.LocalImage;
 import com.miaxis.attendance.data.entity.Person;
+import com.miaxis.attendance.data.model.AttendanceModel;
 import com.miaxis.attendance.data.model.FaceModel;
+import com.miaxis.attendance.data.model.LocalImageModel;
 import com.miaxis.attendance.data.model.PersonModel;
 import com.miaxis.common.camera.CameraConfig;
 import com.miaxis.common.camera.CameraHelper;
@@ -25,7 +31,6 @@ import org.zz.api.MXFaceIdAPI;
 import org.zz.api.MXImageToolsAPI;
 import org.zz.api.MXResult;
 import org.zz.api.MxImage;
-import org.zz.mr990Driver;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -81,6 +86,8 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
     //MutableLiveData<Boolean> HaveFace = new MutableLiveData<>(false);
 
     MutableLiveData<Boolean> StartCountdown = new MutableLiveData<>(true);
+
+    MutableLiveData<ZZResponse<AttendanceBean>> AttendanceBean = new MutableLiveData<>();
 
     public PreviewViewModel() {
     }
@@ -300,7 +307,7 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
      * 处理活体和比对
      */
     private void processLiveAndMatch() {
-        Disposable subscribe = Observable.create((ObservableOnSubscribe<ZZResponse<Person>>) emitter -> {
+        Disposable subscribe = Observable.create((ObservableOnSubscribe<ZZResponse<AttendanceBean>>) emitter -> {
             Map.Entry<MxImage, MXFace> rgbEntry = this.CurrentMxImage_Rgb.get();
             Map.Entry<MxImage, MXFace> nirEntry = this.CurrentMxImage_Nir.get();
             if (rgbEntry == null || nirEntry == null
@@ -308,6 +315,21 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
                     || rgbEntry.getKey().isBufferEmpty() || !rgbEntry.getKey().isSizeLegal()
                     || rgbEntry.getValue() == null || nirEntry.getValue() == null
                     || rgbEntry.getKey().isBufferEmpty() || !rgbEntry.getKey().isSizeLegal()) {
+
+
+                if (rgbEntry!=null){
+                    Log.e(TAG, "processLiveAndMatch:      rgbEntry:" +rgbEntry.getKey()+"   "+rgbEntry.getValue() );
+                }else {
+                    Log.e(TAG, "processLiveAndMatch:      rgbEntry:" +null);
+                }
+                if (nirEntry!=null){
+                    Log.e(TAG, "processLiveAndMatch:      nirEntry:" +nirEntry.getKey()+"   "+nirEntry.getValue() );
+                }else {
+                    Log.e(TAG, "processLiveAndMatch:      nirEntry:" +null);
+                }
+
+
+
                 emitter.onNext(ZZResponse.CreateFail(ZZResponseCode.CODE_ILLEGAL_PARAMETER, ZZResponseCode.MSG_ILLEGAL_PARAMETER));
             } else {
                 MxImage rgbImage = rgbEntry.getKey();
@@ -334,16 +356,20 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
 
                 //5.比对
                 //5.1提取特征
-                MXResult<byte[]> mxResult = MXFaceIdAPI.getInstance().mxFeatureExtract(nirImage.buffer, nirImage.width, nirImage.height, nirFace);
-                if (!MXResult.isSuccess(mxResult)) {
-                    emitter.onNext(ZZResponse.CreateFail(mxResult.getCode(), mxResult.getMsg()));
+                MXResult<byte[]> featureExtract = MXFaceIdAPI.getInstance().mxFeatureExtract(nirImage.buffer, nirImage.width, nirImage.height, nirFace);
+                if (!MXResult.isSuccess(featureExtract)) {
+                    emitter.onNext(ZZResponse.CreateFail(featureExtract.getCode(), featureExtract.getMsg()));
+                    return;
+                }
+                List<Face> all = FaceModel.findAll();
+                if (ListUtils.isNullOrEmpty(all)) {
+                    emitter.onNext(ZZResponse.CreateFail(-80, "人脸数据库为空"));
                     return;
                 }
                 Face tempFace = null;
                 float tempFloat = 0F;
-                List<Face> all = FaceModel.findAll();
                 for (Face face : all) {
-                    MXResult<Float> result = MXFaceIdAPI.getInstance().mxFeatureMatch(mxResult.getData(), face.FaceFeature);
+                    MXResult<Float> result = MXFaceIdAPI.getInstance().mxFeatureMatch(featureExtract.getData(), face.FaceFeature);
                     if (MXResult.isSuccess(result)) {
                         if (result.getData() >= tempFloat) {
                             tempFace = face;
@@ -352,30 +378,91 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
                     }
                 }
                 if (tempFloat < MXFaceIdAPI.getInstance().FaceMatch) {
-                    emitter.onNext(ZZResponse.CreateFail(-80, "未找到，最大匹配值：" + tempFloat));
+                    emitter.onNext(ZZResponse.CreateFail(-81, "未找到，最大匹配值：" + tempFloat));
                     return;
                 }
                 List<Person> byUserID = PersonModel.findByUserID(tempFace.UserId);
                 if (ListUtils.isNullOrEmpty(byUserID)) {
-                    emitter.onNext(ZZResponse.CreateFail(-80, "该人员不存在，UserId：" + tempFace.UserId));
+                    emitter.onNext(ZZResponse.CreateFail(-82, "该人员不存在，UserId：" + tempFace.UserId));
                     return;
                 }
-                mr990Driver.relayControl(1);
-                emitter.onNext(ZZResponse.CreateSuccess(byUserID.get(0)));
+                //识别通过
+                Person person = byUserID.get(0);
+
+                String capturePath = AppConfig.Path_CaptureImage + person.UserId + "_" + System.currentTimeMillis() + ".jpeg";
+                MXResult<?> save = MXImageToolsAPI.getInstance().ImageSave(capturePath, rgbImage.buffer, rgbImage.width, rgbImage.height, 3);
+                if (!MXResult.isSuccess(save)) {
+                    emitter.onNext(ZZResponse.CreateFail(save.getCode(), save.getMsg()));
+                    return;
+                }
+                LocalImage captureLocalImage = new LocalImage();
+                captureLocalImage.Type = 2;
+                captureLocalImage.ImagePath = capturePath;
+                captureLocalImage.id = LocalImageModel.insert(captureLocalImage);
+                if (captureLocalImage.id <= 0) {
+                    emitter.onNext(ZZResponse.CreateFail(-70, "保存图片记录失败"));
+                    return;
+                }
+                MXResult<MxImage> cutRect = MXImageToolsAPI.getInstance().ImageCutRect(rgbImage, rgbFace.getFaceRect());
+                if (!MXResult.isSuccess(cutRect)) {
+                    emitter.onNext(ZZResponse.CreateFail(cutRect.getCode(), cutRect.getMsg()));
+                    return;
+                }
+                MxImage cutImage = cutRect.getData();
+                String cutPath = AppConfig.Path_CutImage + person.UserId + "_" + System.currentTimeMillis() + ".jpeg";
+                MXResult<?> cutSave = MXImageToolsAPI.getInstance().ImageSave(cutPath, cutImage.buffer, cutImage.width, cutImage.height, 3);
+                if (!MXResult.isSuccess(cutSave)) {
+                    emitter.onNext(ZZResponse.CreateFail(cutSave.getCode(), cutSave.getMsg()));
+                    return;
+                }
+                LocalImage cutLocalImage = new LocalImage();
+                cutLocalImage.Type = 5;
+                cutLocalImage.ImagePath = cutPath;
+                cutLocalImage.id = LocalImageModel.insert(cutLocalImage);
+                if (cutLocalImage.id <= 0) {
+                    emitter.onNext(ZZResponse.CreateFail(-71, "保存人脸截图记录失败"));
+                    return;
+                }
+
+                Attendance attendance = new Attendance();
+                attendance.UserId = person.UserId;
+                attendance.BaseImage = person.FaceImage;
+                attendance.CaptureImage = captureLocalImage.id;
+                attendance.CutImage = cutLocalImage.id;
+                attendance.Mode = 1;
+                attendance.Status = 1;
+                attendance.id = AttendanceModel.insert(attendance);
+                if (attendance.id <= 0) {
+                    emitter.onNext(ZZResponse.CreateFail(-60, "保存考勤记录失败"));
+                    return;
+                }
+                List<LocalImage> byID = LocalImageModel.findByID(person.FaceImage);
+                if (ListUtils.isNullOrEmpty(byID)) {
+                    emitter.onNext(ZZResponse.CreateFail(-61, "该人员不存在，UserId：" + tempFace.UserId));
+                    return;
+                }
+                AttendanceBean attendanceBean = new AttendanceBean();
+                attendanceBean.AttendanceId = attendance.id;
+                attendanceBean.Status = 1;
+                attendanceBean.Mode = 1;
+                attendanceBean.UserId = person.UserId;
+                attendanceBean.CaptureImage = capturePath;
+                attendanceBean.CutImage = cutPath;
+                attendanceBean.UserName = person.Name;
+                attendanceBean.BaseImage = byID.get(0).ImagePath;
+                //开启门禁
+                emitter.onNext(ZZResponse.CreateSuccess(attendanceBean));
             }
         }).subscribeOn(Schedulers.from(App.getInstance().threadExecutor))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(response -> {
                     Log.e(TAG, "processLiveAndMatch: " + response);
-                    if (ZZResponse.isSuccess(response)) {
-
-                    } else {
-
-                    }
+                    this.AttendanceBean.setValue(response);
                     this.IsNirFrameProcessing.set(false);
                     this.CurrentMxImage_Rgb.set(null);
                     this.CurrentMxImage_Nir.set(null);
                 }, throwable -> {
+                    this.AttendanceBean.setValue(ZZResponse.CreateFail(-99, throwable.getMessage()));
                     this.IsNirFrameProcessing.set(false);
                     this.CurrentMxImage_Rgb.set(null);
                     this.CurrentMxImage_Nir.set(null);
@@ -393,6 +480,8 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
     }
 
     public void resume() {
+        this.CurrentMxImage_Rgb.set(null);
+        this.CurrentMxImage_Nir.set(null);
         CameraHelper.getInstance().resume();
     }
 

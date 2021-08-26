@@ -26,6 +26,10 @@ public class FaceModel {
         return AppDataBase.getInstance().FaceDao().delete(userId);
     }
 
+    public static int delete(long id) {
+        return AppDataBase.getInstance().FaceDao().delete(id);
+    }
+
     public static void deleteAll() {
         AppDataBase.getInstance().FaceDao().deleteAll();
     }

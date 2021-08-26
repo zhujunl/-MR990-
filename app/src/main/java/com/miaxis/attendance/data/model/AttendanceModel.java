@@ -32,6 +32,10 @@ public class AttendanceModel {
         return AppDataBase.getInstance().AttendanceDao().findAll();
     }
 
+    public static List<Attendance> findNoUpload() {
+        return AppDataBase.getInstance().AttendanceDao().findNoUpload();
+    }
+
     public static int allCounts() {
         return AppDataBase.getInstance().AttendanceDao().allCounts();
     }

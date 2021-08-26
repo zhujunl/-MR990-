@@ -21,8 +21,8 @@
 
         <SurfaceView
             android:id="@+id/sv_preview_nir"
-            android:layout_width="120px"
-            android:layout_height="160px"
+            android:layout_width="3px"
+            android:layout_height="4px"
             android:layout_gravity="bottom|end"
             android:keepScreenOn="true" />
 

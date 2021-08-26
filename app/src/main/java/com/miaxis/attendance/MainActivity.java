@@ -25,7 +25,7 @@ public class MainActivity extends BaseBindingFragmentActivity<ActivityMainBindin
 
     @Override
     protected void initView(@NonNull ActivityMainBinding binding, @Nullable Bundle savedInstanceState) {
-        MainViewModel mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
+        mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
         String[] permissions = {
                 Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
@@ -61,7 +61,10 @@ public class MainActivity extends BaseBindingFragmentActivity<ActivityMainBindin
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mainViewModel.stopHttpServer();
+        if (mainViewModel != null) {
+            mainViewModel.stopHttpServer();
+            mainViewModel.destroy();
+        }
         CameraHelper.getInstance().free();
     }
 }

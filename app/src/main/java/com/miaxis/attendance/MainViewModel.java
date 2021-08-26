@@ -1,17 +1,27 @@
 package com.miaxis.attendance;
 
+import android.os.Handler;
+
+import com.miaxis.attendance.config.AppConfig;
 import com.miaxis.attendance.data.bean.AttendanceBean;
 import com.miaxis.attendance.service.HttpServer;
+import com.miaxis.common.response.ZZResponse;
+
+import org.zz.mr990Driver;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 public class MainViewModel extends ViewModel {
 
+
+    private Handler mHandler = new Handler();
     public MutableLiveData<Integer> httpServerStatus = new MutableLiveData<>(0);
     public MutableLiveData<Boolean> showAdvertising = new MutableLiveData<>(false);
     public MutableLiveData<Boolean> startService = new MutableLiveData<>(false);
-    public MutableLiveData<AttendanceBean> mAttendance = new MutableLiveData<>();
+    public MutableLiveData<ZZResponse<AttendanceBean>> mAttendance = new MutableLiveData<>();
+
+    public MutableLiveData<Boolean> EnableNirProcess = new MutableLiveData<>();
 
     private HttpServer httpServer;
 
@@ -39,5 +49,15 @@ public class MainViewModel extends ViewModel {
             this.httpServer = null;
             this.httpServerStatus.setValue(0);
         }
+    }
+
+    public void openDoor() {
+        mr990Driver.relayControl(1);
+        mHandler.removeCallbacksAndMessages(null);
+        mHandler.postDelayed(() -> mr990Driver.relayControl(0), AppConfig.CloseDoorDelay);
+    }
+
+    public void destroy() {
+        mHandler.removeCallbacksAndMessages(null);
     }
 }

@@ -24,6 +24,10 @@ public class PersonModel {
         AppDataBase.getInstance().PersonDao().delete(userId);
     }
 
+    public static void delete(long id) {
+        AppDataBase.getInstance().PersonDao().delete(id);
+    }
+
     public static void deleteAll() {
         AppDataBase.getInstance().PersonDao().deleteAll();
     }

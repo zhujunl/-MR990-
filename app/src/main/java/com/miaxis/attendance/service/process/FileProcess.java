@@ -4,16 +4,14 @@ package com.miaxis.attendance.service.process;
 import android.util.Base64;
 import android.util.Log;
 
+import com.miaxis.attendance.config.AppConfig;
 import com.miaxis.attendance.data.entity.LocalImage;
 import com.miaxis.attendance.data.model.LocalImageModel;
-import com.miaxis.attendance.service.HttpServer;
 import com.miaxis.attendance.service.MxResponse;
 import com.miaxis.attendance.service.MxResponseCode;
+import com.miaxis.attendance.service.process.base.PostBodyProcess;
 import com.miaxis.common.utils.FileUtils;
-import com.miaxis.common.utils.MapUtils;
 import com.miaxis.common.utils.StringUtils;
-
-import org.nanohttpd.NanoHTTPD;
 
 import java.util.Map;
 
@@ -26,36 +24,29 @@ import java.util.Map;
  */
 public class FileProcess {
 
-    public static class AddFile extends PostProcess {
-
-        private static final String TAG = "AddFile";
+    public static class AddFile extends PostBodyProcess {
 
         public AddFile() {
         }
 
         @Override
-        public NanoHTTPD.Response onProcess(NanoHTTPD.IHTTPSession session) throws Exception {
-            Map<String, String> parms = session.getParms();
-            if (MapUtils.isNullOrEmpty(parms)) {
-                return NanoHTTPD.newFixedLengthResponse(
-                        NanoHTTPD.Response.Status.BAD_REQUEST, NanoHTTPD.MIME_PLAINTEXT, null);
-            }
-            String file = parms.get("file");
+        public MxResponse<?> onPostProcess(Map<String, String> param) throws Exception {
+            String file = param.get("file");
             if (StringUtils.isNullOrEmpty(file)) {
-                return NanoHTTPD.newFixedLengthResponse(HttpServer.Gson.toJson(MxResponse.CreateFail(MxResponseCode.CODE_ILLEGAL_PARAMETER,MxResponseCode.MSG_ILLEGAL_PARAMETER)));
+                return MxResponse.CreateFail(MxResponseCode.CODE_ILLEGAL_PARAMETER, "param empty");
             }
             byte[] decode = Base64.decode(file, Base64.NO_WRAP);
-            String savePath = HttpServer.FilePath_Face + System.currentTimeMillis() + ".jpeg";
+            String savePath = AppConfig.Path_File + System.currentTimeMillis() + ".jpeg";
             boolean b = FileUtils.writeFile(savePath, decode);
             Log.e(TAG, "writeFile: " + b);
             if (!b) {
-                return NanoHTTPD.newFixedLengthResponse(HttpServer.Gson.toJson(MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_ERROR, "save image failed")));
+                return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_ERROR, "save image failed");
             }
             LocalImage localImage = new LocalImage();
             localImage.Type = 1;
             localImage.ImagePath = savePath;
-            long insert = LocalImageModel.insert(localImage);
-            return NanoHTTPD.newFixedLengthResponse(HttpServer.Gson.toJson(MxResponse.CreateSuccess(insert)));
+            localImage.id = LocalImageModel.insert(localImage);
+            return MxResponse.CreateSuccess(localImage.id);
         }
     }
 

@@ -69,6 +69,7 @@ public abstract class NanoHTTPD {
     private static final Pattern CONTENT_DISPOSITION_ATTRIBUTE_PATTERN;
     public static final int SOCKET_READ_TIMEOUT = 5000;
     public static final String MIME_PLAINTEXT = "text/plain";
+    public static final String MIME_JSON = "application/json;charset=UTF-8";
     public static final String MIME_HTML = "text/html";
     private static final String QUERY_STRING_PARAMETER = "NanoHttpd.QUERY_STRING";
     private static final Logger LOG;
@@ -682,7 +683,7 @@ public abstract class NanoHTTPD {
         }
 
         public String getEncoding() {
-            return (this.encoding == null) ? "US-ASCII" : this.encoding;
+            return (this.encoding == null) ? "UTF-8" : this.encoding;
         }
 
         public String getBoundary() {
@@ -804,7 +805,7 @@ public abstract class NanoHTTPD {
                 final byte[] partHeaderBuff = new byte[1024];
                 for (int boundaryIdx = 0; boundaryIdx < boundaryIdxs.length - 1; ++boundaryIdx) {
                     fbuf.position(boundaryIdxs[boundaryIdx]);
-                    final int len = (fbuf.remaining() < 1024) ? fbuf.remaining() : 1024;
+                    final int len = Math.min(fbuf.remaining(), 1024);
                     fbuf.get(partHeaderBuff, 0, len);
                     final BufferedReader in = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(partHeaderBuff, 0, len), Charset.forName(contentType.getEncoding())), len);
                     int headerLines = 0;
