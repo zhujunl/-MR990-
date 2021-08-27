@@ -10,10 +10,11 @@ public class Face {
     public long id;
     public String UserId;
     public byte[] FaceFeature;//人脸特征
-    public String create_time;//创建时间
-    public String update_time;//修改时间
+    public long create_time;//创建时间
+    public long update_time;//修改时间
 
     public Face() {
+        this.create_time=System.currentTimeMillis();
     }
 
     @Override

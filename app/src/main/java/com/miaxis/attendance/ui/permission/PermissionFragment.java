@@ -2,17 +2,13 @@ package com.miaxis.attendance.ui.permission;
 
 import android.os.Bundle;
 import android.util.Log;
-
+import com.miaxis.attendance.App;
 import com.miaxis.attendance.R;
 import com.miaxis.attendance.databinding.FragmentPermissionBinding;
 import com.miaxis.attendance.ui.main.HomeFragment;
 import com.miaxis.common.activity.BaseBindingFragment;
 import com.tbruyelle.rxpermissions3.RxPermissions;
-
-import org.zz.api.MXFaceIdAPI;
 import org.zz.api.MXResult;
-import org.zz.mr990Driver;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -42,12 +38,10 @@ public class PermissionFragment extends BaseBindingFragment<FragmentPermissionBi
 
     @Override
     protected void initView(@NonNull FragmentPermissionBinding binding, @Nullable Bundle savedInstanceState) {
-        int zzCamControl = mr990Driver.zzCamControl(1);
-        Log.e(TAG, "zzCamControl:" + zzCamControl);
         Disposable subscribe = new RxPermissions(this).request(this.permissions)
                 .subscribe(aBoolean -> {
                     if (aBoolean) {
-                        MXResult<?> initAlg = MXFaceIdAPI.getInstance().mxInitAlg(getContext(), null, null);
+                        MXResult<?> initAlg = App.getInstance().init();
                         Log.e(TAG, "initAlg:" + initAlg);
                         if (MXResult.isSuccess(initAlg)) {
                             replaceParent(R.id.container, HomeFragment.newInstance());

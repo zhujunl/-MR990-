@@ -4,15 +4,19 @@ package com.miaxis.attendance.api;
 public class HttpResponse<T> {
     public String code;
     public String message;
-    public T data;
+    public T result;
 
     public HttpResponse() {
     }
 
-    public HttpResponse(String code, String message, T data) {
+    public HttpResponse(String code, String message, T result) {
         this.code = code;
         this.message = message;
-        this.data = data;
+        this.result = result;
+    }
+
+    public boolean isSuccess(){
+        return "200".equals(this.code);
     }
 
     @Override
@@ -20,7 +24,7 @@ public class HttpResponse<T> {
         return "ResponseEntity{" +
                 "code='" + code + '\'' +
                 ", message='" + message + '\'' +
-                ", data=" + data +
+                ", result=" + result +
                 '}';
     }
 }

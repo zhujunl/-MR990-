@@ -69,7 +69,7 @@ dependencies {
 
 //    implementation 'org.aspectj:aspectjrt:1.9.8.M1'
 
-    implementation project(path: ':device_MR990')
+//    implementation project(path: ':device_MR990')
 
 
 //    def work_version = "2.5.0"

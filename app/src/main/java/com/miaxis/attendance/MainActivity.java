@@ -2,6 +2,7 @@ package com.miaxis.attendance;
 
 import android.Manifest;
 import android.os.Bundle;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.miaxis.attendance.databinding.ActivityMainBinding;
@@ -25,6 +26,7 @@ public class MainActivity extends BaseBindingFragmentActivity<ActivityMainBindin
 
     @Override
     protected void initView(@NonNull ActivityMainBinding binding, @Nullable Bundle savedInstanceState) {
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
         String[] permissions = {
                 Manifest.permission.READ_EXTERNAL_STORAGE,

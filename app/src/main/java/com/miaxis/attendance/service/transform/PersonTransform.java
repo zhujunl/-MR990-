@@ -111,7 +111,7 @@ public class PersonTransform {
         }
         LocalImage localImage = new LocalImage();
         localImage.Type = 1;
-        localImage.ImagePath = savePath;
+        localImage.LocalPath = savePath;
         localImage.id = LocalImageModel.insert(localImage);
         if (localImage.id <= 0) {
             FileUtils.delete(savePath);
@@ -195,7 +195,7 @@ public class PersonTransform {
         }
         LocalImage localImage = new LocalImage();
         localImage.Type = 1;
-        localImage.ImagePath = savePath;
+        localImage.LocalPath = savePath;
         localImage.id = LocalImageModel.insert(localImage);
         if (localImage.id <= 0) {
             FileUtils.delete(savePath);
@@ -228,9 +228,6 @@ public class PersonTransform {
         if (user == null) {
             return MxResponse.CreateFail(MxResponseCode.CODE_ILLEGAL_PARAMETER, MxResponseCode.MSG_ILLEGAL_PARAMETER);
         }
-        if (StringUtils.isNullOrEmpty(user.base_pic)) {
-            return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_ERROR, "image url can not be null or empty");
-        }
         List<Person> byUserID = PersonModel.findByUserID(String.valueOf(user.id));
         if (ListUtils.isNullOrEmpty(byUserID)) {
             return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_ERROR, "not exists");
@@ -239,7 +236,7 @@ public class PersonTransform {
             FaceModel.delete(person.UserId);
             List<LocalImage> byID = LocalImageModel.findByID(person.FaceImage);
             for (LocalImage localImage : byID) {
-                FileUtils.delete(localImage.ImagePath);
+                FileUtils.delete(localImage.LocalPath);
             }
             LocalImageModel.delete(person.FaceImage);
             PersonModel.delete(person);

@@ -7,7 +7,6 @@ import java.util.List;
 
 import okhttp3.MultipartBody;
 import retrofit2.Call;
-import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
@@ -41,16 +40,16 @@ public interface HttpInterface {
      * @param type   通行类型（0-面部识别 1-指纹识别）
      * @param url    图片地址
      */
-    @FormUrlEncoded
+    @Multipart
     @POST("api/app/attendance/add")
-    Call<HttpResponse<List<UserBean>>> uploadAttendance(@Field("userId") String userId,
-                                                        @Field("status") int status,
-                                                        @Field("direction") int direction,
-                                                        @Field("attendanceDeviceId") String attendanceDeviceId,
-                                                        @Field("attendanceTime") String attendanceTime,
-                                                        @Field("address") String address,
-                                                        @Field("type") int type,
-                                                        @Field("url") String url
+    Call<HttpResponse<Object>> uploadAttendance(@Part("userId") int userId,
+                                                @Part("status") int status,
+                                                @Part("direction") int direction,
+                                                @Part("attendanceDeviceId") int attendanceDeviceId,
+                                                @Part("attendanceTime") String attendanceTime,
+                                                @Part("address") String address,
+                                                @Part("type") int type,
+                                                @Part("url") String url
     );
 
 

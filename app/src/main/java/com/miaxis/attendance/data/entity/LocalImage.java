@@ -19,11 +19,13 @@ public class LocalImage {
      * 图片类型  0无  1人脸图片(注册图片)   2人脸抓拍图片  3指纹图片(注册)  4指纹图片(采集)  5人脸截图
      */
     public int Type;
-    public String ImagePath;
-    public String create_time;//创建时间
-    public String update_time;//修改时间
+    public String LocalPath;
+    public String RemotePath;
+    public long create_time;//创建时间
+    public long update_time;//修改时间
 
     public LocalImage() {
+        this.create_time=System.currentTimeMillis();
     }
 
     @Override
@@ -31,7 +33,8 @@ public class LocalImage {
         return "Image{" +
                 "id=" + id +
                 ", Type=" + Type +
-                ", ImagePath='" + ImagePath + '\'' +
+                ", LocalPath='" + LocalPath + '\'' +
+                ", RemotePath='" + RemotePath + '\'' +
                 '}';
     }
 

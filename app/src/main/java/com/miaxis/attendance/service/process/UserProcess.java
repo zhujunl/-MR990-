@@ -74,9 +74,6 @@ public class UserProcess {
         @Override
         protected MxResponse<?> onPostProcess(Map<String, String> param) throws Exception {
             User user = HttpServer.Gson.fromJson(HttpServer.Gson.toJson(param), User.class);
-            if (user == null || user.isIllegal()) {
-                return MxResponse.CreateFail(MxResponseCode.CODE_ILLEGAL_PARAMETER, "param error");
-            }
             MxResponse<?> transform = PersonTransform.delete(user);
             return MxResponse.Create(transform.getCode(), transform.getMessage(), transform.getData());
         }

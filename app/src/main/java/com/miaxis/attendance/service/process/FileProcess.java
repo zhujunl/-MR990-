@@ -9,6 +9,7 @@ import com.miaxis.attendance.data.entity.LocalImage;
 import com.miaxis.attendance.data.model.LocalImageModel;
 import com.miaxis.attendance.service.MxResponse;
 import com.miaxis.attendance.service.MxResponseCode;
+import com.miaxis.attendance.service.process.base.GetParamProcess;
 import com.miaxis.attendance.service.process.base.PostBodyProcess;
 import com.miaxis.common.utils.FileUtils;
 import com.miaxis.common.utils.StringUtils;
@@ -23,6 +24,18 @@ import java.util.Map;
  * @updateDes
  */
 public class FileProcess {
+
+
+    public static class Query extends GetParamProcess {
+
+        public Query() {
+        }
+
+        @Override
+        protected MxResponse<?> onPostParamProcess(Map<String, String> parameter) throws Exception {
+            return MxResponse.CreateSuccess(LocalImageModel.findAll());
+        }
+    }
 
     public static class AddFile extends PostBodyProcess {
 
@@ -44,7 +57,7 @@ public class FileProcess {
             }
             LocalImage localImage = new LocalImage();
             localImage.Type = 1;
-            localImage.ImagePath = savePath;
+            localImage.LocalPath = savePath;
             localImage.id = LocalImageModel.insert(localImage);
             return MxResponse.CreateSuccess(localImage.id);
         }

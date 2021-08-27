@@ -18,10 +18,11 @@ public class Department {
     public String Name;//部门名称
     public String Number;//部门编号
     public boolean Enable;//是否启用
-    public String create_time;//创建时间
-    public String update_time;//修改时间
+    public long create_time;//创建时间
+    public long update_time;//修改时间
 
     public Department() {
+        this.create_time=System.currentTimeMillis();
     }
 
     @Override

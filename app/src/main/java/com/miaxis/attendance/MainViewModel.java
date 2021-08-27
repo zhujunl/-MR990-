@@ -4,10 +4,9 @@ import android.os.Handler;
 
 import com.miaxis.attendance.config.AppConfig;
 import com.miaxis.attendance.data.bean.AttendanceBean;
+import com.miaxis.attendance.device.MR990Device;
 import com.miaxis.attendance.service.HttpServer;
 import com.miaxis.common.response.ZZResponse;
-
-import org.zz.mr990Driver;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -52,9 +51,9 @@ public class MainViewModel extends ViewModel {
     }
 
     public void openDoor() {
-        mr990Driver.relayControl(1);
+        MR990Device.getInstance().DoorPower(true);
         mHandler.removeCallbacksAndMessages(null);
-        mHandler.postDelayed(() -> mr990Driver.relayControl(0), AppConfig.CloseDoorDelay);
+        mHandler.postDelayed(() -> MR990Device.getInstance().DoorPower(false), AppConfig.CloseDoorDelay);
     }
 
     public void destroy() {

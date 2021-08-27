@@ -13,12 +13,12 @@ import java.io.File;
  */
 public class AppConfig {
 
-    private static final String FilePath = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "Miaxis" + File.separator;
-    public static final String Path_FaceImage = FilePath + "Image_Face" + File.separator;
-    public static final String Path_File = FilePath + "File" + File.separator;
-    public static final String Path_CaptureImage = FilePath + "Image_Capture" + File.separator;
-    public static final String Path_CutImage = FilePath + "Image_Cut" + File.separator;
-    public static final String Path_DataBase = FilePath + "DataBase" + File.separator + "attendance.db";
+    private static final String MainPath = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "Miaxis" + File.separator;
+    public static final String Path_FaceImage = MainPath + "Image_Face" + File.separator;
+    public static final String Path_File = MainPath + "File" + File.separator;
+    public static final String Path_CaptureImage = MainPath + "Image_Capture" + File.separator;
+    public static final String Path_CutImage = MainPath + "Image_Cut" + File.separator;
+    public static final String Path_DataBase = MainPath + "DataBase" + File.separator + "attendance.db";
 
 
     public static final long CloseDoorDelay = 8 * 1000L;

@@ -45,10 +45,11 @@ public class Person {
     public long FaceImage;//人脸图片ID
     public long FaceID;//人脸特征ID
 
-    public String create_time;//创建时间
-    public String update_time;//修改时间
+    public long create_time;//创建时间
+    public long update_time;//修改时间
 
     public Person() {
+        this.create_time=System.currentTimeMillis();
     }
 
     @Override

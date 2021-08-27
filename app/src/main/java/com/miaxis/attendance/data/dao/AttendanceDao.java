@@ -25,7 +25,7 @@ public interface AttendanceDao {
     @Query("SELECT * FROM Attendance ORDER BY Attendance.id DESC")
     List<Attendance> findAll();
 
-    @Query("SELECT * FROM Attendance WHERE Attendance.Upload=2 ORDER BY Attendance.id DESC Limit 1")
+    @Query("SELECT * FROM Attendance WHERE Attendance.Upload!=1 ORDER BY Attendance.id DESC Limit 1")
     List<Attendance> findNoUpload();
 
     @Query("SELECT * FROM Attendance WHERE Attendance.userID=:userID")

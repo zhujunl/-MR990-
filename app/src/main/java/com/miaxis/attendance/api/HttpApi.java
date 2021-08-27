@@ -15,7 +15,7 @@ import retrofit2.Call;
 
 public class HttpApi {
 
-    public static final String BaseUrl = "http://192.168.5.164:8080/policebus/";
+    public static final String BaseUrl = "http://192.168.5.164:8085/";
 
     public static void init(Context context) {
         BaseAPI.getInstance().init(context);
@@ -32,6 +32,13 @@ public class HttpApi {
             fileBody = MultipartBody.Part.createFormData("file", file.getName(), requestBody);
         }
         return BaseAPI.getInstance().getHttpInterface(BaseUrl).uploadImage(fileBody);
+    }
+
+    public static Call<HttpResponse<Object>> uploadAttendance(int userId, int status, int direction,
+                                                              String attendanceDeviceId, String attendanceTime,
+                                                              String address, int type, String url) {
+        return BaseAPI.getInstance().getHttpInterface(BaseUrl).uploadAttendance(userId, status, direction,
+                311, attendanceTime, address, type, url);
     }
 
 }

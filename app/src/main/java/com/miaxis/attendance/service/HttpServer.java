@@ -4,6 +4,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.miaxis.attendance.service.process.AttendanceProcess;
 import com.miaxis.attendance.service.process.FaceProcess;
 import com.miaxis.attendance.service.process.FileProcess;
 import com.miaxis.attendance.service.process.UserProcess;
@@ -63,14 +64,18 @@ public class HttpServer extends NanoHTTPD {
         switch (uri) {
             case "/api/user/list":
                 return new UserProcess.QueryAllUser();
-            case "/api/face/list":
-                return new FaceProcess.QueryAllFace();
             case "/api/user/add":
                 return new UserProcess.AddUser();
             case "/api/user/update":
                 return new UserProcess.UpdateUser();
             case "/api/user/delete":
                 return new UserProcess.DeleteUser();
+            case "/api/face/list":
+                return new FaceProcess.QueryAllFace();
+            case "/api/attendance/list":
+                return new AttendanceProcess.QueryAll();
+            case "/api/file/list":
+                return new FileProcess.Query();
             case "/api/file/add":
                 return new FileProcess.AddFile();
             default:

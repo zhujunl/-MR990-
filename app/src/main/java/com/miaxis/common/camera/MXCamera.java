@@ -7,6 +7,7 @@ import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.view.SurfaceHolder;
 
+import com.miaxis.common.response.ZZResponse;
 import com.miaxis.common.utils.BitmapUtils;
 
 /**
@@ -42,19 +43,19 @@ public class MXCamera implements Camera.AutoFocusCallback, Camera.PreviewCallbac
         return this.mCameraId;
     }
 
-    protected int open(int cameraId, int width, int height) {
+    protected ZZResponse<MXCamera> open(int cameraId, int width, int height) {
         if (this.mCamera != null) {
-            return -2;
+            return ZZResponse.CreateFail(-2, "already open");
         }
-        if (cameraId >= Camera.getNumberOfCameras()) {
-            return -4;
-        }
+        //        if (cameraId >= Camera.getNumberOfCameras()) {
+        //            return -4;
+        //        }
         try {
             this.mCameraId = cameraId;
             this.mCamera = Camera.open(cameraId);
         } catch (Exception e) {
             e.printStackTrace();
-            return -1;
+            return ZZResponse.CreateFail(-1, "open camera failed，" + e.getMessage());
         }
         try {
             Camera.Parameters parameters = this.mCamera.getParameters();
@@ -65,10 +66,17 @@ public class MXCamera implements Camera.AutoFocusCallback, Camera.PreviewCallbac
             this.height = height;
         } catch (Exception e) {
             e.printStackTrace();
-            return -3;
+            try {
+                if (this.mCamera != null) {
+                    this.mCamera.release();
+                }
+            } catch (Exception e1) {
+                e1.printStackTrace();
+            }
+            return ZZResponse.CreateFail(-3, "set camera parameters failed," + e.getMessage());
         }
         this.buffer = new byte[((this.width * this.height) * ImageFormat.getBitsPerPixel(ImageFormat.NV21)) / 8];
-        return 0;
+        return ZZResponse.CreateSuccess(this);
     }
 
     public int setOrientation(int orientation) {

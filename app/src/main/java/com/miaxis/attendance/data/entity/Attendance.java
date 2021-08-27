@@ -23,10 +23,11 @@ public class Attendance {
     public long CutImage;//现场人脸图ID
     public int Status;//考勤状态  0无  1成功   2失败
     public int Upload;//上传状态  0无  1已上传   2未上传
-    public String create_time;//创建时间
-    public String update_time;//修改时间
+    public long create_time;//创建时间
+    public long update_time;//修改时间
 
     public Attendance() {
+        this.create_time=System.currentTimeMillis();
     }
 
     @Override

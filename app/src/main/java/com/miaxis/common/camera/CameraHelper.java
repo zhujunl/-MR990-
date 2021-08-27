@@ -15,10 +15,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class CameraHelper {
 
-    private final CopyOnWriteArrayList<MXCamera> mMXCameras;
+    private final CopyOnWriteArrayList<MXCamera> mMXCameras = new CopyOnWriteArrayList<>();
 
     private CameraHelper() {
-        this.mMXCameras = new CopyOnWriteArrayList<>();
     }
 
     private static class CameraHelperHolder {
@@ -42,9 +41,7 @@ public class CameraHelper {
     }
 
     public void free() {
-        for (MXCamera camera : this.mMXCameras) {
-            camera.stop();
-        }
+        stop();
         this.mMXCameras.clear();
     }
 
@@ -59,20 +56,16 @@ public class CameraHelper {
         MXCamera mxCamera = new MXCamera();
         int init = mxCamera.init();
         if (init == 0) {
-            int open = mxCamera.open(cameraConfig.CameraId, cameraConfig.width, cameraConfig.height);
-            if (open == 0) {
+            ZZResponse<MXCamera> open = mxCamera.open(cameraConfig.CameraId, cameraConfig.width, cameraConfig.height);
+            if (ZZResponse.isSuccess(open)) {
                 int setOrientation = mxCamera.setOrientation(cameraConfig.previewOrientation);
                 if (setOrientation == 0) {
                     addMXCamera(mxCamera);
-                    return ZZResponse.CreateSuccess(mxCamera);
                 } else {
                     return ZZResponse.CreateFail(MXCameraErrorCode.CODE_FAIL_CAMERA_ORIENTATION, MXCameraErrorCode.MSG_FAIL_CAMERA_ORIENTATION);
                 }
-            } else if (open == -2) {
-                return ZZResponse.CreateFail(MXCameraErrorCode.CODE_FAIL_PARAMETERS, MXCameraErrorCode.MSG_FAIL_PARAMETERS);
-            } else {
-                return ZZResponse.CreateFail(MXCameraErrorCode.CODE_FAIL_CAMERA_OPEN, MXCameraErrorCode.MSG_FAIL_CAMERA_OPEN);
             }
+            return open;
         } else {
             return ZZResponse.CreateFail(MXCameraErrorCode.CODE_FAIL_NO_CAMERA, MXCameraErrorCode.MSG_FAIL_NO_CAMERA);
         }

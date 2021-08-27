@@ -68,8 +68,8 @@ public class BaseAPI {
                 .addInterceptor(chain -> {
                     // 以拦截到的请求为基础创建一个新的请求对象，然后插入Header
                     Request request = chain.request().newBuilder()
-                            .addHeader("device_id", DevicesId)
-                            .addHeader("mac_address", MacAddress)
+                            .addHeader("device_id", String.valueOf(DevicesId))
+                            .addHeader("mac_address", String.valueOf(MacAddress))
                             .addHeader("version_name", BuildConfig.VERSION_NAME)
                             .addHeader("build_type", BuildConfig.BUILD_TYPE)
                             .addHeader("application_id", BuildConfig.APPLICATION_ID)

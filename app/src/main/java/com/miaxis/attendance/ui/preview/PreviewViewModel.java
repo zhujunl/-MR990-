@@ -161,7 +161,7 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
             this.IsCameraEnable_Rgb.setValue(ZZResponse.CreateSuccess());
         } else {
             StartCountdown.setValue(false);
-            this.IsCameraEnable_Rgb.setValue(ZZResponse.CreateFail(mxCamera.getCode(), "Can not found rgb camera"));
+            this.IsCameraEnable_Rgb.setValue(ZZResponse.CreateFail(mxCamera.getCode(), mxCamera.getMsg()));
         }
     }
 
@@ -179,7 +179,7 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
                 this.IsCameraEnable_Nir.setValue(ZZResponse.CreateSuccess());
             } else {
                 this.StartCountdown.setValue(false);
-                this.IsCameraEnable_Nir.setValue(ZZResponse.CreateFail(mxCamera.getCode(), "Can not found nir camera"));
+                this.IsCameraEnable_Nir.setValue(ZZResponse.CreateFail(mxCamera.getCode(), mxCamera.getMsg()));
             }
         }
     }
@@ -397,7 +397,7 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
                 }
                 LocalImage captureLocalImage = new LocalImage();
                 captureLocalImage.Type = 2;
-                captureLocalImage.ImagePath = capturePath;
+                captureLocalImage.LocalPath = capturePath;
                 captureLocalImage.id = LocalImageModel.insert(captureLocalImage);
                 if (captureLocalImage.id <= 0) {
                     emitter.onNext(ZZResponse.CreateFail(-70, "保存图片记录失败"));
@@ -417,7 +417,7 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
                 }
                 LocalImage cutLocalImage = new LocalImage();
                 cutLocalImage.Type = 5;
-                cutLocalImage.ImagePath = cutPath;
+                cutLocalImage.LocalPath = cutPath;
                 cutLocalImage.id = LocalImageModel.insert(cutLocalImage);
                 if (cutLocalImage.id <= 0) {
                     emitter.onNext(ZZResponse.CreateFail(-71, "保存人脸截图记录失败"));
@@ -449,7 +449,7 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
                 attendanceBean.CaptureImage = capturePath;
                 attendanceBean.CutImage = cutPath;
                 attendanceBean.UserName = person.Name;
-                attendanceBean.BaseImage = byID.get(0).ImagePath;
+                attendanceBean.BaseImage = byID.get(0).LocalPath;
                 //开启门禁
                 emitter.onNext(ZZResponse.CreateSuccess(attendanceBean));
             }
