@@ -1,4 +1,4 @@
-package com.miaxis.attendance.ui.main;
+package com.miaxis.attendance.ui.home;
 
 import androidx.lifecycle.ViewModel;
 

@@ -5,7 +5,7 @@ import android.os.Handler;
 
 import com.miaxis.attendance.R;
 import com.miaxis.attendance.databinding.FragmentAdvertisingBinding;
-import com.miaxis.attendance.ui.main.HomeFragment;
+import com.miaxis.attendance.ui.home.HomeFragment;
 import com.miaxis.common.activity.BaseBindingFragment;
 
 import java.util.ArrayList;
@@ -37,11 +37,12 @@ public class AdvertisingFragment extends BaseBindingFragment<FragmentAdvertising
         binding.vpAdvertising.setAdapter(advertisingAdapter);
 
         List<Advertising> objects = new ArrayList<>();
-        objects.add(new Advertising(R.drawable.advertising_1));
-        objects.add(new Advertising(R.drawable.advertising_2));
-        objects.add(new Advertising(R.drawable.advertising_3));
-        objects.add(new Advertising(R.drawable.advertising_4));
-        objects.add(new Advertising(R.drawable.advertising_5));
+        objects.add(new Advertising(R.drawable.advertising_1,R.drawable.logo_2,new Advertising.MxRect(50,50,250,100)));
+        objects.add(new Advertising(R.drawable.advertising_2,R.drawable.logo_2,new Advertising.MxRect(50,50,250,100)));
+        objects.add(new Advertising(R.drawable.advertising_3,R.drawable.logo_2,new Advertising.MxRect(50,50,250,100)));
+        objects.add(new Advertising(R.drawable.advertising_4,R.drawable.logo_2,new Advertising.MxRect(50,50,250,100)));
+        objects.add(new Advertising(R.drawable.advertising_5,R.drawable.logo_2,new Advertising.MxRect(50,50,250,100)));
+        objects.add(new Advertising(R.drawable.advertising_6,R.drawable.logo_2,new Advertising.MxRect(50,50,250,100)));
         advertisingAdapter.addAll(objects);
     }
 

@@ -5,7 +5,7 @@ import android.util.Log;
 import com.miaxis.attendance.App;
 import com.miaxis.attendance.R;
 import com.miaxis.attendance.databinding.FragmentPermissionBinding;
-import com.miaxis.attendance.ui.main.HomeFragment;
+import com.miaxis.attendance.ui.home.HomeFragment;
 import com.miaxis.common.activity.BaseBindingFragment;
 import com.tbruyelle.rxpermissions3.RxPermissions;
 import org.zz.api.MXResult;

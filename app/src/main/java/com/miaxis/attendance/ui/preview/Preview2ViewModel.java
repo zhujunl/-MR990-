@@ -47,7 +47,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class PreviewViewModel extends ViewModel implements CameraPreviewCallback {
+public class Preview2ViewModel extends ViewModel implements CameraPreviewCallback {
 
     private static final String TAG = "PreviewViewModel";
     private Handler mHandler = new Handler();
@@ -83,20 +83,18 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
     AtomicReference<Map.Entry<MxImage, MXFace>> CurrentMxImage_Rgb = new AtomicReference<>();
     AtomicReference<Map.Entry<MxImage, MXFace>> CurrentMxImage_Nir = new AtomicReference<>();
 
-    //MutableLiveData<Boolean> HaveFace = new MutableLiveData<>(false);
-
     MutableLiveData<Boolean> StartCountdown = new MutableLiveData<>(true);
 
     MutableLiveData<ZZResponse<AttendanceBean>> AttendanceBean = new MutableLiveData<>();
 
-    public PreviewViewModel() {
+    public Preview2ViewModel() {
     }
 
     /**
      * 处理可见光视频帧数据
      */
     private synchronized void Process_Rgb(MXFrame frame) {
-        Disposable subscribe = Observable.create((ObservableOnSubscribe<List<RectF>>) emitter -> {
+        Disposable subscribe = Observable.create((ObservableOnSubscribe<Boolean>) emitter -> {
             if (!MXFrame.isBufferEmpty(frame) && MXFrame.isSizeLegal(frame)) {
                 MXResult<byte[]> mxResult = MXImageToolsAPI.getInstance().YUV2RGB(frame.buffer, frame.width, frame.height);//MR90 10ms
                 if (MXResult.isSuccess(mxResult)) {
@@ -105,41 +103,41 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
                             CameraConfig.Camera_RGB.bufferOrientation);//MR90 15ms
                     if (MXResult.isSuccess(imageRotate)) {
                         MxImage mxImage = imageRotate.getData();
-                        MXResult<List<MXFace>> detectFace = MXFaceIdAPI.getInstance().mxDetectFace(
-                                mxImage.buffer, mxImage.width, mxImage.height);//MR90 40--100ms
-                        if (MXResult.isSuccess(detectFace)) {
-                            List<RectF> list = new ArrayList<>();
-                            List<MXFace> data = detectFace.getData();
-                            for (MXFace mxFace : data) {
-                                list.add(mxFace.getFaceRectF());
-                            }
-                            boolean b = this.CurrentMxImage_Rgb.compareAndSet(null, new AbstractMap.SimpleEntry<>(mxImage, MXFaceIdAPI.getInstance().getMaxFace(data)));
-                            Log.e(TAG, "Process_Rgb: compareAndSet:" + b);
-                            emitter.onNext(list);
+                        boolean compareAndSet = this.CurrentMxImage_Rgb.compareAndSet(null, new AbstractMap.SimpleEntry<>(mxImage, null));
+                        Log.e(TAG, "Process_Rgb: compareAndSet:" + compareAndSet);
+                        if (compareAndSet) {
+                            emitter.onNext(true);
                             return;
                         }
                     }
                 }
             }
             this.CurrentMxImage_Rgb.compareAndSet(null, null);
-            emitter.onNext(new ArrayList<>());
+            emitter.onNext(false);
         }).subscribeOn(Schedulers.from(App.getInstance().threadExecutor))
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(list -> {
-                    if (ListUtils.isNullOrEmpty(list)) {
-                        this.faceRect.postValue(null);
-                    } else {
+                .subscribe(result -> {
+                    if (result) {
                         if (this.IsNirEnable.get()) {
                             startNirFrame();
                         }
-                        this.faceRect.postValue(list.get(0));
                     }
-                    startRgbFrame();
+
+
+                    //                    if (ListUtils.isNullOrEmpty(list)) {
+                    //                        this.faceRect.postValue(null);
+                    //                    } else {
+                    //                        if (this.IsNirEnable.get()) {
+                    //                            startNirFrame();
+                    //                        }
+                    //                        this.faceRect.postValue(list.get(0));
+                    //                    }
+                    //                    startRgbFrame();
                 }, throwable -> {
                     this.CurrentMxImage_Rgb.compareAndSet(null, null);
                     this.faceRect.postValue(null);
                     this.StartCountdown.setValue(false);
-                    startRgbFrame();
+                    //                    startRgbFrame();
                 });
     }
 
@@ -160,12 +158,10 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
             }, this.timeOut);
             this.IsCameraEnable_Rgb.setValue(ZZResponse.CreateSuccess());
         } else {
-            this.StartCountdown.setValue(false);
+            StartCountdown.setValue(false);
             this.IsCameraEnable_Rgb.setValue(ZZResponse.CreateFail(mxCamera.getCode(), mxCamera.getMsg()));
         }
     }
-
-
 
     /**
      * 开启近红外视频帧
@@ -262,7 +258,7 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(camera -> {
                     if (ZZResponse.isSuccess(camera)) {
-                        camera.getData().setPreviewCallback(PreviewViewModel.this);
+                        camera.getData().setPreviewCallback(Preview2ViewModel.this);
                         startNirPreview();
                     }
                     startRgbFrame();
@@ -297,7 +293,7 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(camera -> {
                     if (ZZResponse.isSuccess(camera)) {
-                        camera.getData().setPreviewCallback(PreviewViewModel.this);
+                        camera.getData().setPreviewCallback(Preview2ViewModel.this);
                     }
                     this.IsCameraEnable_Nir.setValue(camera);
                 }, throwable -> {

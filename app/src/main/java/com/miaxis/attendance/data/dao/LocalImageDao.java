@@ -28,6 +28,9 @@ public interface LocalImageDao {
     @Query("SELECT * FROM LocalImage WHERE LocalImage.id=:id")
     List<LocalImage> findByID(long id);
 
+    @Query("SELECT * FROM LocalImage WHERE LocalImage.UserId=:UserId")
+    List<LocalImage> findByUserId(String UserId);
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insert(LocalImage localImage);
 
@@ -39,6 +42,21 @@ public interface LocalImageDao {
 
     @Query("DELETE FROM LocalImage WHERE LocalImage.id=:id")
     int delete(long id);
+
+    @Query("DELETE FROM LocalImage WHERE LocalImage.UserId=:UserId")
+    int delete(String UserId);
+
+    @Query("DELETE FROM LocalImage WHERE LocalImage.UserId=:UserId AND LocalImage.Type=1")
+    int deleteFace(String UserId);
+
+    @Query("DELETE FROM LocalImage WHERE LocalImage.UserId=:UserId AND LocalImage.Type=3")
+    int deleteFinger(String UserId);
+
+    @Query("SELECT * FROM LocalImage WHERE LocalImage.UserId=:UserId AND LocalImage.Type=1")
+    List<LocalImage> findFaceImageByUserId(String UserId);
+
+    @Query("SELECT * FROM LocalImage WHERE LocalImage.UserId=:UserId AND LocalImage.Type=3")
+    List<LocalImage> findFingerImageByUserId(String UserId);
 
     @Query("DELETE FROM LocalImage")
     int deleteAll();

@@ -4,6 +4,7 @@ import android.app.Application;
 
 import com.miaxis.attendance.data.dao.AttendanceDao;
 import com.miaxis.attendance.data.dao.FaceDao;
+import com.miaxis.attendance.data.dao.FingerDao;
 import com.miaxis.attendance.data.dao.LocalImageDao;
 import com.miaxis.attendance.data.dao.PersonDao;
 
@@ -79,5 +80,8 @@ public class AppDataBase {
         return this.mDB.LocalImageDao();
     }
 
+    public FingerDao FingerDao() {
+        return this.mDB.FingerDao();
+    }
 
 }

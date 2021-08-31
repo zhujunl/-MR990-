@@ -17,11 +17,14 @@ public class Attendance {
     @PrimaryKey(autoGenerate = true)
     public long id;
     public int Mode;//考勤方式  0无  1人脸   2指纹
-    public String UserId;//用户ID(Person)
-    public long BaseImage;//底图ID
+    /**
+     * 用户ID
+     */
+    public String UserId;//用户ID
+    //public long BaseImage;//底图ID
     public long CaptureImage;//现场对比图ID
-    public long CutImage;//现场人脸图ID
-    public int Status;//考勤状态  0无  1成功   2失败
+    public long CutImage;//现场人脸图ID(仅人脸)
+    public int Status;//考勤状态  0无  1成功     2失败
     public int Upload;//上传状态  0无  1已上传   2未上传
     public long create_time;//创建时间
     public long update_time;//修改时间
@@ -36,13 +39,13 @@ public class Attendance {
                 "id=" + id +
                 ", Mode=" + Mode +
                 ", UserId='" + UserId + '\'' +
-                ", BaseImage=" + BaseImage +
+                //", BaseImage=" + BaseImage +
                 ", CaptureImage=" + CaptureImage +
                 ", CutImage=" + CutImage +
                 ", Status=" + Status +
                 ", Upload=" + Upload +
-                ", create_time='" + create_time + '\'' +
-                ", update_time='" + update_time + '\'' +
+                ", create_time=" + create_time +
+                ", update_time=" + update_time +
                 '}';
     }
 }

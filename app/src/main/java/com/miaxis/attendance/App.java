@@ -10,6 +10,7 @@ import com.miaxis.attendance.config.AppConfig;
 import com.miaxis.attendance.data.AppDataBase;
 import com.miaxis.attendance.device.MR990Device;
 import com.miaxis.attendance.task.UploadAttendance;
+import com.miaxis.attendance.ui.finger.MR990FingerStrategy;
 import com.miaxis.common.utils.FileUtils;
 
 import org.zz.api.MXFaceIdAPI;
@@ -44,6 +45,7 @@ public class App extends Application {
             public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {
                 if (activity.getClass() == MainActivity.class) {
                     MR990Device.getInstance().CameraPower(true);
+                    MR990Device.getInstance().FingerPower(true);
                 }
             }
 
@@ -51,6 +53,7 @@ public class App extends Application {
             public void onActivityDestroyed(@NonNull Activity activity) {
                 if (activity.getClass() == MainActivity.class) {
                     MR990Device.getInstance().CameraPower(false);
+                    MR990Device.getInstance().FingerPower(false);
                     System.exit(0);
                 }
             }
@@ -68,6 +71,7 @@ public class App extends Application {
         }
         AppDataBase.getInstance().init(AppConfig.Path_DataBase, this);
         HttpApi.init(this);
+        MR990FingerStrategy.getInstance().init();
         return MXFaceIdAPI.getInstance().mxInitAlg(this, null, null);
     }
 

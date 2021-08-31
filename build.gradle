@@ -3,7 +3,7 @@ buildscript {
     repositories {
         google()
         mavenCentral()
-        jcenter {
+        mavenCentral {
             url 'https://jcenter.bintray.com'
         }
     }
@@ -20,7 +20,7 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        jcenter {
+        mavenCentral {
             url 'https://jcenter.bintray.com'
         }
         maven { url 'https://jitpack.io' }
@@ -30,7 +30,7 @@ allprojects {
         repositories {
             mavenLocal()
             google()
-            jcenter {
+            mavenCentral {
                 url 'https://jcenter.bintray.com'
             }
         }

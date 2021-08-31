@@ -1,6 +1,6 @@
 package com.miaxis.attendance.service.process;
 
-import com.miaxis.attendance.data.model.FaceModel;
+import com.miaxis.attendance.data.model.FingerModel;
 import com.miaxis.attendance.service.MxResponse;
 import com.miaxis.attendance.service.process.base.GetParamProcess;
 
@@ -14,7 +14,7 @@ import java.util.Map;
  * @updateAuthor
  * @updateDes
  */
-public class FaceProcess {
+public class FingerProcess {
 
 
     public static class QueryAll extends GetParamProcess {
@@ -23,7 +23,7 @@ public class FaceProcess {
 
         @Override
         protected MxResponse<?> onPostParamProcess(Map<String, String> parameter) throws Exception {
-            return MxResponse.CreateSuccess(FaceModel.findAll());
+            return MxResponse.CreateSuccess(FingerModel.findAll());
         }
     }
 

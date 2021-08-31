@@ -26,9 +26,9 @@ import java.util.Map;
 public class FileProcess {
 
 
-    public static class Query extends GetParamProcess {
+    public static class QueryAll extends GetParamProcess {
 
-        public Query() {
+        public QueryAll() {
         }
 
         @Override

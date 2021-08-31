@@ -25,8 +25,8 @@ public class UserProcess {
     private final ConcurrentHashMap<String, Integer> mAddUserProcess = new ConcurrentHashMap<>();
 
 
-    public static class QueryAllUser extends GetParamProcess {
-        public QueryAllUser() {
+    public static class QueryAll extends GetParamProcess {
+        public QueryAll() {
         }
 
         @Override

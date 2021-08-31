@@ -8,7 +8,10 @@ public class Face {
 
     @PrimaryKey(autoGenerate = true)
     public long id;
-    public String UserId;
+    /**
+     * 用户ID
+     */
+    public String UserId;//用户ID
     public byte[] FaceFeature;//人脸特征
     public long create_time;//创建时间
     public long update_time;//修改时间

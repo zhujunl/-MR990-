@@ -2,6 +2,7 @@
 package org.zz.api;
 
 
+import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.text.TextUtils;
 
@@ -145,11 +146,17 @@ public class MXImageToolsAPI {
      * @author chen.gs
      * @category 图像文件加载到内存
      */
-    public MXResult<MxImage> ImageLoad(String imagePath, int input_width, int input_height) {
+    public MXResult<MxImage> ImageLoad(String imagePath) {
         if (StringUtils.isNullOrEmpty(imagePath)) {
             return MXResult.CreateFail(-1, "加载图片参数不合法");
         }
-        byte[] out = new byte[input_width * input_height * 3];
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(imagePath, options);
+        if (options.outWidth <= 0 || options.outHeight <= 0) {
+            return MXResult.CreateFail(-1, "图片加载失败");
+        }
+        byte[] out = new byte[options.outWidth * options.outHeight * 3];
         int[] width = new int[1];
         int[] height = new int[1];
         int imageLoad = this.mMxImageTool.ImageLoad(imagePath, 3, out, width, height);

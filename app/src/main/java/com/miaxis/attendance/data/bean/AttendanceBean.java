@@ -14,7 +14,7 @@ public class AttendanceBean {
     public int Mode;//考勤方式  0无  1人脸   2指纹
     public String UserId;//用户ID(Person)
     public String UserName;//用户姓名
-    public String BaseImage;//底图
+    //public String BaseImage;//底图
     public String CaptureImage;//现场对比图
     public String CutImage;//现场人脸图
     public int Status;//考勤状态  0无  1成功   2失败
@@ -31,7 +31,7 @@ public class AttendanceBean {
                 ", Mode=" + Mode +
                 ", UserId='" + UserId + '\'' +
                 ", UserName='" + UserName + '\'' +
-                ", BaseImage=" + BaseImage +
+                //", BaseImage=" + BaseImage +
                 ", CaptureImage=" + CaptureImage +
                 ", CutImage=" + CutImage +
                 ", Status=" + Status +

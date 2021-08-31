@@ -1,4 +1,4 @@
-package com.miaxis.attendance.ui.main;
+package com.miaxis.attendance.ui.home;
 
 import android.os.Bundle;
 
@@ -6,6 +6,7 @@ import com.miaxis.attendance.App;
 import com.miaxis.attendance.R;
 import com.miaxis.attendance.databinding.FragmentMainBinding;
 import com.miaxis.attendance.ui.bar.BarFragment;
+import com.miaxis.attendance.ui.finger.FingerFragment;
 import com.miaxis.attendance.ui.preview.PreviewFragment;
 import com.miaxis.common.activity.BaseBindingFragment;
 
@@ -31,6 +32,8 @@ public class HomeFragment extends BaseBindingFragment<FragmentMainBinding> {
         mViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
         replaceChild(R.id.fl_preview, PreviewFragment.newInstance());
         replaceChild(R.id.fl_content, BarFragment.newInstance());
+        replaceChild(R.id.fl_finger, FingerFragment.newInstance());
+
         App.getInstance().startUploadAttendance();
     }
 

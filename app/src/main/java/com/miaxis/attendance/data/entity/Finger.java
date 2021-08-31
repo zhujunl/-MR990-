@@ -8,8 +8,10 @@ public class Finger {
 
     @PrimaryKey(autoGenerate = true)
     public long id;
-    public String UserId;
-    public String FingerImage;
+    /**
+     * 用户ID
+     */
+    public String UserId;//用户ID
     public byte[] FingerFeature;
     public long create_time;//创建时间
     public long update_time;//修改时间
@@ -18,5 +20,14 @@ public class Finger {
         this.create_time=System.currentTimeMillis();
     }
 
-
+    @Override
+    public String toString() {
+        return "Finger{" +
+                "id=" + id +
+                ", UserId='" + UserId + '\'' +
+                ", FingerFeature=" + (FingerFeature == null ? null : FingerFeature.length) +
+                ", create_time=" + create_time +
+                ", update_time=" + update_time +
+                '}';
+    }
 }

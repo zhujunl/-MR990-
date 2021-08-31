@@ -24,6 +24,18 @@ public class LocalImageModel {
         AppDataBase.getInstance().LocalImageDao().delete(id);
     }
 
+    public static void delete(String userId) {
+        AppDataBase.getInstance().LocalImageDao().delete(userId);
+    }
+
+    public static void deleteFace(String userId) {
+        AppDataBase.getInstance().LocalImageDao().deleteFace(userId);
+    }
+
+    public static void deleteFinger(String userId) {
+        AppDataBase.getInstance().LocalImageDao().deleteFinger(userId);
+    }
+
     public static void deleteAll() {
         AppDataBase.getInstance().LocalImageDao().deleteAll();
     }
@@ -32,12 +44,24 @@ public class LocalImageModel {
         return AppDataBase.getInstance().LocalImageDao().findAll();
     }
 
+    public static List<LocalImage> findFaceImageByUserId(String UserId) {
+        return AppDataBase.getInstance().LocalImageDao().findFaceImageByUserId(UserId);
+    }
+
+    public static List<LocalImage> findFingerImageByUserId(String UserId) {
+        return AppDataBase.getInstance().LocalImageDao().findFingerImageByUserId(UserId);
+    }
+
     public static int allCounts() {
         return AppDataBase.getInstance().LocalImageDao().allCounts();
     }
 
     public static List<LocalImage> findByID(long id) {
         return AppDataBase.getInstance().LocalImageDao().findByID(id);
+    }
+
+    public static List<LocalImage> findByUserId(String userId) {
+        return AppDataBase.getInstance().LocalImageDao().findByUserId(userId);
     }
 
     public static List<LocalImage> findPage(int pageSize, int offset) {

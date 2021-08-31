@@ -42,8 +42,6 @@ public class Person {
     /**
      * 人脸图片ID
      */
-    public long FaceImage;//人脸图片ID
-    public long FaceID;//人脸特征ID
 
     public long create_time;//创建时间
     public long update_time;//修改时间
@@ -62,8 +60,6 @@ public class Person {
                 ", Gender='" + Gender + '\'' +
                 ", IdCardNumber='" + IdCardNumber + '\'' +
                 ", Enable=" + Enable +
-                ", FaceImage=" + FaceImage +
-                ", FaceID=" + FaceID +
                 ", create_time='" + create_time + '\'' +
                 ", update_time='" + update_time + '\'' +
                 '}';

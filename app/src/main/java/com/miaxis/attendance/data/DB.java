@@ -2,17 +2,19 @@ package com.miaxis.attendance.data;
 
 import com.miaxis.attendance.data.dao.AttendanceDao;
 import com.miaxis.attendance.data.dao.FaceDao;
+import com.miaxis.attendance.data.dao.FingerDao;
 import com.miaxis.attendance.data.dao.LocalImageDao;
 import com.miaxis.attendance.data.dao.PersonDao;
 import com.miaxis.attendance.data.entity.Attendance;
 import com.miaxis.attendance.data.entity.Face;
+import com.miaxis.attendance.data.entity.Finger;
 import com.miaxis.attendance.data.entity.LocalImage;
 import com.miaxis.attendance.data.entity.Person;
 
 import androidx.room.Database;
 import androidx.room.RoomDatabase;
 
-@Database(entities = {Attendance.class, Face.class, LocalImage.class, Person.class}, version = 1)
+@Database(entities = {Attendance.class, Face.class, Finger.class, LocalImage.class, Person.class}, version = 1)
 //@TypeConverters({StringListConverter.class, OrderImageListConverter.class, DateConverter.class})
 public abstract class DB extends RoomDatabase {
 
@@ -24,5 +26,6 @@ public abstract class DB extends RoomDatabase {
 
     public abstract PersonDao PersonDao();
 
+    public abstract FingerDao FingerDao();
 
 }

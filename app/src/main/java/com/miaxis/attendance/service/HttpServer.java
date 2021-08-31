@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 import com.miaxis.attendance.service.process.AttendanceProcess;
 import com.miaxis.attendance.service.process.FaceProcess;
 import com.miaxis.attendance.service.process.FileProcess;
+import com.miaxis.attendance.service.process.FingerProcess;
 import com.miaxis.attendance.service.process.UserProcess;
 import com.miaxis.attendance.service.process.base.BaseProcess;
 
@@ -63,7 +64,7 @@ public class HttpServer extends NanoHTTPD {
         }
         switch (uri) {
             case "/api/user/list":
-                return new UserProcess.QueryAllUser();
+                return new UserProcess.QueryAll();
             case "/api/user/add":
                 return new UserProcess.AddUser();
             case "/api/user/update":
@@ -71,11 +72,13 @@ public class HttpServer extends NanoHTTPD {
             case "/api/user/delete":
                 return new UserProcess.DeleteUser();
             case "/api/face/list":
-                return new FaceProcess.QueryAllFace();
+                return new FaceProcess.QueryAll();
+            case "/api/finger/list":
+                return new FingerProcess.QueryAll();
             case "/api/attendance/list":
                 return new AttendanceProcess.QueryAll();
             case "/api/file/list":
-                return new FileProcess.Query();
+                return new FileProcess.QueryAll();
             case "/api/file/add":
                 return new FileProcess.AddFile();
             default:

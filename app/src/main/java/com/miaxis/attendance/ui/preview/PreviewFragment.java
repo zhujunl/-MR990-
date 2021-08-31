@@ -119,7 +119,11 @@ public class PreviewFragment extends BaseBindingFragment<FragmentPreviewBinding>
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        mViewModel.faceRect.removeObservers(this);
         mViewModel.AttendanceBean.removeObservers(this);
+        mViewModel.StartCountdown.removeObservers(this);
+        mViewModel.IsCameraEnable_Rgb.removeObservers(this);
+        mViewModel.IsCameraEnable_Nir.removeObservers(this);
         mViewModel.destroy();
     }
 }

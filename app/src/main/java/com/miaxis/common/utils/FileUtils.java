@@ -9,6 +9,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.util.List;
 
 /**
  * @author Tank
@@ -97,6 +98,11 @@ public class FileUtils {
         }
     }
 
+    public static void delete(List<String> paths) {
+        for (String path : paths) {
+            delete(path);
+        }
+    }
 
     /**
      * 下载文件
