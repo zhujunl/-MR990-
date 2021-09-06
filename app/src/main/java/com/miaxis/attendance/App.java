@@ -33,7 +33,7 @@ public class App extends Application {
 
     private static final String TAG = "App";
     private static App context;
-    public ExecutorService threadExecutor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
+    public final ExecutorService threadExecutor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
     private final UploadAttendance mUploadAttendance = new UploadAttendance();
 
     @Override

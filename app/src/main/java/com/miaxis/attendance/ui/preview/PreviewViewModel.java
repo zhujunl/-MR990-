@@ -150,14 +150,10 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
         ZZResponse<MXCamera> mxCamera = CameraHelper.getInstance().createOrFindMXCamera(CameraConfig.Camera_RGB);
         if (ZZResponse.isSuccess(mxCamera)) {
             int enable = mxCamera.getData().setNextFrameEnable();
-            this.mHandler.removeCallbacksAndMessages(null);
+            timeOutReset();
             if (this.StartCountdown.getValue() != null && !this.StartCountdown.getValue()) {
                 this.StartCountdown.setValue(true);
             }
-            this.mHandler.postDelayed(() -> {
-                StartCountdown.setValue(false);
-                IsCameraEnable_Rgb.setValue(ZZResponse.CreateFail(-98, "Camera is error"));
-            }, this.timeOut);
             this.IsCameraEnable_Rgb.setValue(ZZResponse.CreateSuccess());
         } else {
             this.StartCountdown.setValue(false);
@@ -165,7 +161,27 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
         }
     }
 
+    /**
+     * 倒计时重置
+     */
+    private void timeOutReset() {
+        timeOutCancel();
+        if (this.mHandler != null) {
+            this.mHandler.postDelayed(() -> {
+                StartCountdown.setValue(false);
+                IsCameraEnable_Rgb.setValue(ZZResponse.CreateFail(-98, "Camera preview is error"));
+            }, this.timeOut);
+        }
+    }
 
+    /**
+     * 取消倒计时
+     */
+    private void timeOutCancel() {
+        if (this.mHandler != null) {
+            this.mHandler.removeCallbacksAndMessages(null);
+        }
+    }
 
     /**
      * 开启近红外视频帧
@@ -472,7 +488,7 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
     @Override
     public void onPreview(MXCamera camera, MXFrame frame) {
         if (camera.getCameraId() == CameraConfig.Camera_RGB.CameraId) {
-            this.mHandler.removeCallbacksAndMessages(null);
+            timeOutCancel();
             this.Process_Rgb(frame);
         } else {
             this.Process_Nir(frame);
@@ -486,7 +502,7 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
     }
 
     public void pause() {
-        this.mHandler.removeCallbacksAndMessages(null);
+        timeOutCancel();
         CameraHelper.getInstance().pause();
     }
 

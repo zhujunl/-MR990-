@@ -19,7 +19,8 @@ public class BarViewModel extends ViewModel {
     }
 
     public boolean isNewUser(AttendanceBean attendanceBean) {
-        boolean isNew = attendanceBean != null && !TextUtils.equals(attendanceBean.UserId, this.LastUserId.get());
+        boolean isNew = attendanceBean != null && !
+                TextUtils.equals(attendanceBean.UserId, this.LastUserId.get());
         if (isNew) {
             this.LastUserId.set(attendanceBean.UserId);
         }

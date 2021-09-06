@@ -8,6 +8,7 @@ import android.widget.Toast;
 import com.miaxis.attendance.config.AppConfig;
 import com.miaxis.attendance.databinding.ActivityMainBinding;
 import com.miaxis.attendance.ui.advertising.AdvertisingFragment;
+import com.miaxis.attendance.ui.permission.PermissionFragment;
 import com.miaxis.common.activity.BaseBindingFragmentActivity;
 import com.miaxis.common.camera.CameraHelper;
 
@@ -34,9 +35,9 @@ public class MainActivity extends BaseBindingFragmentActivity<ActivityMainBindin
                 Manifest.permission.CAMERA,
                 Manifest.permission.READ_PHONE_STATE,
                 Manifest.permission.ACCESS_WIFI_STATE};
-        //replace(R.id.container, PermissionFragment.newInstance(permissions));
-        // TODO: 2021/8/31 测试
-        replace(R.id.container, AdvertisingFragment.newInstance());
+        replace(R.id.container, PermissionFragment.newInstance(permissions));
+        //TODO: 2021/8/31 测试
+        //replace(R.id.container, AdvertisingFragment.newInstance());
         mainViewModel.showAdvertising.observe(this, aBoolean -> {
             if (aBoolean) {
                 replace(R.id.container, AdvertisingFragment.newInstance());

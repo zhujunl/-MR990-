@@ -45,7 +45,7 @@ public abstract class BaseBindingActivity<V extends ViewDataBinding> extends App
 
     protected abstract void initView(@NonNull V binding, @Nullable Bundle savedInstanceState);
 
-    protected void initData(@NonNull V binding, @Nullable Bundle savedInstanceState){
+    protected void initData(@NonNull V binding, @Nullable Bundle savedInstanceState) {
 
     }
 
@@ -86,6 +86,18 @@ public abstract class BaseBindingActivity<V extends ViewDataBinding> extends App
             InputMethodManager manager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             manager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        //        List<Fragment> list = getSupportFragmentManager().getFragments();
+        //        if (!list.isEmpty()) {
+        //            getSupportFragmentManager().popBackStack();
+        //        }else {
+        //
+        //        }
     }
 
     @Override

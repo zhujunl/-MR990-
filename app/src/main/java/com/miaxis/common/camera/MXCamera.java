@@ -5,6 +5,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
+import android.os.SystemClock;
+import android.util.Log;
 import android.view.SurfaceHolder;
 
 import com.miaxis.common.response.ZZResponse;
@@ -19,6 +21,7 @@ import com.miaxis.common.utils.BitmapUtils;
  */
 public class MXCamera implements Camera.AutoFocusCallback, Camera.PreviewCallback {
 
+    private static final String TAG = "MXCamera";
     private int width = 640;
     private int height = 480;
     private boolean isPreview = false;
@@ -50,13 +53,21 @@ public class MXCamera implements Camera.AutoFocusCallback, Camera.PreviewCallbac
         //        if (cameraId >= Camera.getNumberOfCameras()) {
         //            return -4;
         //        }
-        try {
-            this.mCameraId = cameraId;
-            this.mCamera = Camera.open(cameraId);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ZZResponse.CreateFail(-1, "open camera failed，" + e.getMessage());
+        for (int i = 0; i < 2; i++) {
+            try {
+                this.mCameraId = cameraId;
+                this.mCamera = Camera.open(cameraId);
+                break;
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.e(TAG,""+e);
+                SystemClock.sleep(500);
+            }
         }
+        if (this.mCamera == null) {
+            return ZZResponse.CreateFail(-1, "open camera failed");
+        }
+
         try {
             Camera.Parameters parameters = this.mCamera.getParameters();
             parameters.setPreviewSize(width, height);

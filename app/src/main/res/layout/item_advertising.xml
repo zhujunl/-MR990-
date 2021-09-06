@@ -15,7 +15,7 @@
         android:id="@+id/aiv_logo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="#66dd00dd"
+        tools:background="#66dd00dd"
         tools:layout_height="100px"
         tools:layout_marginLeft="100px"
         tools:layout_marginTop="100px"

@@ -80,8 +80,12 @@ public class Preview2ViewModel extends ViewModel implements CameraPreviewCallbac
     /**
      * 人脸帧数据缓存
      */
-    AtomicReference<Map.Entry<MxImage, MXFace>> CurrentMxImage_Rgb = new AtomicReference<>();
-    AtomicReference<Map.Entry<MxImage, MXFace>> CurrentMxImage_Nir = new AtomicReference<>();
+    //AtomicReference<Map.Entry<MxImage, MXFace>> CurrentMxImage_Rgb = new AtomicReference<>();
+    //AtomicReference<Map.Entry<MxImage, MXFace>> CurrentMxImage_Nir = new AtomicReference<>();
+    AtomicReference<MxImage> CurrentImageCache_Rgb = new AtomicReference<>();
+    AtomicReference<MxImage> CurrentImageCache_Nir = new AtomicReference<>();
+
+    //MutableLiveData<Boolean> HaveFace = new MutableLiveData<>(false);
 
     MutableLiveData<Boolean> StartCountdown = new MutableLiveData<>(true);
 
@@ -94,50 +98,43 @@ public class Preview2ViewModel extends ViewModel implements CameraPreviewCallbac
      * 处理可见光视频帧数据
      */
     private synchronized void Process_Rgb(MXFrame frame) {
-        Disposable subscribe = Observable.create((ObservableOnSubscribe<Boolean>) emitter -> {
+        Disposable subscribe = Observable.create((ObservableOnSubscribe<MXResult<MxImage>>) emitter -> {
             if (!MXFrame.isBufferEmpty(frame) && MXFrame.isSizeLegal(frame)) {
                 MXResult<byte[]> mxResult = MXImageToolsAPI.getInstance().YUV2RGB(frame.buffer, frame.width, frame.height);//MR90 10ms
                 if (MXResult.isSuccess(mxResult)) {
-                    MXResult<MxImage> imageRotate = MXImageToolsAPI.getInstance().ImageRotate(
-                            new MxImage(frame.width, frame.height, mxResult.getData()),
+                    MXResult<MxImage> imageRotate = MXImageToolsAPI.getInstance().ImageRotate(new MxImage(frame.width, frame.height, mxResult.getData()),
                             CameraConfig.Camera_RGB.bufferOrientation);//MR90 15ms
-                    if (MXResult.isSuccess(imageRotate)) {
-                        MxImage mxImage = imageRotate.getData();
-                        boolean compareAndSet = this.CurrentMxImage_Rgb.compareAndSet(null, new AbstractMap.SimpleEntry<>(mxImage, null));
-                        Log.e(TAG, "Process_Rgb: compareAndSet:" + compareAndSet);
-                        if (compareAndSet) {
-                            emitter.onNext(true);
-                            return;
-                        }
-                    }
+                    emitter.onNext(imageRotate);
+                    return;
+                    //                    if (MXResult.isSuccess(imageRotate)) {
+                    //                        emitter.onNext(imageRotate.getData());
+                    //                        return;
+                    //                    }
                 }
             }
-            this.CurrentMxImage_Rgb.compareAndSet(null, null);
-            emitter.onNext(false);
+            emitter.onNext(MXResult.CreateFail(-2,"failed "));
         }).subscribeOn(Schedulers.from(App.getInstance().threadExecutor))
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(result -> {
-                    if (result) {
+                .subscribe(mxImage -> {
+
+
+                    CurrentImageCache_Rgb.set(mxImage);
+
+
+                    if (ListUtils.isNullOrEmpty(list)) {
+                        this.faceRect.postValue(null);
+                    } else {
                         if (this.IsNirEnable.get()) {
                             startNirFrame();
                         }
+                        this.faceRect.postValue(list.get(0));
                     }
-
-
-                    //                    if (ListUtils.isNullOrEmpty(list)) {
-                    //                        this.faceRect.postValue(null);
-                    //                    } else {
-                    //                        if (this.IsNirEnable.get()) {
-                    //                            startNirFrame();
-                    //                        }
-                    //                        this.faceRect.postValue(list.get(0));
-                    //                    }
-                    //                    startRgbFrame();
+                    startRgbFrame();
                 }, throwable -> {
                     this.CurrentMxImage_Rgb.compareAndSet(null, null);
                     this.faceRect.postValue(null);
                     this.StartCountdown.setValue(false);
-                    //                    startRgbFrame();
+                    startRgbFrame();
                 });
     }
 
@@ -148,18 +145,36 @@ public class Preview2ViewModel extends ViewModel implements CameraPreviewCallbac
         ZZResponse<MXCamera> mxCamera = CameraHelper.getInstance().createOrFindMXCamera(CameraConfig.Camera_RGB);
         if (ZZResponse.isSuccess(mxCamera)) {
             int enable = mxCamera.getData().setNextFrameEnable();
-            this.mHandler.removeCallbacksAndMessages(null);
+            timeOutReset();
             if (this.StartCountdown.getValue() != null && !this.StartCountdown.getValue()) {
                 this.StartCountdown.setValue(true);
             }
-            this.mHandler.postDelayed(() -> {
-                StartCountdown.setValue(false);
-                IsCameraEnable_Rgb.setValue(ZZResponse.CreateFail(-98, "Camera is error"));
-            }, this.timeOut);
             this.IsCameraEnable_Rgb.setValue(ZZResponse.CreateSuccess());
         } else {
-            StartCountdown.setValue(false);
+            this.StartCountdown.setValue(false);
             this.IsCameraEnable_Rgb.setValue(ZZResponse.CreateFail(mxCamera.getCode(), mxCamera.getMsg()));
+        }
+    }
+
+    /**
+     * 倒计时重置
+     */
+    private void timeOutReset() {
+        timeOutCancel();
+        if (this.mHandler != null) {
+            this.mHandler.postDelayed(() -> {
+                StartCountdown.setValue(false);
+                IsCameraEnable_Rgb.setValue(ZZResponse.CreateFail(-98, "Camera preview is error"));
+            }, this.timeOut);
+        }
+    }
+
+    /**
+     * 取消倒计时
+     */
+    private void timeOutCancel() {
+        if (this.mHandler != null) {
+            this.mHandler.removeCallbacksAndMessages(null);
         }
     }
 
@@ -468,7 +483,7 @@ public class Preview2ViewModel extends ViewModel implements CameraPreviewCallbac
     @Override
     public void onPreview(MXCamera camera, MXFrame frame) {
         if (camera.getCameraId() == CameraConfig.Camera_RGB.CameraId) {
-            this.mHandler.removeCallbacksAndMessages(null);
+            timeOutCancel();
             this.Process_Rgb(frame);
         } else {
             this.Process_Nir(frame);
@@ -482,7 +497,7 @@ public class Preview2ViewModel extends ViewModel implements CameraPreviewCallbac
     }
 
     public void pause() {
-        this.mHandler.removeCallbacksAndMessages(null);
+        timeOutCancel();
         CameraHelper.getInstance().pause();
     }
 

@@ -1,6 +1,7 @@
 package com.miaxis.attendance.ui.finger;
 
 import android.graphics.Bitmap;
+import android.os.SystemClock;
 import android.util.Log;
 
 import com.miaxis.attendance.App;
@@ -69,6 +70,10 @@ public class MR990FingerStrategy {
         this.isCancel = false;
         App.getInstance().threadExecutor.execute(() -> {
             while (!this.isCancel && mxMscBigFingerApi != null) {
+                SystemClock.sleep(200);
+                if (!mxMscBigFingerApi.getDeviceInfo().isSuccess()) {
+                    continue;
+                }
                 Result<MxImage> result = mxMscBigFingerApi.getFingerImageBig(1000);
                 Log.e(TAG, "getFingerImageBig:" + result);
                 if (!this.isCancel && result.isSuccess()) {
@@ -107,6 +112,9 @@ public class MR990FingerStrategy {
         mxFingerAlg = null;
     }
 
+    /**
+     * 读取指纹回调
+     */
     public interface ReadFingerCallBack {
         void onReadFinger(MxImage finger);
 
