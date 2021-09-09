@@ -112,7 +112,7 @@ public class MyMqttService extends Service {
 //            try {
 //                mMqttConnectOptions.setWill(topic, message.getBytes(), (int) qos, retained);
 //            } catch (Exception e) {
-//                Log.i(TAG, "Exception Occurred", e);
+//                Timber.i(TAG, "Exception Occurred", e);
 //                doConnect = false;
 //                iMqttActionListener.onFailure(null, e);
 //            }
@@ -143,10 +143,10 @@ public class MyMqttService extends Service {
 //        NetworkInfo info = connectivityManager.getActiveNetworkInfo();
 //        if (info != null && info.isAvailable()) {
 //            String name = info.getTypeName();
-//            Log.i(TAG, "当前网络名称：" + name);
+//            Timber.i(TAG, "当前网络名称：" + name);
 //            return true;
 //        } else {
-//            Log.i(TAG, "没有可用网络");
+//            Timber.i(TAG, "没有可用网络");
 //            /*没有可用网络的时候，延迟3秒再尝试重连*/
 //            new Handler().postDelayed(new Runnable() {
 //                @Override
@@ -163,7 +163,7 @@ public class MyMqttService extends Service {
 //
 //        @Override
 //        public void onSuccess(IMqttToken arg0) {
-//            Log.i(TAG, "连接成功 ");
+//            Timber.i(TAG, "连接成功 ");
 //            try {
 //                mqttAndroidClient.subscribe(PUBLISH_TOPIC, 2);//订阅主题，参数：主题、服务质量
 //            } catch (MqttException e) {
@@ -174,7 +174,7 @@ public class MyMqttService extends Service {
 //        @Override
 //        public void onFailure(IMqttToken arg0, Throwable arg1) {
 //            arg1.printStackTrace();
-//            Log.i(TAG, "连接失败 ");
+//            Timber.i(TAG, "连接失败 ");
 //            doClientConnection();//连接失败，重连（可关闭服务器进行模拟）
 //        }
 //    };
@@ -184,7 +184,7 @@ public class MyMqttService extends Service {
 //
 //        @Override
 //        public void messageArrived(String topic, MqttMessage message) throws Exception {
-//            Log.i(TAG, "收到消息： " + new String(message.getPayload()));
+//            Timber.i(TAG, "收到消息： " + new String(message.getPayload()));
 //            //收到消息，这里弹出Toast表示。如果需要更新UI，可以使用广播或者EventBus进行发送
 //            Toast.makeText(getApplicationContext(), "messageArrived: " + new String(message.getPayload()), Toast.LENGTH_LONG).show();
 //            //收到其他客户端的消息后，响应给对方告知消息已到达或者消息有问题等
@@ -198,7 +198,7 @@ public class MyMqttService extends Service {
 //
 //        @Override
 //        public void connectionLost(Throwable arg0) {
-//            Log.i(TAG, "连接断开 ");
+//            Timber.i(TAG, "连接断开 ");
 //            doClientConnection();//连接断开，重连
 //        }
 //    };

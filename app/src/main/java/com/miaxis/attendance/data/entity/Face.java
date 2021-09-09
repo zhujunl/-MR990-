@@ -1,5 +1,7 @@
 package com.miaxis.attendance.data.entity;
 
+import android.text.TextUtils;
+
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
@@ -17,7 +19,15 @@ public class Face {
     public long update_time;//修改时间
 
     public Face() {
-        this.create_time=System.currentTimeMillis();
+        this.create_time = System.currentTimeMillis();
+    }
+
+    public boolean isIllegal() {
+        return TextUtils.isEmpty(UserId) || FaceFeature == null || FaceFeature.length <= 0;
+    }
+
+    public static boolean isIllegal(Face face) {
+        return face == null || face.isIllegal();
     }
 
     @Override

@@ -2,7 +2,6 @@ package com.miaxis.attendance.ui.finger;
 
 import android.graphics.Bitmap;
 import android.os.SystemClock;
-import android.util.Log;
 
 import com.miaxis.attendance.App;
 import com.miaxis.attendance.data.entity.Finger;
@@ -17,7 +16,10 @@ import com.mx.finger.utils.RawBitmapUtils;
 
 import org.zz.api.MXResult;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+
+import timber.log.Timber;
 
 
 public class MR990FingerStrategy {
@@ -65,61 +67,88 @@ public class MR990FingerStrategy {
     }
 
     private boolean isCancel = false;
+    private boolean isWaite = false;
 
+    /**
+     * 待优化
+     */
     public void readFinger(ReadFingerCallBack readFingerCallBack) {
         this.isCancel = false;
         App.getInstance().threadExecutor.execute(() -> {
-            while (!this.isCancel && mxMscBigFingerApi != null) {
+            while (!this.isCancel && this.mxMscBigFingerApi != null) {
                 SystemClock.sleep(200);
-                if (!mxMscBigFingerApi.getDeviceInfo().isSuccess()) {
+                if (this.isWaite) {
+                    SystemClock.sleep(500);
                     continue;
                 }
-                Result<MxImage> result = mxMscBigFingerApi.getFingerImageBig(1000);
-                Log.e(TAG, "getFingerImageBig:" + result);
+                if (!this.mxMscBigFingerApi.getDeviceInfo().isSuccess()) {
+                    continue;
+                }
+                Result<MxImage> result = this.mxMscBigFingerApi.getFingerImageBig(1000);
+                Timber.e("getFingerImageBig:%s", result);
                 if (!this.isCancel && result.isSuccess()) {
                     MxImage image = result.data;
                     readFingerCallBack.onReadFinger(image);
                     if (!this.isCancel && image != null) {
                         byte[] feature = mxFingerAlg.extractFeature(image.data, image.width, image.height);
-                        Log.e(TAG, "extractFeature:" + (feature == null ? null : feature.length));
+                        Timber.e("extractFeature:%s", (feature == null ? null : feature.length));
                         readFingerCallBack.onExtractFeature(image, feature);
-                        List<Finger> fingerList = FingerModel.findAll();
-                        for (Finger finger : fingerList) {
-                            if (!this.isCancel && !ArrayUtils.isNullOrEmpty(finger.FingerFeature) && !ArrayUtils.isNullOrEmpty(feature)) {
+                        HashMap<String, Finger> all = FingerModel.findAll();
+                        for (Map.Entry<String, Finger> entry : all.entrySet()) {
+                            Finger finger = entry.getValue();
+                            if (!this.isCancel && !ArrayUtils.isNullOrEmpty(finger.FingerFeature) &&
+                                    !ArrayUtils.isNullOrEmpty(feature)) {
                                 int match = mxFingerAlg.match(finger.FingerFeature, feature, 3);
                                 if (!this.isCancel && match == 0) {
-                                    Log.e(TAG, "onFeatureMatch: " + finger);
-                                    readFingerCallBack.onFeatureMatch(image, feature, finger, RawBitmapUtils.raw2Bimap(image.data, image.width, image.height));
+                                    Timber.e("onFeatureMatch: %s", finger);
+                                    readFingerCallBack.onFeatureMatch(image, feature, finger,
+                                            RawBitmapUtils.raw2Bimap(image.data, image.width, image.height));
                                     break;
                                 }
                             }
                         }
-                        Log.e(TAG, "onFeatureMatch: end");
+                        Timber.e("onFeatureMatch: end");
                     }
                 }
             }
-
         });
     }
 
+    public void pause() {
+        this.isWaite = true;
+    }
+
+    public void resume() {
+        this.isWaite = false;
+    }
+
     public void stopRead() {
-        isCancel = true;
+        this.isCancel = true;
     }
 
     public void release() {
-        isCancel = true;
-        mxMscBigFingerApi = null;
-        mxFingerAlg = null;
+        this.isCancel = true;
+        this.mxMscBigFingerApi = null;
+        this.mxFingerAlg = null;
     }
 
     /**
      * 读取指纹回调
      */
     public interface ReadFingerCallBack {
+        /**
+         * 读到指纹
+         */
         void onReadFinger(MxImage finger);
 
+        /**
+         * 指纹特征提取成功
+         */
         void onExtractFeature(MxImage finger, byte[] feature);
 
+        /**
+         * 指纹特征比对成功
+         */
         void onFeatureMatch(MxImage image, byte[] feature, Finger finger, Bitmap bitmap);
 
     }

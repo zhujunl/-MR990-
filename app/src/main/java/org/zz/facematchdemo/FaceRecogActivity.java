@@ -49,7 +49,7 @@ public class FaceRecogActivity extends Activity  {
 //    public boolean onKeyDown(int keyCode, KeyEvent event) {
 //        // 按下键盘上返回按钮
 //        if (keyCode == KeyEvent.KEYCODE_BACK) {
-//           // Log.e(TAG, "onKeyDown KEYCODE_BACK");
+//           // Timber.e(TAG, "onKeyDown KEYCODE_BACK");
 //            finish();
 //            return true;
 //        } else {
@@ -61,7 +61,7 @@ public class FaceRecogActivity extends Activity  {
 //    {
 //        try {
 //            if (m_Camera != null) {
-//                Log.e(TAG, "openCamera -> closeCamera");
+//                Timber.e(TAG, "openCamera -> closeCamera");
 //                closeCamera();
 //            }
 //            m_Camera = Camera.open(iCamIndex);
@@ -82,7 +82,7 @@ public class FaceRecogActivity extends Activity  {
 //                return -2;
 //            }
 //        } catch (Exception e) {
-//            Log.w(TAG, "Open Camera Error ! ");
+//            Timber.w(TAG, "Open Camera Error ! ");
 //            return -1;
 //        }
 //        return 0;
@@ -103,30 +103,30 @@ public class FaceRecogActivity extends Activity  {
 //
 //    @Override
 //    public void surfaceCreated(SurfaceHolder holder) {
-//        Log.e(TAG, "surfaceCreated");
+//        Timber.e(TAG, "surfaceCreated");
 //        openCamera(m_iCamIndex);
 //    }
 //
 //    @Override
 //    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-//        Log.e(TAG, "surfaceChanged");
+//        Timber.e(TAG, "surfaceChanged");
 //    }
 //
 //    @Override
 //    public void surfaceDestroyed(SurfaceHolder holder) {
-//        Log.e("MIAXIS", "surfaceDestroyed");
+//        Timber.e("MIAXIS", "surfaceDestroyed");
 //        closeCamera();
 //    }
 //
 //    @Override
 //    public void onPreviewFrame(byte[] data, Camera camera) {
-//       // Log.e(TAG, "onPreviewFrame");
-//        //Log.e(TAG,"mDisplayOrientation="+mDisplayOrientation);
+//       // Timber.e(TAG, "onPreviewFrame");
+//        //Timber.e(TAG,"mDisplayOrientation="+mDisplayOrientation);
 //
 //        //检测人脸信息读写标识
 //        if (CommData.getFaceInfoRW() == true)
 //        {
-//            Log.e(TAG,"人脸信息读写中");
+//            Timber.e(TAG,"人脸信息读写中");
 //            return;
 //        }
 //        //数据格式转换
@@ -185,7 +185,7 @@ public class FaceRecogActivity extends Activity  {
 //                nRet = m_faceAlgApi.mxSearchAllFace(DataManager.m_pFaceFeaList, DataManager.m_pFaceFeaMaskList, DataManager.m_iPersonNum,
 //                        Config.matchThreshold, Config.maskMatchThreshold, Config.qualityThreshold,
 //                        pRGBImage, iRGBWidth, iRGBHeight, pFaceNum[0],pFaceInfo);
-//                Log.e(TAG, "mxSearchAllFace,nRet：" +nRet);
+//                Timber.e(TAG, "mxSearchAllFace,nRet：" +nRet);
 //            }
 //            //标注检测结果
 //            for (int i=0;i<pFaceNum[0];i++) {
@@ -200,7 +200,7 @@ public class FaceRecogActivity extends Activity  {
 //                    m_imgTool.DrawRect(pRGBImage, iRGBWidth, iRGBHeight, iRect, 1);
 //                    Date date = new Date(System.currentTimeMillis());
 //                    String strUserId = DataManager.m_strUserIdList.get(pFaceInfo[i].reCogId);
-//                    Log.e(TAG, "搜索到：" + strUserId + "，得分：" + pFaceInfo[i].reCogScore);
+//                    Timber.e(TAG, "搜索到：" + strUserId + "，得分：" + pFaceInfo[i].reCogScore);
 //                    m_imgTool.DrawText(pRGBImage, iRGBWidth, iRGBHeight, iRect[0]+10, iRect[1]+30,strUserId,1);
 //                }else{
 //                    m_imgTool.DrawRect(pRGBImage, iRGBWidth, iRGBHeight,iRect,0);

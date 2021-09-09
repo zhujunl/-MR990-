@@ -1423,9 +1423,9 @@ public abstract class NanoHTTPD {
                 }
                 //byte[] send = new byte[read];
                 //System.arraycopy(buff, 0, send, 0, read);
-                //Log.e(TAG, "sendBody   send:" + new String(send));
-                //Log.e(TAG, "sendBody   send:" + ByteUtils.bytes2hex(send));
-                //Log.e(TAG, "sendBody   send:" + Arrays.toString(send));
+                //Timber.e(TAG, "sendBody   send:" + new String(send));
+                //Timber.e(TAG, "sendBody   send:" + ByteUtils.bytes2hex(send));
+                //Timber.e(TAG, "sendBody   send:" + Arrays.toString(send));
                 outputStream.write(buff, 0, read);
                 outputStream.flush();
                 if (sendEverything) {

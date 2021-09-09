@@ -12,6 +12,8 @@ import com.miaxis.attendance.service.transform.PersonTransform;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import timber.log.Timber;
+
 
 /**
  * @author Tank
@@ -42,6 +44,7 @@ public class UserProcess {
         @Override
         public MxResponse<?> onPostProcess(Map<String, String> param) throws Exception {
             User user = HttpServer.Gson.fromJson(HttpServer.Gson.toJson(param), User.class);
+            Timber.e("AddUser:%s", user);
             if (user == null || user.isIllegal()) {
                 return MxResponse.CreateFail(MxResponseCode.CODE_ILLEGAL_PARAMETER, "param error");
             }
@@ -58,6 +61,7 @@ public class UserProcess {
         @Override
         protected MxResponse<?> onPostProcess(Map<String, String> param) throws Exception {
             User user = HttpServer.Gson.fromJson(HttpServer.Gson.toJson(param), User.class);
+            Timber.e("UpdateUser:%s", user);
             if (user == null || user.isIllegal()) {
                 return MxResponse.CreateFail(MxResponseCode.CODE_ILLEGAL_PARAMETER, "param error");
             }

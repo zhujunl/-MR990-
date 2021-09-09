@@ -44,7 +44,7 @@ public class DataManager {
 //        List<String> strSubPathList = new ArrayList<String>();
 //        FileDataUtils.GetSubFolders(Config.TzDbPath, strSubPathList);
 //        int nPersonNum = strSubPathList.size();
-//        //Log.e(tag,"nPersonNum = "+ nPersonNum);
+//        //Timber.e(tag,"nPersonNum = "+ nPersonNum);
 //        if (nPersonNum <= 0) {
 //            return 0;
 //        }
@@ -57,22 +57,22 @@ public class DataManager {
 //        for (int i = 0; i < nPersonNum; i++) {
 //            String strSubPath = strSubPathList.get(i);
 //            String strUserId = strSubPath.substring(Config.TzDbPath.length());
-//            //Log.e(tag,strSubPath);
-//            //Log.e(tag,"====UserId:"+strUserId);
+//            //Timber.e(tag,strSubPath);
+//            //Timber.e(tag,"====UserId:"+strUserId);
 //            List<String> strTzFileList = new ArrayList<String>();
 //            FileDataUtils.GetSubFiles(strSubPath, strTzFileList);
 //            int nTzNum = strTzFileList.size();
-//            //Log.e(tag,"nImageNum = "+ nImageNum);
+//            //Timber.e(tag,"nImageNum = "+ nImageNum);
 //            int iPerTzNum = 0;
 //            for (int j = 0; j < nTzNum; j++) {
 //                String strTzFile = strTzFileList.get(j);
 //                String strTzName = strTzFile.substring(strSubPath.length() + 1);
-//                Log.e(tag, "=======FeaturePath:" + strTzFile);
-//                //Log.e(tag,"====TzName:"+strTzName);
+//                Timber.e(tag, "=======FeaturePath:" + strTzFile);
+//                //Timber.e(tag,"====TzName:"+strTzName);
 //                //读取特征
 //                byte[] pFeatureData = FileDataUtils.ReadData(strTzFile);
 //                if (iFeatureSize != pFeatureData.length) {
-//                    Log.e(tag, strTzFile + ",特征文件大小不合法,length=" + pFeatureData.length);
+//                    Timber.e(tag, strTzFile + ",特征文件大小不合法,length=" + pFeatureData.length);
 //                    continue;
 //                }
 //                //保存数据
@@ -80,11 +80,11 @@ public class DataManager {
 //
 //                //读取特征(戴口罩)
 //                String strMaskFeaturePath = Config.TzMaskDbPath + strUserId + "/" + strTzName;
-//                //Log.e(tag,"====TzName:"+strTzName);
-//                Log.e(tag, "=======MaskFeaturePath:" + strMaskFeaturePath);
+//                //Timber.e(tag,"====TzName:"+strTzName);
+//                Timber.e(tag, "=======MaskFeaturePath:" + strMaskFeaturePath);
 //                byte[] pMaskFeatureData = FileDataUtils.ReadData(strMaskFeaturePath);
 //                if (iFeatureSize != pMaskFeatureData.length) {
-//                    Log.e(tag, strTzFile + ",特征文件大小不合法,length=" + pMaskFeatureData.length);
+//                    Timber.e(tag, strTzFile + ",特征文件大小不合法,length=" + pMaskFeatureData.length);
 //                    continue;
 //                }
 //                //保存数据(戴口罩)
@@ -99,11 +99,11 @@ public class DataManager {
 //            if (iPerTzNum > 0) {
 //                //String strUserId = strSubPath.substring(Config.TzDbPath.length());
 //                m_strUserIdList.add(strUserId);
-//                //Log.e(tag,"strUserId="+strUserId);
-//                Log.e(tag, strUserId + ",特征个数=" + iPerTzNum);
+//                //Timber.e(tag,"strUserId="+strUserId);
+//                Timber.e(tag, strUserId + ",特征个数=" + iPerTzNum);
 //            }
 //        }
-//        Log.e(tag, "库中总人数=" + m_iPersonNum);
+//        Timber.e(tag, "库中总人数=" + m_iPersonNum);
 //        return m_iPersonNum;
 //    }
 //
@@ -119,7 +119,7 @@ public class DataManager {
 //    }
 //
 //    public static int ImgDb2TzDb() {
-//        Log.e(tag, "=========ImgDb2TzDb========");
+//        Timber.e(tag, "=========ImgDb2TzDb========");
 //        int nRet = 0;
 //        int[] iWidth = new int[1];
 //        int[] iHeight = new int[1];
@@ -138,30 +138,30 @@ public class DataManager {
 //        List<String> strSubPathList = new ArrayList<String>();
 //        FileDataUtils.GetSubFolders(Config.ImgDbPath, strSubPathList);
 //        int nPersonNum = strSubPathList.size();
-//        Log.e(tag, "nPersonNum = " + nPersonNum);
+//        Timber.e(tag, "nPersonNum = " + nPersonNum);
 //        if (nPersonNum <= 0) {
 //            return 0;
 //        }
 //        for (int i = 0; i < nPersonNum; i++) {
 //            float percent = (float) (i + 1) / nPersonNum * 100;
-//            Log.e(tag, "完成 [" + (int) percent + "%]");
+//            Timber.e(tag, "完成 [" + (int) percent + "%]");
 //            String strSubPath = strSubPathList.get(i);
 //            String strUserId = strSubPath.substring(Config.ImgDbPath.length());
-//            Log.e(tag, "strSubPath=" + strSubPath);
-//            Log.e(tag, "strUserId=" + strUserId);
+//            Timber.e(tag, "strSubPath=" + strSubPath);
+//            Timber.e(tag, "strUserId=" + strUserId);
 //            List<String> strImageFileList = new ArrayList<String>();
 //            FileDataUtils.GetSubFiles(strSubPath, strImageFileList);
 //            int nImageNum = strImageFileList.size();
-//            //Log.e(tag,"nImageNum = "+ nImageNum);
+//            //Timber.e(tag,"nImageNum = "+ nImageNum);
 //            for (int j = 0; j < nImageNum; j++) {
 //                String strImageFile = strImageFileList.get(j);
 //                String strImageName = strImageFile.substring(strSubPath.length() + 1);
-//                Log.e(tag, "strImageFile=" + strImageFile);
-//                Log.e(tag, "strImageName=" + strImageName);
+//                Timber.e(tag, "strImageFile=" + strImageFile);
+//                Timber.e(tag, "strImageName=" + strImageName);
 //                //读取图像
 //                nRet = m_imgTool.ImageLoad(strImageFile, 3, null, iWidth, iHeight);
 //                if (nRet != 1) {
-//                    Log.e(tag, strImageFile + ",读取失败,nRet=" + nRet);
+//                    Timber.e(tag, strImageFile + ",读取失败,nRet=" + nRet);
 //                    continue;
 //                }
 //                pImgBuf = new byte[iWidth[0] * iHeight[0] * 3];
@@ -169,24 +169,24 @@ public class DataManager {
 //                //人脸检测
 //                nRet = m_faceAlgApi.mxDetectFace(pImgBuf, iWidth[0], iHeight[0], pFaceNum, pFaceInfo);
 //                if (nRet != 0) {
-//                    Log.e(tag, strImageFile + ",人脸检测失败,nRet=" + nRet);
+//                    Timber.e(tag, strImageFile + ",人脸检测失败,nRet=" + nRet);
 //                    continue;
 //                }
 //                if (pFaceNum[0] != 1) {
-//                    Log.e(tag, strImageFile + ",人脸个数不合法，FaceNum=" + pFaceNum[0]);
+//                    Timber.e(tag, strImageFile + ",人脸个数不合法，FaceNum=" + pFaceNum[0]);
 //                    continue;
 //                }
 //                //质量评价
 //                //                AlgEngine.m_faceAlgApi.mxFaceQuality4Reg(pImgBuf, iWidth[0], iHeight[0],pFaceNum[0],pFaceInfo);
 //                //                if (pFaceInfo[0].quality<Config.quality4RegThreshold) { //
-//                //                    Log.e(tag,strImageFile+",注册" +
+//                //                    Timber.e(tag,strImageFile+",注册" +
 //                //                            "人脸质量分数过低，quality="+pFaceInfo[0].quality);
 //                //                    continue;
 //                //                }
 //                //提取特征
 //                nRet = m_faceAlgApi.mxFeatureExtract(pImgBuf, iWidth[0], iHeight[0], pFaceNum[0], pFaceInfo, pFeatureData);
 //                if (nRet != 0) {
-//                    Log.e(tag, strImageFile + ",提取特征失败,nRet=" + nRet);
+//                    Timber.e(tag, strImageFile + ",提取特征失败,nRet=" + nRet);
 //                    continue;
 //                }
 //                //保存特征
@@ -199,7 +199,7 @@ public class DataManager {
 //                //提取特征（戴口罩）
 //                nRet = m_faceAlgApi.mxMaskFeatureExtract4Reg(pImgBuf, iWidth[0], iHeight[0], pFaceNum[0], pFaceInfo, pMaskFeatureData);
 //                if (nRet != 0) {
-//                    Log.e(tag, strImageFile + ",提取特征（戴口罩）失败,nRet=" + nRet);
+//                    Timber.e(tag, strImageFile + ",提取特征（戴口罩）失败,nRet=" + nRet);
 //                    continue;
 //                }
 //                //保存特征（戴口罩）
@@ -210,7 +210,7 @@ public class DataManager {
 //                FileDataUtils.saveData(strSaveFile, pMaskFeatureData);
 //            }
 //        }
-//        Log.e(tag, "=================================");
+//        Timber.e(tag, "=================================");
 //        return 0;
 //    }
 //
@@ -275,7 +275,7 @@ public class DataManager {
 //
 //        //注册人脸图像质量评价
 //        m_faceAlgApi.mxFaceQuality4Reg(pRGBBuff, iWidth, iHeight, pFaceNum[0], pFaceInfo);
-//        Log.e("miaxis", "pFaceInfo[0].quality=" + pFaceInfo[0].quality);
+//        Timber.e("miaxis", "pFaceInfo[0].quality=" + pFaceInfo[0].quality);
 //        if (pFaceInfo[0].quality < Config.quality4RegThreshold) {
 //            return MXErrorCode.ERR_FACE_QUALITY;
 //        }

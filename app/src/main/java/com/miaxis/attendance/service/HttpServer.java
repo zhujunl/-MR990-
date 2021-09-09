@@ -1,7 +1,6 @@
 package com.miaxis.attendance.service;
 
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.google.gson.Gson;
 import com.miaxis.attendance.service.process.AttendanceProcess;
@@ -12,6 +11,8 @@ import com.miaxis.attendance.service.process.UserProcess;
 import com.miaxis.attendance.service.process.base.BaseProcess;
 
 import org.nanohttpd.NanoHTTPD;
+
+import timber.log.Timber;
 
 
 /**
@@ -35,12 +36,18 @@ public class HttpServer extends NanoHTTPD {
     @Override
     public Response serve(IHTTPSession session) {
         if (session != null) {
+            //Map<String, String> headers = session.getHeaders();
+            //Timber.e("headers: %s", HttpServer.Gson.toJson(headers));
+            //String token = headers.get("Token");
+            //Timber.e("Token: %s", token);
+            //String user_agent = headers.get("user_agent");
             BaseProcess process = getProcess(session);
             if (process != null) {
                 try {
                     return process.process(session);
                 } catch (Exception e) {
                     e.printStackTrace();
+                    Timber.e("Exception:%s", e.getMessage());
                     return NanoHTTPD.newFixedLengthResponse(
                             Response.Status.INTERNAL_ERROR, NanoHTTPD.MIME_PLAINTEXT, "" + e.getMessage());
                 }
@@ -58,7 +65,7 @@ public class HttpServer extends NanoHTTPD {
             return null;
         }
         String uri = session.getUri();
-        Log.e(TAG, "serve: uri:" + uri);
+        Timber.e("serve: uri:%s", uri);
         if (TextUtils.isEmpty(uri)) {
             return null;
         }

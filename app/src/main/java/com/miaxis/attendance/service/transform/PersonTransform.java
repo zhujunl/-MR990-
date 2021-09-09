@@ -79,29 +79,32 @@ public class PersonTransform {
             return MxResponse.CreateFail(MxResponseCode.Code_Illegal_Image_Face, MxResponseCode.Msg_Illegal_Image_Face);
         }
         List<String> fingerList = new ArrayList<>();
-        for (User.Finger finger : user.url_fingers) {
-            String fingerPath = AppConfig.Path_FingerImage + "finger_" + user.id + "_" + finger.position + "_" + RANDOM.nextLong() + ".jpeg";
-            ZZResponse<?> downloadFinger = new DownloadClient()
-                    .bindDownloadInfo(finger.url, fingerPath)
-                    .bindDownloadTimeOut(3 * 1000, 3 * 1000)
-                    .download();
-            if (!ZZResponse.isSuccess(downloadFinger)) {
-                FileUtils.delete(facePath);
-                FileUtils.delete(fingerList);
-                return MxResponse.CreateFail(MxResponseCode.Code_Illegal_Image_Finger, downloadFinger.getMsg());
-            } else {
-                BitmapFactory.Options fingerOptions = new BitmapFactory.Options();
-                fingerOptions.inJustDecodeBounds = true;
-                BitmapFactory.decodeFile(fingerPath, fingerOptions);
-                if (fingerOptions.outWidth <= 0 || fingerOptions.outHeight <= 0) {
+        if (user.url_fingers != null) {
+            for (User.Finger finger : user.url_fingers) {
+                String fingerPath = AppConfig.Path_FingerImage + "finger_" + user.id + "_" + finger.position + "_" + RANDOM.nextLong() + ".jpeg";
+                ZZResponse<?> downloadFinger = new DownloadClient()
+                        .bindDownloadInfo(finger.url, fingerPath)
+                        .bindDownloadTimeOut(3 * 1000, 3 * 1000)
+                        .download();
+                if (!ZZResponse.isSuccess(downloadFinger)) {
                     FileUtils.delete(facePath);
                     FileUtils.delete(fingerList);
-                    return MxResponse.CreateFail(MxResponseCode.Code_Illegal_Image_Finger, MxResponseCode.Msg_Illegal_Image_Finger);
+                    return MxResponse.CreateFail(MxResponseCode.Code_Illegal_Image_Finger, downloadFinger.getMsg());
                 } else {
-                    fingerList.add(fingerPath);
+                    BitmapFactory.Options fingerOptions = new BitmapFactory.Options();
+                    fingerOptions.inJustDecodeBounds = true;
+                    BitmapFactory.decodeFile(fingerPath, fingerOptions);
+                    if (fingerOptions.outWidth <= 0 || fingerOptions.outHeight <= 0) {
+                        FileUtils.delete(facePath);
+                        FileUtils.delete(fingerList);
+                        return MxResponse.CreateFail(MxResponseCode.Code_Illegal_Image_Finger, MxResponseCode.Msg_Illegal_Image_Finger);
+                    } else {
+                        fingerList.add(fingerPath);
+                    }
                 }
             }
         }
+
         MxResponse<byte[]> featureExtract = doFaceProcess(facePath);
         if (!MxResponse.isSuccess(featureExtract)) {
             FileUtils.delete(facePath);

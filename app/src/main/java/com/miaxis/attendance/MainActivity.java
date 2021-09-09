@@ -18,7 +18,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 public class MainActivity extends BaseBindingFragmentActivity<ActivityMainBinding> {
 
-    private MainViewModel mainViewModel;
+    private MainViewModel mMainViewModel;
 
     @Override
     protected int initLayout() {
@@ -28,7 +28,7 @@ public class MainActivity extends BaseBindingFragmentActivity<ActivityMainBindin
     @Override
     protected void initView(@NonNull ActivityMainBinding binding, @Nullable Bundle savedInstanceState) {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
+        mMainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
         String[] permissions = {
                 Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
@@ -38,18 +38,18 @@ public class MainActivity extends BaseBindingFragmentActivity<ActivityMainBindin
         replace(R.id.container, PermissionFragment.newInstance(permissions));
         //TODO: 2021/8/31 测试
         //replace(R.id.container, AdvertisingFragment.newInstance());
-        mainViewModel.showAdvertising.observe(this, aBoolean -> {
+        mMainViewModel.isIdle.observe(this, aBoolean -> {
             if (aBoolean) {
                 replace(R.id.container, AdvertisingFragment.newInstance());
             }
         });
 
-        mainViewModel.startService.observe(this, aBoolean -> {
+        mMainViewModel.startService.observe(this, aBoolean -> {
             if (aBoolean) {
-                mainViewModel.startHttpServer(AppConfig.Server_Port);
+                mMainViewModel.startHttpServer(AppConfig.Server_Port);
             }
         });
-        mainViewModel.httpServerStatus.observe(this, integer -> {
+        mMainViewModel.httpServerStatus.observe(this, integer -> {
             switch (integer) {
                 case 1:
                     Toast.makeText(MainActivity.this, "服务已启动", Toast.LENGTH_SHORT).show();
@@ -66,9 +66,9 @@ public class MainActivity extends BaseBindingFragmentActivity<ActivityMainBindin
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (mainViewModel != null) {
-            mainViewModel.stopHttpServer();
-            mainViewModel.destroy();
+        if (mMainViewModel != null) {
+            mMainViewModel.stopHttpServer();
+            mMainViewModel.destroy();
         }
         CameraHelper.getInstance().free();
     }

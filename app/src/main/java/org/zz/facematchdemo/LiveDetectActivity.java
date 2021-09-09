@@ -61,7 +61,7 @@ public class LiveDetectActivity extends Activity{
 //        m_infraredSurfaceHolder.addCallback(new SurfaceHolder.Callback() {
 //            @Override
 //            public void surfaceCreated(SurfaceHolder surfaceHolder) {
-//                Log.e(TAG, "infrared surfaceCreated");
+//                Timber.e(TAG, "infrared surfaceCreated");
 //                openInfraredCamera();
 //            }
 //
@@ -72,7 +72,7 @@ public class LiveDetectActivity extends Activity{
 //
 //            @Override
 //            public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
-//                Log.e(TAG, "infrared surfaceDestroyed");
+//                Timber.e(TAG, "infrared surfaceDestroyed");
 //                m_bProcessImage = false;
 //                MySleep(100);
 //                closeInfraredCamera();
@@ -85,7 +85,7 @@ public class LiveDetectActivity extends Activity{
 //
 //            @Override
 //            public void surfaceCreated(SurfaceHolder surfaceHolder) {
-//                Log.e(TAG, "visible surfaceCreated");
+//                Timber.e(TAG, "visible surfaceCreated");
 //                openVisibleCamera();
 //            }
 //
@@ -96,7 +96,7 @@ public class LiveDetectActivity extends Activity{
 //
 //            @Override
 //            public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
-//                Log.e(TAG, "visible surfaceDestroyed");
+//                Timber.e(TAG, "visible surfaceDestroyed");
 //                m_bProcessImage = false;
 //                MySleep(100);
 //                closeVisibleCamera();
@@ -134,7 +134,7 @@ public class LiveDetectActivity extends Activity{
 //    public boolean onKeyDown(int keyCode, KeyEvent event) {
 //        // 按下键盘上返回按钮
 //        if (keyCode == KeyEvent.KEYCODE_BACK) {
-//            Log.e(TAG, "onKeyDown KEYCODE_BACK");
+//            Timber.e(TAG, "onKeyDown KEYCODE_BACK");
 //            finish();
 //            return true;
 //        } else {
@@ -146,7 +146,7 @@ public class LiveDetectActivity extends Activity{
 //    {
 //        try {
 //            if (m_infraredCamera != null) {
-//                Log.e(TAG, "openInfraredCamera -> closeInfraredCamera");
+//                Timber.e(TAG, "openInfraredCamera -> closeInfraredCamera");
 //                closeInfraredCamera();
 //            }
 //            m_infraredCamera = Camera.open(m_infraredCamIndex);
@@ -167,7 +167,7 @@ public class LiveDetectActivity extends Activity{
 //                return -2;
 //            }
 //        } catch (Exception e) {
-//            Log.w(TAG, "Open Camera Error ! ");
+//            Timber.w(TAG, "Open Camera Error ! ");
 //            return -1;
 //        }
 //        return 0;
@@ -190,7 +190,7 @@ public class LiveDetectActivity extends Activity{
 //    {
 //        try {
 //            if (m_visibleCamera != null) {
-//                Log.e(TAG, "openVisibleCamera -> closeVisibleCamera");
+//                Timber.e(TAG, "openVisibleCamera -> closeVisibleCamera");
 //                closeVisibleCamera();;
 //            }
 //            m_visibleCamera = Camera.open(m_visibleCamIndex);
@@ -211,7 +211,7 @@ public class LiveDetectActivity extends Activity{
 //                return -2;
 //            }
 //        } catch (Exception e) {
-//            Log.w(TAG, "Open Camera Error ! ");
+//            Timber.w(TAG, "Open Camera Error ! ");
 //            return -1;
 //        }
 //        return 0;
@@ -231,12 +231,12 @@ public class LiveDetectActivity extends Activity{
 //    }
 //
 //    private Camera.PreviewCallback infraredPreviewCallback = (data, camera) -> {
-//        //Log.e(TAG, "infraredPreviewCallback");
+//        //Timber.e(TAG, "infraredPreviewCallback");
 //        this.m_infraredData = data;
 //    };
 //
 //    private Camera.PreviewCallback visiblePreviewCallback = (data, camera) -> {
-//        //Log.e(TAG, "visiblePreviewCallback");
+//        //Timber.e(TAG, "visiblePreviewCallback");
 //        this.m_visibleData = data;
 //    };
 //
@@ -244,7 +244,7 @@ public class LiveDetectActivity extends Activity{
 //        //检测人脸信息读写标识
 //        if (CommData.getFaceInfoRW() == true)
 //        {
-//            Log.e(TAG,"人脸信息读写中");
+//            Timber.e(TAG,"人脸信息读写中");
 //            return;
 //        }
 //        CommData.setCamerasRW(true);

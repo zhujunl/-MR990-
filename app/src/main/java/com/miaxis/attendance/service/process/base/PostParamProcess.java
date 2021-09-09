@@ -1,14 +1,14 @@
 package com.miaxis.attendance.service.process.base;
 
 
-import android.util.Log;
-
 import com.miaxis.attendance.service.HttpServer;
 import com.miaxis.attendance.service.MxResponse;
 
 import org.nanohttpd.NanoHTTPD;
 
 import java.util.Map;
+
+import timber.log.Timber;
 
 /**
  * @author Tank
@@ -22,7 +22,7 @@ public abstract class PostParamProcess extends BasePostProcess {
     @Override
     public MxResponse<?> onProcess(NanoHTTPD.IHTTPSession session) throws Exception {
         Map<String, String> parms = session.getParms();
-        Log.e(TAG, "parameter: " + HttpServer.Gson.toJson(parms));
+        Timber.e( "parameter: " + HttpServer.Gson.toJson(parms));
         return onPostParamProcess(parms);
     }
 

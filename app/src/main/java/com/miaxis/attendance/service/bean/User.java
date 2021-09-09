@@ -14,7 +14,7 @@ import java.util.List;
 public class User {
 
     public long id;
-    public boolean ia_admin;//是否是管理员 0-否 1-是
+    //public boolean ia_admin;//是否是管理员 0-否 1-是
     public String name;//姓名（唯一，汉字）
     public String id_number;//身份证号
     public String job_no;//工号（唯一，大小写字母和数字）
@@ -22,8 +22,8 @@ public class User {
     public String url_face;//人脸底图(图片URL)
     public List<User.Finger> url_fingers;//指纹底图(图片URL)
     public String is_delete;//是否删除 0-否 1-是
-    public String create_time;//创建时间
-    public String update_time;//修改时间
+    //public String create_time;//创建时间
+    //public String update_time;//修改时间
 
     public User() {
     }
@@ -39,7 +39,7 @@ public class User {
     public String toString() {
         return "User{" +
                 "id=" + id +
-                ", ia_admin=" + ia_admin +
+                //", ia_admin=" + ia_admin +
                 ", name='" + name + '\'' +
                 ", id_number='" + id_number + '\'' +
                 ", job_no='" + job_no + '\'' +
@@ -47,14 +47,13 @@ public class User {
                 ", url_face=" + url_face +
                 ", url_fingers=" + url_fingers +
                 ", is_delete='" + is_delete + '\'' +
-                ", create_time='" + create_time + '\'' +
-                ", update_time='" + update_time + '\'' +
+                //", create_time='" + create_time + '\'' +
+                //", update_time='" + update_time + '\'' +
                 '}';
     }
 
     public static class Finger {
 
-        public long userId;
         public int position;
         public String url;
 
@@ -62,8 +61,7 @@ public class User {
         }
 
         public boolean isIllegal() {
-            return this.userId <= 0 ||
-                    this.position < 0 ||
+            return this.position < 0 ||
                     this.position > 9 ||
                     StringUtils.isNullOrEmpty(this.url);
         }
@@ -71,7 +69,6 @@ public class User {
         @Override
         public String toString() {
             return "Finger{" +
-                    "userId=" + userId +
                     ", position=" + position +
                     ", url='" + url + '\'' +
                     '}';

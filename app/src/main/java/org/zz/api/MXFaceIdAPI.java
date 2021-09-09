@@ -17,8 +17,8 @@ public class MXFaceIdAPI {
     private static final String TAG = "MXFaceIdAPI";
     private boolean m_bInit = false;
     private final JustouchFaceApi mJustouchFaceApi = new JustouchFaceApi();
-    private int[] FaceData;
-    private MXFaceInfoEx[] FaceInfo;
+    private int[] FaceData_Rgb;
+    private MXFaceInfoEx[] FaceInfo_Rgb;
 
     private int[] FaceData_Nir;
     private MXFaceInfoEx[] FaceInfo_Nir;
@@ -49,7 +49,7 @@ public class MXFaceIdAPI {
      * @category algorithm version
      */
     public MXResult<String> mxAlgVersion() {
-        return MXResult.CreateSuccess(mJustouchFaceApi.getAlgVersion());
+        return MXResult.CreateSuccess(this.mJustouchFaceApi.getAlgVersion());
     }
 
     /**
@@ -65,10 +65,10 @@ public class MXFaceIdAPI {
         if (nRet != 0) {
             return MXResult.CreateFail(nRet, null);
         }
-        this.FaceData = new int[MXFaceInfoEx.SIZE * MXFaceInfoEx.iMaxFaceNum];
-        this.FaceInfo = new MXFaceInfoEx[MXFaceInfoEx.iMaxFaceNum];
+        this.FaceData_Rgb = new int[MXFaceInfoEx.SIZE * MXFaceInfoEx.iMaxFaceNum];
+        this.FaceInfo_Rgb = new MXFaceInfoEx[MXFaceInfoEx.iMaxFaceNum];
         for (int i = 0; i < MXFaceInfoEx.iMaxFaceNum; i++) {
-            this.FaceInfo[i] = new MXFaceInfoEx();
+            this.FaceInfo_Rgb[i] = new MXFaceInfoEx();
         }
         this.FaceData_Nir = new int[MXFaceInfoEx.SIZE * MXFaceInfoEx.iMaxFaceNum];
         this.FaceInfo_Nir = new MXFaceInfoEx[MXFaceInfoEx.iMaxFaceNum];
@@ -106,8 +106,8 @@ public class MXFaceIdAPI {
         if (this.m_bInit) {
             this.mJustouchFaceApi.freeAlg();
         }
-        this.FaceData = null;
-        this.FaceInfo = null;
+        this.FaceData_Rgb = null;
+        this.FaceInfo_Rgb = null;
         this.FaceData_Nir = null;
         this.FaceInfo_Nir = null;
         this.m_bInit = false;
@@ -132,17 +132,17 @@ public class MXFaceIdAPI {
             return MXResult.CreateFail(parameter);
         }
         int[] pFaceNum = new int[1];
-        int nRet = this.mJustouchFaceApi.detectFace(pImage, nWidth, nHeight, pFaceNum, this.FaceData);
+        int nRet = this.mJustouchFaceApi.detectFace(pImage, nWidth, nHeight, pFaceNum, this.FaceData_Rgb);
         if (nRet != 0) {
             pFaceNum[0] = 0;
             return MXResult.CreateFail(nRet, "人脸检测失败");
         }
-        MXFaceInfoEx.Ints2MXFaceInfoExs(pFaceNum[0], this.FaceData, this.FaceInfo);
+        MXFaceInfoEx.Ints2MXFaceInfoExs(pFaceNum[0], this.FaceData_Rgb, this.FaceInfo_Rgb);
         List<MXFace> infoList = new ArrayList<>();
         for (int i = 0; i < pFaceNum[0]; i++) {
             int[] info = new int[MXFaceInfoEx.SIZE];
-            System.arraycopy(this.FaceData, MXFaceInfoEx.SIZE * i, info, 0, MXFaceInfoEx.SIZE);
-            infoList.add(new MXFace(info, this.FaceInfo[i]));
+            System.arraycopy(this.FaceData_Rgb, MXFaceInfoEx.SIZE * i, info, 0, MXFaceInfoEx.SIZE);
+            infoList.add(new MXFace(info, this.FaceInfo_Rgb[i]));
         }
         return MXResult.CreateSuccess(infoList);
     }
@@ -272,6 +272,37 @@ public class MXFaceIdAPI {
         }
         MXFaceInfoEx.Int2MXFaceInfoEx(mxFace.getFaceData(), mxFace.getFaceInfo());
         return MXResult.CreateSuccess(mxFace.getFaceInfo().liveness);
+    }
+
+    /**
+     * @return 10000-活体，10001-假体，其他-图像质量不满足
+     * @author chen.gs
+     * @category 双目摄像头活体检测
+     * @paramp pRgbImage        - 输入，可见光摄像头的图像数据
+     * pNirImage		- 输入，近红外摄像头的图像数据
+     * ImgWidth		- 输入，图像宽度
+     * nImgHeight		- 输入，图像高度
+     * pRgbFaceNum		- 输出，可见光摄像头图像的人脸检出数
+     * pRgbFaceInfo	- 输出，可见光摄像头图像的人脸信息
+     * pNirFaceNum		- 输出，近红外摄像头图像的人脸检出数
+     * pNirFaceInfo	- 输出，近红外摄像头图像的人脸信息
+     */
+    public MXResult<List<MXFace>> detectLive(byte[] pRgbImage, int nImgWidth, int nImgHeight, byte[] pNirImage) {
+        if (!this.m_bInit) {
+            return MXResult.CreateFail(MXErrorCode.ERR_NO_INIT, "未初始化");
+        }
+        MXResult<?> parameter = checkParameter(pRgbImage, nImgWidth, nImgHeight);
+        if (!MXResult.isSuccess(parameter)) {
+            return MXResult.CreateFail(parameter);
+        }
+        parameter = checkParameter(pNirImage, nImgWidth, nImgHeight);
+        if (!MXResult.isSuccess(parameter)) {
+            return MXResult.CreateFail(parameter);
+        }
+        int[] faceNumber_rgb = new int[1];
+        int[] faceNumber_nir = new int[1];
+        int nRet = this.mJustouchFaceApi.detectLive(pRgbImage, pNirImage, nImgWidth, nImgHeight, faceNumber_rgb, this.FaceData_Rgb, faceNumber_nir, this.FaceData_Rgb);
+        return liveResultFormat(nRet, faceNumber_rgb, faceNumber_nir);
     }
 
     public MXResult<?> mxRGBLiveDetect(byte[] pImage, int nWidth, int nHeight, MXFace mxFace) {
@@ -446,6 +477,75 @@ public class MXFaceIdAPI {
             return MXResult.CreateFail(MXErrorCode.ERR_IMAGE_SIZE_ILLEGAL, "图像尺寸不合法");
         }
         return MXResult.CreateSuccess();
+    }
+
+
+    /**
+     * 活体检测返回值格式化
+     */
+    private MXResult<List<MXFace>> liveResultFormat(int result, int[] faceNumber_rgb, int[] faceNumber_nir) {
+        if (ArrayUtils.isNullOrEmpty(faceNumber_rgb) || ArrayUtils.isNullOrEmpty(faceNumber_nir)) {
+            return MXResult.CreateFail(-1, "参数错误");
+        }
+        //活体检测返回值
+        //public static final int ERR_FACE_LIV_IS_LIVE = 10000;    //活体
+        //public static final int ERR_FACE_LIV_IS_UNLIVE = 10001;    //非活体
+        //public static final int ERR_FACE_LIV_VIS_NO_FACE = 10002;    //可见光输入没有人脸
+        //public static final int ERR_FACE_LIV_NIS_NO_FACE = 10003;    //近红外输入没有人脸
+        //public static final int ERR_FACE_LIV_SKIN_FAILED = 10004;    //人脸肤色检测未通过
+        //public static final int ERR_FACE_LIV_DIST_TOO_CLOSE = 10005;    //请离远一点
+        //public static final int ERR_FACE_LIV_DIST_TOO_FAR = 10006;    //请离近一点
+        //public static final int ERR_FACE_LIV_POSE_DET_FAIL = 10007;    //请正对摄像头
+        //public static final int ERR_FACE_LIV_FACE_CLARITY_DET_FAIL = 10008;    //模糊
+        //public static final int ERR_FACE_LIV_VIS_EYE_CLOSE = 10009;    //请勿闭眼
+        //public static final int ERR_FACE_LIV_VIS_MOUTH_OPEN = 10010;    //请勿张嘴
+        //public static final int ERR_FACE_LIV_VIS_BRIGHTNESS_EXC = 10011;    //过曝
+        //public static final int ERR_FACE_LIV_VIS_BRIGHTNESS_INS = 10012;   //欠曝
+        //public static final int ERR_FACE_LIV_VIS_OCCLUSION = 10013;   //遮挡
+        switch (result) {
+            case 10000:
+                if (faceNumber_rgb[0] > 0) {
+                    MXFaceInfoEx.Ints2MXFaceInfoExs(faceNumber_rgb[0], this.FaceData_Rgb, this.FaceInfo_Rgb);
+                }
+                if (faceNumber_nir[0] > 0) {
+                    MXFaceInfoEx.Ints2MXFaceInfoExs(faceNumber_nir[0], this.FaceData_Nir, this.FaceInfo_Nir);
+                }
+                List<MXFace> infoList = new ArrayList<>();
+                for (int i = 0; i < faceNumber_rgb[0]; i++) {
+                    int[] info = new int[MXFaceInfoEx.SIZE];
+                    System.arraycopy(this.FaceData_Rgb, MXFaceInfoEx.SIZE * i, info, 0, MXFaceInfoEx.SIZE);
+                    infoList.add(new MXFace(info, this.FaceInfo_Rgb[i]));
+                }
+                return MXResult.CreateSuccess(infoList);
+            case 10001:
+                return MXResult.CreateFail(result, "活体检测不通过");
+            case 10002:
+                return MXResult.CreateFail(result, "可见光输入没有人脸");
+            case 10003:
+                return MXResult.CreateFail(result, "近红外输入没有人脸");
+            case 10004:
+                return MXResult.CreateFail(result, "人脸肤色检测未通过");
+            case 10005:
+                return MXResult.CreateFail(result, "请离远一点");
+            case 10006:
+                return MXResult.CreateFail(result, "请离近一点");
+            case 10007:
+                return MXResult.CreateFail(result, "请正对摄像头");
+            case 10008:
+                return MXResult.CreateFail(result, "图像模糊");
+            case 10009:
+                return MXResult.CreateFail(result, "请勿闭眼");
+            case 10010:
+                return MXResult.CreateFail(result, "请勿张嘴");
+            case 10011:
+                return MXResult.CreateFail(result, "过曝");
+            case 10012:
+                return MXResult.CreateFail(result, "欠曝");
+            case 10013:
+                return MXResult.CreateFail(result, "遮挡");
+            default:
+                return MXResult.CreateFail(result, "未知错误");
+        }
     }
 
 }

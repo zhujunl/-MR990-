@@ -3,6 +3,7 @@ package com.miaxis.attendance.api;
 import android.content.Context;
 import android.text.TextUtils;
 
+import com.google.gson.Gson;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.miaxis.attendance.BuildConfig;
 import com.miaxis.common.utils.HardWareUtils;
@@ -15,6 +16,7 @@ import okhttp3.Request;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
+import timber.log.Timber;
 
 public class BaseAPI {
 
@@ -32,8 +34,9 @@ public class BaseAPI {
     //            //builder.sslSocketFactory(SSLSocketClient.getSSLSocketFactory());
     //            //builder.hostnameVerifier(SSLSocketClient.getHostnameVerifier());
     //            .build();
+    Gson gson = new Gson();
 
-    private String DevicesId = "";
+    private String DevicesName = "";
     private String MacAddress = "";
 
     private BaseAPI() {
@@ -48,7 +51,7 @@ public class BaseAPI {
     }
 
     public void init(Context context) {
-        this.DevicesId = HardWareUtils.getDeviceId(context);
+        this.DevicesName = HardWareUtils.getDeviceId(context);
         this.MacAddress = HardWareUtils.getWifiMac(context);
     }
 
@@ -68,12 +71,14 @@ public class BaseAPI {
                 .addInterceptor(chain -> {
                     // 以拦截到的请求为基础创建一个新的请求对象，然后插入Header
                     Request request = chain.request().newBuilder()
-                            .addHeader("device_id", String.valueOf(DevicesId))
+                            .addHeader("device_name", String.valueOf(DevicesName))
                             .addHeader("mac_address", String.valueOf(MacAddress))
                             .addHeader("version_name", BuildConfig.VERSION_NAME)
+                            .addHeader("version_code", String.valueOf(BuildConfig.VERSION_CODE))
                             .addHeader("build_type", BuildConfig.BUILD_TYPE)
-                            .addHeader("application_id", BuildConfig.APPLICATION_ID)
+                            .addHeader("application_name", BuildConfig.APPLICATION_ID)
                             .build();
+                    Timber.e("Interceptor:%s", gson.toJson(request.toString()));
                     // 开始请求
                     return chain.proceed(request);
                 })

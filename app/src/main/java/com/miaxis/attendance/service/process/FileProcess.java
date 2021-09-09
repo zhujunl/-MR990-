@@ -2,7 +2,6 @@ package com.miaxis.attendance.service.process;
 
 
 import android.util.Base64;
-import android.util.Log;
 
 import com.miaxis.attendance.config.AppConfig;
 import com.miaxis.attendance.data.entity.LocalImage;
@@ -15,6 +14,8 @@ import com.miaxis.common.utils.FileUtils;
 import com.miaxis.common.utils.StringUtils;
 
 import java.util.Map;
+
+import timber.log.Timber;
 
 /**
  * @author Tank
@@ -51,7 +52,7 @@ public class FileProcess {
             byte[] decode = Base64.decode(file, Base64.NO_WRAP);
             String savePath = AppConfig.Path_File + System.currentTimeMillis() + ".jpeg";
             boolean b = FileUtils.writeFile(savePath, decode);
-            Log.e(TAG, "writeFile: " + b);
+            Timber.e("writeFile: " + b);
             if (!b) {
                 return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_ERROR, "save image failed");
             }

@@ -10,17 +10,22 @@ import com.miaxis.common.response.ZZResponse;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+import timber.log.Timber;
 
 public class MainViewModel extends ViewModel {
 
 
-    private Handler mHandler = new Handler();
+    private Handler mHandler_Door = new Handler();
+    private Handler mHandler_Dog = new Handler();
+
     public MutableLiveData<Integer> httpServerStatus = new MutableLiveData<>(0);
-    public MutableLiveData<Boolean> showAdvertising = new MutableLiveData<>(false);
+    /**
+     * 设备是否空闲，空闲时显示轮播
+     */
+    public MutableLiveData<Boolean> isIdle = new MutableLiveData<>(false);
     public MutableLiveData<Boolean> startService = new MutableLiveData<>(false);
     public MutableLiveData<ZZResponse<AttendanceBean>> mAttendance = new MutableLiveData<>();
-
-    public MutableLiveData<Boolean> EnableNirProcess = new MutableLiveData<>();
+    //public MutableLiveData<Boolean> EnableNirProcess = new MutableLiveData<>();
 
     private HttpServer httpServer;
 
@@ -52,11 +57,42 @@ public class MainViewModel extends ViewModel {
 
     public void openDoor() {
         MR990Device.getInstance().DoorPower(true);
-        mHandler.removeCallbacksAndMessages(null);
-        mHandler.postDelayed(() -> MR990Device.getInstance().DoorPower(false), AppConfig.CloseDoorDelay);
+        if (mHandler_Door != null) {
+            mHandler_Door.removeCallbacksAndMessages(null);
+            mHandler_Door.postDelayed(() -> MR990Device.getInstance().DoorPower(false), AppConfig.CloseDoorDelay);
+        }
     }
 
     public void destroy() {
-        mHandler.removeCallbacksAndMessages(null);
+        timeOutCancel();
+        if (mHandler_Door!=null){
+            mHandler_Door.removeCallbacksAndMessages(null);
+        }
     }
+
+    /**
+     * 空闲倒计时重置
+     */
+    public void timeOutReset(boolean isStartTimeOut) {
+        timeOutCancel();
+        Timber.e("timeOutReset: %s", isStartTimeOut);
+        if (isStartTimeOut) {
+            if (this.mHandler_Dog != null) {
+                this.mHandler_Dog.postDelayed(() -> {
+                    isIdle.postValue(true);
+                }, AppConfig.IdleTimeOut);
+            }
+        }
+    }
+
+    /**
+     * 取消空闲倒计时
+     */
+    public void timeOutCancel() {
+        Timber.e("timeOutCancel");
+        if (this.mHandler_Dog != null) {
+            this.mHandler_Dog.removeCallbacksAndMessages(null);
+        }
+    }
+
 }

@@ -24,7 +24,7 @@ public class CameraHelper {
         static CameraHelper mCameraHelper = new CameraHelper();
     }
 
-    public synchronized static CameraHelper getInstance() {
+    public static CameraHelper getInstance() {
         return CameraHelperHolder.mCameraHelper;
     }
 
@@ -71,14 +71,14 @@ public class CameraHelper {
         }
     }
 
-    public synchronized ZZResponse<MXCamera> find(CameraConfig cameraConfig) {
+    public ZZResponse<MXCamera> find(CameraConfig cameraConfig) {
         if (cameraConfig == null) {
             return ZZResponse.CreateFail(-90, "config error");
         }
         return find(cameraConfig.CameraId);
     }
 
-    private synchronized ZZResponse<MXCamera> find(int cameraId) {
+    private ZZResponse<MXCamera> find(int cameraId) {
         if (cameraId < 0) {
             return ZZResponse.CreateFail(MXCameraErrorCode.CODE_FAIL_CAMERA_ID, null);
         }
@@ -97,7 +97,7 @@ public class CameraHelper {
         this.mMXCameras.add(mxCamera);
     }
 
-    public synchronized int resume() {
+    public int resume() {
         for (MXCamera mxCamera : this.mMXCameras) {
             if (mxCamera != null) {
                 mxCamera.resume();
@@ -106,7 +106,7 @@ public class CameraHelper {
         return 0;
     }
 
-    public synchronized int pause() {
+    public int pause() {
         for (MXCamera mxCamera : this.mMXCameras) {
             if (mxCamera != null) {
                 mxCamera.pause();
@@ -115,7 +115,7 @@ public class CameraHelper {
         return 0;
     }
 
-    public synchronized int stop() {
+    public int stop() {
         for (MXCamera mxCamera : this.mMXCameras) {
             if (mxCamera != null) {
                 mxCamera.stop();

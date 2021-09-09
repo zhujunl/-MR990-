@@ -24,4 +24,12 @@ public class ArrayUtils {
     public static boolean isLength(byte[] array, int length) {
         return array != null && array.length == length;
     }
+
+    public static boolean isNullOrEmpty(int[] array) {
+        return array == null || array.length == 0;
+    }
+
+    public static boolean isLength(int[] array, int length) {
+        return array != null && array.length == length;
+    }
 }

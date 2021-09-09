@@ -1,7 +1,7 @@
 package com.miaxis.application;
 
+import android.os.Build;
 import android.os.Bundle;
-import android.util.Base64;
 import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
@@ -12,15 +12,21 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String TAG = "MainActivity";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
 
-        byte[] bytes = File2Bytes(new File("/sdcard/1/11.jpeg"));
-        byte[] encode = Base64.encode(bytes, Base64.NO_WRAP);
-        Log.e("MainActivity", "onCreate: " + new String(encode));
+        //byte[] bytes = File2Bytes(new File("/sdcard/1/11.jpeg"));
+        //byte[] encode = Base64.encode(bytes, Base64.NO_WRAP);
+
+
+        Log.e(TAG, "onCreate: " + Build.SERIAL);
+        Log.e(TAG, "onCreate: " + Build.MANUFACTURER);
+
 
     }
 

@@ -25,7 +25,7 @@ import androidx.lifecycle.ViewModelProvider;
 public class BarFragment extends BaseBindingFragment<FragmentBarBinding> {
 
     private static final String TAG = "BarFragment";
-    private MainViewModel mainViewModel;
+    private MainViewModel mMainViewModel;
     private Handler mHandler = new Handler();
     private final NetworkChangeReceiver networkChangeReceiver = new NetworkChangeReceiver();
 
@@ -45,11 +45,11 @@ public class BarFragment extends BaseBindingFragment<FragmentBarBinding> {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
         getActivity().registerReceiver(networkChangeReceiver, intentFilter);
-        binding.tvIp.setText(HardWareUtils.getHostIP());
-
-        mainViewModel = new ViewModelProvider(getActivity()).get(MainViewModel.class);
-        mainViewModel.startService.setValue(true);
-        mainViewModel.httpServerStatus.observe(this, integer -> {
+        binding.tvIp.setText("本机IP：" + HardWareUtils.getHostIP());
+        viewModel.UserCounts.observe(this, integer -> binding.tvUserCounts.setText("人数：" + (integer == null ? "0 " : ("" + integer))));
+        mMainViewModel = new ViewModelProvider(getActivity()).get(MainViewModel.class);
+        mMainViewModel.startService.setValue(true);
+        mMainViewModel.httpServerStatus.observe(this, integer -> {
             switch (integer) {
                 case 1:
                     binding.ivCloud.setImageResource(R.drawable.ic_baseline_cloud_done);
@@ -62,12 +62,12 @@ public class BarFragment extends BaseBindingFragment<FragmentBarBinding> {
             }
         });
 
-        mainViewModel.mAttendance.observe(this, attendance -> {
+        mMainViewModel.mAttendance.observe(this, attendance -> {
             if (attendance == null) {
                 return;
             }
             if (ZZResponse.isSuccess(attendance)) {
-                mainViewModel.openDoor();
+                mMainViewModel.openDoor();
                 AttendanceBean attendanceData = attendance.getData();
                 if (viewModel.isNewUser(attendance.getData())) {
                     Glide.with(binding.ivImage).load(attendanceData.CutImage).into(binding.ivImage);
@@ -89,9 +89,9 @@ public class BarFragment extends BaseBindingFragment<FragmentBarBinding> {
     public void onDestroyView() {
         super.onDestroyView();
         mHandler.removeCallbacksAndMessages(null);
-        mainViewModel.httpServerStatus.removeObservers(this);
-        mainViewModel.mAttendance.removeObservers(this);
-        mainViewModel.mAttendance.setValue(null);
+        mMainViewModel.httpServerStatus.removeObservers(this);
+        mMainViewModel.mAttendance.removeObservers(this);
+        mMainViewModel.mAttendance.setValue(null);
         getActivity().unregisterReceiver(networkChangeReceiver);
     }
 

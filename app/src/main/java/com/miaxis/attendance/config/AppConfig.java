@@ -21,9 +21,24 @@ public class AppConfig {
     public static final String Path_CutImage = MainPath + "Image_Cut" + File.separator;
     public static final String Path_DataBase = MainPath + "DataBase" + File.separator + "attendance.db";
 
+    /**
+     * 设备ID
+     */
+    public static final int DeviceId = 311;
 
+    /**
+     * 自动关门时间
+     */
     public static final long CloseDoorDelay = 8 * 1000L;
 
+    /**
+     * 空闲超时时间
+     */
+    public static final long IdleTimeOut = 18 * 1000L;
+
+    /**
+     * 服务默认端口
+     */
     public static final int Server_Port = 8090;
 
 }

@@ -1,5 +1,7 @@
 package com.miaxis.attendance.data.entity;
 
+import android.text.TextUtils;
+
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
@@ -19,6 +21,15 @@ public class Finger {
     public Finger() {
         this.create_time=System.currentTimeMillis();
     }
+
+    public boolean isIllegal() {
+        return TextUtils.isEmpty(UserId) || FingerFeature == null || FingerFeature.length <= 0;
+    }
+
+    public static boolean isIllegal(Finger finger) {
+        return finger == null || finger.isIllegal();
+    }
+
 
     @Override
     public String toString() {

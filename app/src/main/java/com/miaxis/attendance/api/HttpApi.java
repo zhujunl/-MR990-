@@ -4,6 +4,7 @@ package com.miaxis.attendance.api;
 import android.content.Context;
 
 import com.miaxis.attendance.api.bean.UserBean;
+import com.miaxis.attendance.config.AppConfig;
 
 import java.io.File;
 import java.util.List;
@@ -34,11 +35,9 @@ public class HttpApi {
         return BaseAPI.getInstance().getHttpInterface(BaseUrl).uploadImage(fileBody);
     }
 
-    public static Call<HttpResponse<Object>> uploadAttendance(int userId, int status, int direction,
-                                                              String attendanceDeviceId, String attendanceTime,
-                                                              String address, int type, String url) {
+    public static Call<HttpResponse<Object>> uploadAttendance(int userId, int status, int direction, String attendanceTime, String address, int type, String url) {
         return BaseAPI.getInstance().getHttpInterface(BaseUrl).uploadAttendance(userId, status, direction,
-                311, attendanceTime, address, type, url);
+                AppConfig.DeviceId, attendanceTime, address, type, url);
     }
 
 }

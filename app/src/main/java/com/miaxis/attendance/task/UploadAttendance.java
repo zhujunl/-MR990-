@@ -1,9 +1,7 @@
 package com.miaxis.attendance.task;
 
 import android.os.SystemClock;
-import android.util.Log;
 
-import com.miaxis.attendance.App;
 import com.miaxis.attendance.api.HttpApi;
 import com.miaxis.attendance.api.HttpResponse;
 import com.miaxis.attendance.data.entity.Attendance;
@@ -11,7 +9,6 @@ import com.miaxis.attendance.data.entity.LocalImage;
 import com.miaxis.attendance.data.model.AttendanceModel;
 import com.miaxis.attendance.data.model.LocalImageModel;
 import com.miaxis.common.utils.DateUtil;
-import com.miaxis.common.utils.HardWareUtils;
 import com.miaxis.common.utils.ListUtils;
 import com.miaxis.common.utils.StringUtils;
 
@@ -21,6 +18,7 @@ import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Response;
+import timber.log.Timber;
 
 /**
  * @author Tank
@@ -61,9 +59,9 @@ public class UploadAttendance implements Runnable {
                         if (StringUtils.isNullOrEmpty(localImage.RemotePath)) {
                             File file = new File(localImage.LocalPath);
                             Response<HttpResponse<String>> execute = HttpApi.uploadImage(file).execute();
-                            //Log.d(TAG, "uploadImage:" + execute);
+                            //Timber.d(TAG, "uploadImage:" + execute);
                             HttpResponse<String> body = execute.body();
-                            //Log.d(TAG, "uploadImage   body:" + body);
+                            //Timber.d(TAG, "uploadImage   body:" + body);
                             if (body.isSuccess()) {
                                 uploadImagePath = body.result;
                                 localImage.RemotePath = uploadImagePath;
@@ -77,24 +75,28 @@ public class UploadAttendance implements Runnable {
                         throw new IllegalArgumentException("上传图片路径不能为空");
                     }
                     Call<HttpResponse<Object>> uploadAttendance = HttpApi.uploadAttendance(
-                            Integer.parseInt(attendance.UserId), attendance.Status == 1 ? 0 : 1, 0,
-                            HardWareUtils.getDeviceId(App.getInstance()),
+                            attendance.UserId == null ? 0 : Integer.parseInt(attendance.UserId),
+                            attendance.Status == 1 ? 0 : 1,
+                            0,
+                            //HardWareUtils.getDeviceId(App.getInstance()),
                             DateUtil.DATE_FORMAT.format(new Date(attendance.create_time)),
-                            "入口", attendance.Mode == 1 ? 0 : 1, uploadImagePath);
+                            "入口",
+                            attendance.Mode == 1 ? 0 : 1,
+                            uploadImagePath);
                     Response<HttpResponse<Object>> response = uploadAttendance.execute();
-                    Log.d(TAG, "uploadAttendance:" + response);
+                    Timber.e("uploadAttendance:" + response);
                     HttpResponse<Object> httpResponse = response.body();
-                    Log.d(TAG, "uploadAttendance   body:" + httpResponse);
+                    Timber.e("uploadAttendance   body:" + httpResponse);
                     if (httpResponse.code.equals("200")) {
                         attendance.Upload = 1;
                         AttendanceModel.update(attendance);
                     }
                 } else {
-                    Log.e(TAG, "run: no attendance");
+                    Timber.e("no attendance");
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                Log.e(TAG, "Exception:" + e);
+                Timber.e("Exception:" + e);
             }
         }
     }

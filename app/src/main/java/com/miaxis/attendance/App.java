@@ -8,11 +8,14 @@ import com.miaxis.attendance.api.HttpApi;
 import com.miaxis.attendance.callback.ActivityCallbacks;
 import com.miaxis.attendance.config.AppConfig;
 import com.miaxis.attendance.data.AppDataBase;
+import com.miaxis.attendance.data.model.FaceModel;
+import com.miaxis.attendance.data.model.FingerModel;
 import com.miaxis.attendance.device.MR990Device;
 import com.miaxis.attendance.task.UploadAttendance;
 import com.miaxis.attendance.ui.finger.MR990FingerStrategy;
 import com.miaxis.common.utils.FileUtils;
 
+import org.jetbrains.annotations.NotNull;
 import org.zz.api.MXFaceIdAPI;
 import org.zz.api.MXResult;
 
@@ -21,6 +24,7 @@ import java.util.concurrent.Executors;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import timber.log.Timber;
 
 /**
  * @author Tank
@@ -33,13 +37,21 @@ public class App extends Application {
 
     private static final String TAG = "App";
     private static App context;
-    public final ExecutorService threadExecutor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
+    public final ExecutorService threadExecutor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
     private final UploadAttendance mUploadAttendance = new UploadAttendance();
 
     @Override
     public void onCreate() {
         super.onCreate();
         context = this;
+        if (BuildConfig.DEBUG) {
+            Timber.plant(new Timber.DebugTree() {
+                @Override
+                protected void log(int priority, String tag, @NotNull String message, Throwable t) {
+                    super.log(priority, "Mx" + tag, message, t);
+                }
+            });
+        }
         registerActivityLifecycleCallbacks(new ActivityCallbacks() {
             @Override
             public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {
@@ -70,6 +82,8 @@ public class App extends Application {
             return MXResult.CreateFail(-2, "初始化文件错误");
         }
         AppDataBase.getInstance().init(AppConfig.Path_DataBase, this);
+        FaceModel.init();
+        FingerModel.init();
         HttpApi.init(this);
         MR990FingerStrategy.getInstance().init();
         return MXFaceIdAPI.getInstance().mxInitAlg(this, null, null);

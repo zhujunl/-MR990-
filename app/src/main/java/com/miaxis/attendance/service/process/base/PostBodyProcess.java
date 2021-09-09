@@ -1,8 +1,6 @@
 package com.miaxis.attendance.service.process.base;
 
 
-import android.util.Log;
-
 import com.miaxis.attendance.service.HttpServer;
 import com.miaxis.attendance.service.MxResponse;
 import com.miaxis.common.utils.MapUtils;
@@ -11,6 +9,8 @@ import org.nanohttpd.NanoHTTPD;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import timber.log.Timber;
 
 /**
  * @author Tank
@@ -26,7 +26,7 @@ public abstract class PostBodyProcess extends BasePostProcess {
         Map<String, String> param = new HashMap<>();
         session.parseBody(param);
         Map<String, String> parms = session.getParms();
-        Log.e(TAG, "parameter: " + HttpServer.Gson.toJson(parms));
+        Timber.e( "parameter: " + HttpServer.Gson.toJson(parms));
         if (MapUtils.isNullOrEmpty(parms)) {
             return MxResponse.CreateFail(-1,"Error parameter");
         }

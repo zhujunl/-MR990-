@@ -11,7 +11,9 @@ import androidx.lifecycle.ViewModel;
 
 public class BarViewModel extends ViewModel {
 
-    public MutableLiveData<Integer> httpServerStatus = new MutableLiveData<>(0);
+    //public MutableLiveData<Integer> httpServerStatus = new MutableLiveData<>(0);
+
+    public MutableLiveData<Integer> UserCounts = new MutableLiveData<>(0);
 
     public AtomicReference<String> LastUserId = new AtomicReference<>();
 
