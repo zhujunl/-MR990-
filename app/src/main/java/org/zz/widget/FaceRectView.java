@@ -50,7 +50,21 @@ public class FaceRectView extends View {
             canvas.save();
             canvas.restore();
         } else {
-            canvas.drawRect(new RectF(this.mRectF.left * 2F, (this.mRectF.top * 2F - 120) * 5 / 8F, this.mRectF.right * 2F, (this.mRectF.bottom * 2F + 120) * 5 / 8F), this.mPaint);
+            canvas.drawRect(
+                    new RectF(this.mRectF.left * 2, this.mRectF.top * 2-240,
+                    this.mRectF.right * 2, this.mRectF.bottom * 2-240
+            ), this.mPaint);
+
+            //            float left = this.mRectF.left * 2F;
+            //            float top = (this.mRectF.top * 2F - 120) * 5 / 8F;
+            //            float right = this.mRectF.right * 2F;
+            //            float bottom = (this.mRectF.bottom * 2F + 120) * 5 / 8F;
+            //            RectF rectF = new RectF(left, top, right, bottom);
+            //            if (rectF.height() >= 1.2F*rectF.width()) {
+            //                rectF.bottom = rectF.top + 1.2F*rectF.width();
+            //            }
+            //            canvas.drawRect(rectF, this.mPaint);
+
         }
     }
 }

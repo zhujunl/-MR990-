@@ -115,14 +115,13 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
                                 list.add(mxFace.getFaceRectF());
                             }
                             boolean b = this.CurrentMxImage_Rgb.compareAndSet(null, new AbstractMap.SimpleEntry<>(mxImage, MXFaceIdAPI.getInstance().getMaxFace(data)));
-                            Timber.e("Process_Rgb: compareAndSet:" + b);
                             emitter.onNext(list);
                             return;
                         }
                     }
                 }
             }
-            this.CurrentMxImage_Rgb.compareAndSet(null, null);
+            boolean compareAndSet = this.CurrentMxImage_Rgb.compareAndSet(null, null);
             emitter.onNext(new ArrayList<>());
         }).subscribeOn(Schedulers.from(App.getInstance().threadExecutor))
                 .observeOn(AndroidSchedulers.mainThread())
@@ -131,14 +130,16 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
                         this.faceRect.postValue(null);
                     } else {
                         this.StartCountdown.setValue(true);
-                        if (this.IsNirEnable.get()) {
+                        boolean isNirEnable = this.IsNirEnable.get();
+                        if (isNirEnable) {
+                            this.IsNirEnable.set(false);
                             startNirFrame();
                         }
                         this.faceRect.postValue(list.get(0));
                     }
                     startRgbFrame();
                 }, throwable -> {
-                    this.CurrentMxImage_Rgb.compareAndSet(null, null);
+                    boolean compareAndSet = this.CurrentMxImage_Rgb.compareAndSet(null, null);
                     this.faceRect.postValue(null);
                     startRgbFrame();
                 });
@@ -170,6 +171,7 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
                 this.IsNirFrameProcessing.set(true);
                 this.IsCameraEnable_Nir.setValue(ZZResponse.CreateSuccess());
             } else {
+                this.IsNirEnable.set(true);
                 this.StartCountdown.setValue(false);
                 this.IsCameraEnable_Nir.setValue(ZZResponse.CreateFail(mxCamera.getCode(), mxCamera.getMsg()));
             }
@@ -201,7 +203,6 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
                                 list.add(mxFace.getFaceRectF());
                             }
                             boolean b = this.CurrentMxImage_Nir.compareAndSet(null, new AbstractMap.SimpleEntry<>(mxImage, MXFaceIdAPI.getInstance().getMaxFace(data)));
-                            Timber.e("Process_Nir:  compareAndSet:" + b);
                             emitter.onNext(list);
                             return;
                         }
@@ -214,11 +215,14 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
                 .subscribe(list -> {
                     if (ListUtils.isNullOrEmpty(list)) {
                         this.IsNirFrameProcessing.set(false);
+                        this.IsNirEnable.set(true);
                     } else {
                         this.StartCountdown.setValue(true);
                         processLiveAndMatch();
                     }
                 }, throwable -> {
+                    boolean compareAndSet = this.CurrentMxImage_Rgb.compareAndSet(null, null);
+                    this.IsNirEnable.set(true);
                     this.CurrentMxImage_Nir.compareAndSet(null, null);
                     this.IsNirFrameProcessing.set(false);
                 });
@@ -309,17 +313,7 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
                     || rgbEntry.getKey().isBufferEmpty() || !rgbEntry.getKey().isSizeLegal()
                     || rgbEntry.getValue() == null || nirEntry.getValue() == null
                     || rgbEntry.getKey().isBufferEmpty() || !rgbEntry.getKey().isSizeLegal()) {
-                if (rgbEntry != null) {
-                    Timber.e("processLiveAndMatch:      rgbEntry:" + rgbEntry.getKey() + "   " + rgbEntry.getValue());
-                } else {
-                    Timber.e("processLiveAndMatch:      rgbEntry:" + null);
-                }
-                if (nirEntry != null) {
-                    Timber.e("processLiveAndMatch:      nirEntry:" + nirEntry.getKey() + "   " + nirEntry.getValue());
-                } else {
-                    Timber.e("processLiveAndMatch:      nirEntry:" + null);
-                }
-                emitter.onNext(ZZResponse.CreateFail(ZZResponseCode.CODE_ILLEGAL_PARAMETER, ZZResponseCode.MSG_ILLEGAL_PARAMETER));
+                emitter.onNext(ZZResponse.CreateFail(ZZResponseCode.CODE_ILLEGAL_PARAMETER, "正在检测"));
             } else {
                 MxImage rgbImage = rgbEntry.getKey();
                 MXFace rgbFace = rgbEntry.getValue();
@@ -452,11 +446,13 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(response -> {
                     Timber.e("processLiveAndMatch: " + response);
+                    this.IsNirEnable.set(true);
                     this.AttendanceBean.setValue(response);
                     this.IsNirFrameProcessing.set(false);
                     this.CurrentMxImage_Rgb.set(null);
                     this.CurrentMxImage_Nir.set(null);
                 }, throwable -> {
+                    this.IsNirEnable.set(true);
                     this.AttendanceBean.setValue(ZZResponse.CreateFail(-99, throwable.getMessage()));
                     this.IsNirFrameProcessing.set(false);
                     this.CurrentMxImage_Rgb.set(null);

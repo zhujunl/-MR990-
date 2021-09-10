@@ -16,7 +16,6 @@ public class MXFace {
 
     private final int[] bInfo;
     private final MXFaceInfoEx pFaceInfo;
-    private byte[] faceFeature;
 
     public MXFace(@NonNull int[] bInfo, @NonNull MXFaceInfoEx pFaceInfo) {
         int length = bInfo.length;

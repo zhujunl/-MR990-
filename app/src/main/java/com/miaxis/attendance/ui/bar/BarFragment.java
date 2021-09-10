@@ -83,7 +83,7 @@ public class BarFragment extends BaseBindingFragment<FragmentBarBinding> {
                     }, AppConfig.CloseDoorDelay);
                 }
             } else {
-                Toast.makeText(getContext(), "比对失败：" + attendance.getMsg(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "" + attendance.getMsg(), Toast.LENGTH_SHORT).show();
             }
         });
     }

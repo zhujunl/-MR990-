@@ -44,7 +44,6 @@ public class MicViewModel extends ViewModel {
                     if (!isInterrupted) {
                         int maxAmplitude = mRecorder.getMaxAmplitude();
                         if (!isInterrupted) {
-                            Timber.e("maxAmplitude:%s", maxAmplitude);
                             if (maxAmplitude >= AppConfig.MaxAmplitude) {
                                 Timber.e("maxAmplitude:   postValue");
                                 this.isInterrupted = true;

@@ -24,6 +24,7 @@ public class MXFaceIdAPI {
     private MXFaceInfoEx[] FaceInfo_Nir;
     public final int FaceQuality = 80;
     public final int FaceLive = 60;
+    public final int FaceMinWidth = 150;
     public final float FaceMatch = 0.70F;
 
 
@@ -140,9 +141,12 @@ public class MXFaceIdAPI {
         MXFaceInfoEx.Ints2MXFaceInfoExs(pFaceNum[0], this.FaceData_Rgb, this.FaceInfo_Rgb);
         List<MXFace> infoList = new ArrayList<>();
         for (int i = 0; i < pFaceNum[0]; i++) {
-            int[] info = new int[MXFaceInfoEx.SIZE];
-            System.arraycopy(this.FaceData_Rgb, MXFaceInfoEx.SIZE * i, info, 0, MXFaceInfoEx.SIZE);
-            infoList.add(new MXFace(info, this.FaceInfo_Rgb[i]));
+            MXFaceInfoEx mxFaceInfoEx = this.FaceInfo_Rgb[i];
+            if (mxFaceInfoEx.width >= this.FaceMinWidth) {
+                int[] info = new int[MXFaceInfoEx.SIZE];
+                System.arraycopy(this.FaceData_Rgb, MXFaceInfoEx.SIZE * i, info, 0, MXFaceInfoEx.SIZE);
+                infoList.add(new MXFace(info, mxFaceInfoEx));
+            }
         }
         return MXResult.CreateSuccess(infoList);
     }
@@ -164,9 +168,12 @@ public class MXFaceIdAPI {
         MXFaceInfoEx.Ints2MXFaceInfoExs(pFaceNum[0], this.FaceData_Nir, this.FaceInfo_Nir);
         List<MXFace> infoList = new ArrayList<>();
         for (int i = 0; i < pFaceNum[0]; i++) {
-            int[] info = new int[MXFaceInfoEx.SIZE];
-            System.arraycopy(this.FaceData_Nir, MXFaceInfoEx.SIZE * i, info, 0, MXFaceInfoEx.SIZE);
-            infoList.add(new MXFace(info, this.FaceInfo_Nir[i]));
+            MXFaceInfoEx mxFaceInfoEx = this.FaceInfo_Nir[i];
+            if (mxFaceInfoEx.width >= this.FaceMinWidth) {
+                int[] info = new int[MXFaceInfoEx.SIZE];
+                System.arraycopy(this.FaceData_Nir, MXFaceInfoEx.SIZE * i, info, 0, MXFaceInfoEx.SIZE);
+                infoList.add(new MXFace(info, mxFaceInfoEx));
+            }
         }
         return MXResult.CreateSuccess(infoList);
     }
