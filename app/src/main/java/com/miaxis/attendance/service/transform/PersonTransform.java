@@ -31,6 +31,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import timber.log.Timber;
+
 /**
  * @author Tank
  * @date 2021/8/23 7:24 下午
@@ -51,10 +53,10 @@ public class PersonTransform {
         if (StringUtils.isNullOrEmpty(user.url_face)) {
             return MxResponse.CreateFail(MxResponseCode.CODE_ILLEGAL_PARAMETER, "face image url can not be null or empty");
         }
-        if (ListUtils.isNullOrEmpty(user.url_fingers)) {
+        if (ListUtils.isNullOrEmpty(user.getUrl_fingers())) {
             return MxResponse.CreateFail(MxResponseCode.CODE_ILLEGAL_PARAMETER, "finger images can not be null or empty");
         }
-        for (User.Finger finger : user.url_fingers) {
+        for (User.Finger finger : user.getUrl_fingers()) {
             if (finger.isIllegal()) {
                 return MxResponse.CreateFail(MxResponseCode.CODE_ILLEGAL_PARAMETER, "finger data is illegal");
             }
@@ -79,8 +81,8 @@ public class PersonTransform {
             return MxResponse.CreateFail(MxResponseCode.Code_Illegal_Image_Face, MxResponseCode.Msg_Illegal_Image_Face);
         }
         List<String> fingerList = new ArrayList<>();
-        if (user.url_fingers != null) {
-            for (User.Finger finger : user.url_fingers) {
+        if (user.getUrl_fingers() != null) {
+            for (User.Finger finger : user.getUrl_fingers()) {
                 String fingerPath = AppConfig.Path_FingerImage + "finger_" + user.id + "_" + finger.position + "_" + RANDOM.nextLong() + ".jpeg";
                 ZZResponse<?> downloadFinger = new DownloadClient()
                         .bindDownloadInfo(finger.url, fingerPath)
@@ -113,7 +115,7 @@ public class PersonTransform {
         }
         List<Finger> fingers = new ArrayList<>();
         for (String localPath : fingerList) {
-            MXResult<MxImage> imageLoad = MXImageToolsAPI.getInstance().ImageLoad(localPath);
+            MXResult<MxImage> imageLoad = MXImageToolsAPI.getInstance().ImageLoad(localPath,1);
             if (!MXResult.isSuccess(imageLoad)) {
                 FileUtils.delete(facePath);
                 FileUtils.delete(fingerList);
@@ -122,6 +124,7 @@ public class PersonTransform {
             MxImage fingerImage = imageLoad.getData();
             MXResult<byte[]> extractFeature = MR990FingerStrategy.getInstance().extractFeature(fingerImage.buffer, fingerImage.width, fingerImage.height);
             if (!MXResult.isSuccess(extractFeature)) {
+                Timber.e("imageLoad:%s", imageLoad);
                 FileUtils.delete(facePath);
                 FileUtils.delete(fingerList);
                 return MxResponse.CreateFail(extractFeature.getCode(), extractFeature.getMsg());
@@ -195,7 +198,7 @@ public class PersonTransform {
     }
 
     private static MxResponse<byte[]> doFaceProcess(String facePath) {
-        MXResult<MxImage> imageLoad = MXImageToolsAPI.getInstance().ImageLoad(facePath);
+        MXResult<MxImage> imageLoad = MXImageToolsAPI.getInstance().ImageLoad(facePath,3);
         if (!MXResult.isSuccess(imageLoad)) {
             return MxResponse.CreateFail(imageLoad.getCode(), imageLoad.getMsg());
         }
@@ -240,7 +243,7 @@ public class PersonTransform {
             return MxResponse.CreateFail(download.getCode(), download.getMsg());
         }
         List<String> fingerList = new ArrayList<>();
-        for (User.Finger finger : user.url_fingers) {
+        for (User.Finger finger : user.getUrl_fingers()) {
             String fingerPath = AppConfig.Path_FingerImage + "finger_" + user.id + "_" + finger.position + "_" + RANDOM.nextLong() + ".jpeg";
             ZZResponse<?> downloadFinger = new DownloadClient()
                     .bindDownloadInfo(finger.url, fingerPath)
@@ -273,7 +276,7 @@ public class PersonTransform {
 
         List<Finger> fingers = new ArrayList<>();
         for (String localPath : fingerList) {
-            MXResult<MxImage> imageLoad = MXImageToolsAPI.getInstance().ImageLoad(localPath);
+            MXResult<MxImage> imageLoad = MXImageToolsAPI.getInstance().ImageLoad(localPath,1);
             if (!MXResult.isSuccess(imageLoad)) {
                 FileUtils.delete(facePath);
                 FileUtils.delete(fingerList);

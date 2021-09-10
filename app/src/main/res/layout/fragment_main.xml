@@ -40,7 +40,6 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:background="#424242" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

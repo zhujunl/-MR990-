@@ -146,8 +146,8 @@ public class MXImageToolsAPI {
      * @author chen.gs
      * @category 图像文件加载到内存
      */
-    public MXResult<MxImage> ImageLoad(String imagePath) {
-        if (StringUtils.isNullOrEmpty(imagePath)) {
+    public MXResult<MxImage> ImageLoad(String imagePath, int channel) {
+        if (StringUtils.isNullOrEmpty(imagePath) || channel <= 0) {
             return MXResult.CreateFail(-1, "加载图片参数不合法");
         }
         BitmapFactory.Options options = new BitmapFactory.Options();
@@ -156,10 +156,10 @@ public class MXImageToolsAPI {
         if (options.outWidth <= 0 || options.outHeight <= 0) {
             return MXResult.CreateFail(-1, "图片加载失败");
         }
-        byte[] out = new byte[options.outWidth * options.outHeight * 3];
+        byte[] out = new byte[options.outWidth * options.outHeight * channel];
         int[] width = new int[1];
         int[] height = new int[1];
-        int imageLoad = this.mMxImageTool.ImageLoad(imagePath, 3, out, width, height);
+        int imageLoad = this.mMxImageTool.ImageLoad(imagePath, channel, out, width, height);
         if (imageLoad != 1) {
             return MXResult.CreateFail(-2, "加载图片操作失败");
         }

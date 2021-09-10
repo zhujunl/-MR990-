@@ -10,7 +10,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ui.finger.FingerFragment">
+        tools:context=".ui.mic.MicFragment">
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

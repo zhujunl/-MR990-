@@ -1,4 +1,4 @@
-package com.miaxis.Aspect;
+package com.miaxis.aspect;
 
 /**
  * @author Tank

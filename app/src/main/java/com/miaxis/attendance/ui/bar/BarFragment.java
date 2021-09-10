@@ -14,6 +14,7 @@ import com.miaxis.attendance.R;
 import com.miaxis.attendance.config.AppConfig;
 import com.miaxis.attendance.data.bean.AttendanceBean;
 import com.miaxis.attendance.databinding.FragmentBarBinding;
+import com.miaxis.attendance.tts.TTSSpeechManager;
 import com.miaxis.common.activity.BaseBindingFragment;
 import com.miaxis.common.response.ZZResponse;
 import com.miaxis.common.utils.HardWareUtils;
@@ -46,7 +47,8 @@ public class BarFragment extends BaseBindingFragment<FragmentBarBinding> {
         intentFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
         getActivity().registerReceiver(networkChangeReceiver, intentFilter);
         binding.tvIp.setText("本机IP：" + HardWareUtils.getHostIP());
-        viewModel.UserCounts.observe(this, integer -> binding.tvUserCounts.setText("人数：" + (integer == null ? "0 " : ("" + integer))));
+        //viewModel.UserCounts.observe(this, integer -> binding.tvUserCounts.setText("人数：" + (integer == null ? "0 " : ("" + integer))));
+        //viewModel.UserCounts.setValue(PersonModel.allCounts());
         mMainViewModel = new ViewModelProvider(getActivity()).get(MainViewModel.class);
         mMainViewModel.startService.setValue(true);
         mMainViewModel.httpServerStatus.observe(this, integer -> {
@@ -72,6 +74,7 @@ public class BarFragment extends BaseBindingFragment<FragmentBarBinding> {
                 if (viewModel.isNewUser(attendance.getData())) {
                     Glide.with(binding.ivImage).load(attendanceData.CutImage).into(binding.ivImage);
                     binding.tvName.setText(String.valueOf(attendanceData.UserName));
+                    TTSSpeechManager.getInstance().speak(AppConfig.WelcomeWords);
                     mHandler.removeCallbacksAndMessages(null);
                     mHandler.postDelayed(() -> {
                         Glide.with(binding.ivImage).load(R.drawable.logo).centerCrop().into(binding.ivImage);

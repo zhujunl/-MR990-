@@ -384,7 +384,7 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
                 //识别通过
                 Person person = byUserID.get(0);
 
-                String capturePath = AppConfig.Path_CaptureImage + person.UserId + "_" + System.currentTimeMillis() + ".jpeg";
+                String capturePath = AppConfig.Path_CaptureImage +"face"+"_"+ person.UserId + "_" + System.currentTimeMillis() + ".jpeg";
                 MXResult<?> save = MXImageToolsAPI.getInstance().ImageSave(capturePath, rgbImage.buffer, rgbImage.width, rgbImage.height, 3);
                 if (!MXResult.isSuccess(save)) {
                     emitter.onNext(ZZResponse.CreateFail(save.getCode(), save.getMsg()));
@@ -475,7 +475,7 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
 
     private void saveFailedAttendance(MxImage rgbImage, MXFace rgbFace) {
         long currentTimeMillis = System.currentTimeMillis();
-        String capturePath = AppConfig.Path_CaptureImage + "temp_" + currentTimeMillis + ".jpeg";
+        String capturePath = AppConfig.Path_CaptureImage +"face"+"_"+ "temp_" + currentTimeMillis + ".jpeg";
         MXResult<?> save = MXImageToolsAPI.getInstance().ImageSave(capturePath, rgbImage.buffer, rgbImage.width, rgbImage.height, 3);
         if (!MXResult.isSuccess(save)) {
             return;

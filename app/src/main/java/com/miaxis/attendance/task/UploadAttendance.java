@@ -92,7 +92,7 @@ public class UploadAttendance implements Runnable {
                         AttendanceModel.update(attendance);
                     }
                 } else {
-                    Timber.e("no attendance");
+                    Timber.d("no attendance");
                 }
             } catch (Exception e) {
                 e.printStackTrace();

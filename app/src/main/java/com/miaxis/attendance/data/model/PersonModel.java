@@ -40,8 +40,8 @@ public class PersonModel {
         return AppDataBase.getInstance().PersonDao().allCounts();
     }
 
-    public static List<Person> findByUserID(String userID) {
-        return AppDataBase.getInstance().PersonDao().findByUserID(userID);
+    public static List<Person> findByUserID(String userId) {
+        return AppDataBase.getInstance().PersonDao().findByUserID(userId);
     }
 
     public static List<Person> findPage(int pageSize, int offset) {

@@ -8,9 +8,9 @@ import android.widget.Toast;
 import com.miaxis.attendance.config.AppConfig;
 import com.miaxis.attendance.databinding.ActivityMainBinding;
 import com.miaxis.attendance.ui.advertising.AdvertisingFragment;
+import com.miaxis.attendance.ui.home.HomeFragment;
 import com.miaxis.attendance.ui.permission.PermissionFragment;
 import com.miaxis.common.activity.BaseBindingFragmentActivity;
-import com.miaxis.common.camera.CameraHelper;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -33,6 +33,7 @@ public class MainActivity extends BaseBindingFragmentActivity<ActivityMainBindin
                 Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 Manifest.permission.CAMERA,
+                Manifest.permission.RECORD_AUDIO,
                 Manifest.permission.READ_PHONE_STATE,
                 Manifest.permission.ACCESS_WIFI_STATE};
         replace(R.id.container, PermissionFragment.newInstance(permissions));
@@ -41,6 +42,8 @@ public class MainActivity extends BaseBindingFragmentActivity<ActivityMainBindin
         mMainViewModel.isIdle.observe(this, aBoolean -> {
             if (aBoolean) {
                 replace(R.id.container, AdvertisingFragment.newInstance());
+            }else {
+                replace(R.id.container, HomeFragment.newInstance());
             }
         });
 
@@ -70,6 +73,5 @@ public class MainActivity extends BaseBindingFragmentActivity<ActivityMainBindin
             mMainViewModel.stopHttpServer();
             mMainViewModel.destroy();
         }
-        CameraHelper.getInstance().free();
     }
 }

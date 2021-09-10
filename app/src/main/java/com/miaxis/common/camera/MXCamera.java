@@ -211,7 +211,11 @@ public class MXCamera implements Camera.AutoFocusCallback, Camera.PreviewCallbac
             return -1;
         }
         if (this.isPreview) {
-            this.mCamera.startPreview();
+            try {
+                this.mCamera.startPreview();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         return 0;
     }
@@ -220,7 +224,11 @@ public class MXCamera implements Camera.AutoFocusCallback, Camera.PreviewCallbac
         if (this.mCamera == null) {
             return -1;
         }
-        this.mCamera.stopPreview();
+        try {
+            this.mCamera.stopPreview();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return 0;
     }
 

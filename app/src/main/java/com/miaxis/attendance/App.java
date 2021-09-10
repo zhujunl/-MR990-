@@ -12,7 +12,9 @@ import com.miaxis.attendance.data.model.FaceModel;
 import com.miaxis.attendance.data.model.FingerModel;
 import com.miaxis.attendance.device.MR990Device;
 import com.miaxis.attendance.task.UploadAttendance;
+import com.miaxis.attendance.tts.TTSSpeechManager;
 import com.miaxis.attendance.ui.finger.MR990FingerStrategy;
+import com.miaxis.common.camera.CameraHelper;
 import com.miaxis.common.utils.FileUtils;
 
 import org.jetbrains.annotations.NotNull;
@@ -66,6 +68,8 @@ public class App extends Application {
                 if (activity.getClass() == MainActivity.class) {
                     MR990Device.getInstance().CameraPower(false);
                     MR990Device.getInstance().FingerPower(false);
+                    TTSSpeechManager.getInstance().free();
+                    CameraHelper.getInstance().free();
                     System.exit(0);
                 }
             }
@@ -85,6 +89,7 @@ public class App extends Application {
         FaceModel.init();
         FingerModel.init();
         HttpApi.init(this);
+        TTSSpeechManager.getInstance().init(this, null);
         MR990FingerStrategy.getInstance().init();
         return MXFaceIdAPI.getInstance().mxInitAlg(this, null, null);
     }

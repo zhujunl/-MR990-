@@ -43,7 +43,9 @@ public class UserProcess {
 
         @Override
         public MxResponse<?> onPostProcess(Map<String, String> param) throws Exception {
-            User user = HttpServer.Gson.fromJson(HttpServer.Gson.toJson(param), User.class);
+            String toJson = HttpServer.Gson.toJson(param);
+            Timber.e("AddUser:%s", toJson);
+            User user = HttpServer.Gson.fromJson(toJson, User.class);
             Timber.e("AddUser:%s", user);
             if (user == null || user.isIllegal()) {
                 return MxResponse.CreateFail(MxResponseCode.CODE_ILLEGAL_PARAMETER, "param error");
