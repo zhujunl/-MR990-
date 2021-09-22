@@ -3,13 +3,16 @@ package com.miaxis.attendance.data.model;
 
 import com.miaxis.attendance.data.AppDataBase;
 import com.miaxis.attendance.data.entity.Person;
+import com.miaxis.common.utils.ListUtils;
 
 import java.util.List;
 
 public class PersonModel {
 
     public static long insert(Person person) {
-        return AppDataBase.getInstance().PersonDao().insert(person);
+        long insert = AppDataBase.getInstance().PersonDao().insert(person);
+        person.id=insert;
+        return insert;
     }
 
     public static void update(Person person) {
@@ -40,8 +43,12 @@ public class PersonModel {
         return AppDataBase.getInstance().PersonDao().allCounts();
     }
 
-    public static List<Person> findByUserID(String userId) {
-        return AppDataBase.getInstance().PersonDao().findByUserID(userId);
+    public static Person findByUserID(String userId) {
+        List<Person> byUserID = AppDataBase.getInstance().PersonDao().findByUserID(userId);
+        if (ListUtils.isNullOrEmpty(byUserID)) {
+            return null;
+        }
+        return byUserID.get(0);
     }
 
     public static List<Person> findPage(int pageSize, int offset) {

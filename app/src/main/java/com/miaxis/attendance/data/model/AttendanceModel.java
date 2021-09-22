@@ -9,7 +9,9 @@ import java.util.List;
 public class AttendanceModel {
 
     public static long insert(Attendance attendance) {
-        return AppDataBase.getInstance().AttendanceDao().insert(attendance);
+        long insert = AppDataBase.getInstance().AttendanceDao().insert(attendance);
+        attendance.id = insert;
+        return insert;
     }
 
     public static void update(Attendance attendance) {

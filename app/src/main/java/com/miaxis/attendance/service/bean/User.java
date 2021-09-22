@@ -24,7 +24,7 @@ public class User {
     public String job_no;//工号（唯一，大小写字母和数字）
     public String department_id;//部门id
     public String url_face;//人脸底图(图片URL)
-    private String url_fingers;//指纹底图(图片URL)
+    public String url_fingers;//指纹底图(图片URL)
     //public String is_delete;//是否删除 0-否 1-是
     //public String create_time;//创建时间
     //public String update_time;//修改时间

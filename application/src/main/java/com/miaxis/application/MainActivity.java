@@ -30,7 +30,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
     public static byte[] File2Bytes(File file) {
         int byte_size = 1024;
         byte[] b = new byte[byte_size];

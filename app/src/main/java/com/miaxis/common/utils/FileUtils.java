@@ -9,7 +9,9 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Tank
@@ -101,6 +103,14 @@ public class FileUtils {
     public static void delete(List<String> paths) {
         for (String path : paths) {
             delete(path);
+        }
+    }
+
+    public static void delete(HashMap<String, ?> paths) {
+        if (paths != null && !paths.isEmpty()) {
+            for (Map.Entry<String, ?> entry : paths.entrySet()) {
+                delete(entry.getKey());
+            }
         }
     }
 

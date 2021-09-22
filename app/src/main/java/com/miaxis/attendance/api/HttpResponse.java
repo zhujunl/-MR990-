@@ -2,6 +2,7 @@ package com.miaxis.attendance.api;
 
 
 public class HttpResponse<T> {
+    public static final String SuccessCode = "200";
     public String code;
     public String message;
     public T result;
@@ -15,8 +16,12 @@ public class HttpResponse<T> {
         this.result = result;
     }
 
-    public boolean isSuccess(){
-        return "200".equals(this.code);
+    public boolean isSuccess() {
+        return HttpResponse.SuccessCode.equals(this.code);
+    }
+
+    public static <T> boolean isSuccess(HttpResponse<T> httpResponse) {
+        return httpResponse != null && httpResponse.isSuccess();
     }
 
     @Override

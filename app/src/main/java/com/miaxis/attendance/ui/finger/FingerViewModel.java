@@ -12,11 +12,8 @@ import com.miaxis.attendance.data.model.AttendanceModel;
 import com.miaxis.attendance.data.model.LocalImageModel;
 import com.miaxis.attendance.data.model.PersonModel;
 import com.miaxis.common.response.ZZResponse;
-import com.miaxis.common.utils.ListUtils;
 import com.mx.finger.common.MxImage;
 import com.mx.finger.utils.RawBitmapUtils;
-
-import java.util.List;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -63,9 +60,8 @@ public class FingerViewModel extends ViewModel implements MR990FingerStrategy.Re
         String UserId = null;
         Person person = null;
         if (finger != null) {
-            List<Person> byUserID = PersonModel.findByUserID(UserId = finger.UserId);
-            if (!ListUtils.isNullOrEmpty(byUserID)) {
-                person = byUserID.get(0);
+            person = PersonModel.findByUserID(UserId = finger.UserId);
+            if (person != null) {
                 capturePath = AppConfig.Path_CaptureImage + "finger" + "_" + person.UserId + "_" + System.currentTimeMillis() + ".bmp";
             }
         }

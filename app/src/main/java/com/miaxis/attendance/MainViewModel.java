@@ -22,7 +22,7 @@ public class MainViewModel extends ViewModel {
     /**
      * 设备是否空闲，空闲时显示轮播
      */
-    public MutableLiveData<Boolean> isIdle = new MutableLiveData<>(false);
+    public MutableLiveData<Boolean> isIdle = new MutableLiveData<>();
     public MutableLiveData<Boolean> startService = new MutableLiveData<>(false);
     public MutableLiveData<ZZResponse<AttendanceBean>> mAttendance = new MutableLiveData<>();
     //public MutableLiveData<Boolean> EnableNirProcess = new MutableLiveData<>();

@@ -42,6 +42,7 @@ public class FaceModel {
                 long delete = AppDataBase.getInstance().FaceDao().delete(put);
             }
         }
+        face.id=insert;
         return insert;
     }
 

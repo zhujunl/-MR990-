@@ -2,9 +2,11 @@ package com.miaxis.attendance.data.model;
 
 
 import android.text.TextUtils;
+
 import com.miaxis.attendance.data.AppDataBase;
 import com.miaxis.attendance.data.entity.Finger;
 import com.miaxis.common.utils.ListUtils;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -39,6 +41,7 @@ public class FingerModel {
                 long delete = AppDataBase.getInstance().FingerDao().delete(put);
             }
         }
+        finger.id = insert;
         return insert;
     }
 
@@ -78,7 +81,7 @@ public class FingerModel {
     public static void delete(List<Finger> fingers) {
         if (!ListUtils.isNullOrEmpty(fingers)) {
             for (Finger finger : fingers) {
-                AppDataBase.getInstance().FingerDao().delete(finger);
+                delete(finger);
                 if (finger.UserId != null) {
                     FingerModel.FingerMapCache.remove(finger.UserId);
                 }

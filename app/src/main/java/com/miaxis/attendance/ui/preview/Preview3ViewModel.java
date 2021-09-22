@@ -403,13 +403,12 @@ public class Preview3ViewModel extends ViewModel implements CameraPreviewCallbac
                     emitter.onNext(ZZResponse.CreateFail(-81, "未找到，最大匹配值：" + tempFloat));
                     return;
                 }
-                List<Person> byUserID = PersonModel.findByUserID(tempFace.UserId);
-                if (ListUtils.isNullOrEmpty(byUserID)) {
+                Person person = PersonModel.findByUserID(tempFace.UserId);
+                if (person==null) {
                     emitter.onNext(ZZResponse.CreateFail(-82, "该人员不存在，UserId：" + tempFace.UserId));
                     return;
                 }
                 //识别通过
-                Person person = byUserID.get(0);
 
                 String capturePath = AppConfig.Path_CaptureImage + person.UserId + "_" + System.currentTimeMillis() + ".jpeg";
                 MXResult<?> save = MXImageToolsAPI.getInstance().ImageSave(capturePath, rgbImage.buffer, rgbImage.width, rgbImage.height, 3);
