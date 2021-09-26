@@ -3,7 +3,6 @@ package com.miaxis.attendance.ui.prepare;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.view.View;
-import android.widget.Toast;
 
 import com.miaxis.attendance.R;
 import com.miaxis.attendance.databinding.FragmentPrepareBinding;
@@ -49,10 +48,7 @@ public class PrepareFragment extends BaseBindingFragment<FragmentPrepareBinding>
         binding.btnTry.setOnClickListener(v -> viewModel.init());
         binding.btnCancel.setOnClickListener(v -> finish());
         binding.tvMsg.setMovementMethod(ScrollingMovementMethod.getInstance());
-        viewModel.msg.observe(this, s -> {
-            binding.tvMsg.setText(s);
-            Toast.makeText(getActivity(), "" + s, Toast.LENGTH_SHORT).show();
-        });
+        viewModel.msg.observe(this, binding.tvMsg::setText);
         viewModel.init();
     }
 

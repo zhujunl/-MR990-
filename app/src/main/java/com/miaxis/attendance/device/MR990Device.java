@@ -32,6 +32,7 @@ public class MR990Device {
     public void CameraPower(boolean enable) {
         DebugPower(false);
         setPower(0x11, enable);
+        //SystemClock.sleep(1000);
     }
 
     /**

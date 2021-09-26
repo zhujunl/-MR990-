@@ -22,8 +22,8 @@ public class MXFaceIdAPI {
 
     private int[] FaceData_Nir;
     private MXFaceInfoEx[] FaceInfo_Nir;
-    public final int FaceQuality = 75;
-    public final int FaceLive = 60;
+    public final int FaceQuality = 80;
+    public final int FaceLive = 65;
     public final int FaceMinWidth = 100;
     public final float FaceMatch = 0.70F;
 
@@ -151,7 +151,7 @@ public class MXFaceIdAPI {
         return infoList.isEmpty() ? MXResult.CreateFail(nRet, "没有人脸") : MXResult.CreateSuccess(infoList);
     }
 
-    public synchronized MXResult<List<MXFace>> mxDetectFaceNir(byte[] pImage, int nWidth, int nHeight) {
+    public MXResult<List<MXFace>> mxDetectFaceNir(byte[] pImage, int nWidth, int nHeight) {
         if (!this.m_bInit) {
             return MXResult.CreateFail(MXErrorCode.ERR_NO_INIT, "未初始化");
         }

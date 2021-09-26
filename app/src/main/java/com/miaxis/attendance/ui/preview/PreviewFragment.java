@@ -98,13 +98,13 @@ public class PreviewFragment extends BaseBindingFragment<FragmentPreviewBinding>
     @Override
     public void onResume() {
         super.onResume();
-        mViewModel.resume();
+        //        mViewModel.resume();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        mViewModel.pause();
+        //        mViewModel.pause();
     }
 
     @Override

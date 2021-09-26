@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
-import android.widget.Toast;
+import android.text.TextUtils;
 
 import com.bumptech.glide.Glide;
 import com.miaxis.attendance.MainViewModel;
@@ -17,10 +17,10 @@ import com.miaxis.attendance.databinding.FragmentBarBinding;
 import com.miaxis.attendance.tts.TTSSpeechManager;
 import com.miaxis.common.activity.BaseBindingFragment;
 import com.miaxis.common.response.ZZResponse;
-import com.miaxis.common.utils.HardWareUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 public class BarFragment extends BaseBindingFragment<FragmentBarBinding> {
@@ -28,7 +28,7 @@ public class BarFragment extends BaseBindingFragment<FragmentBarBinding> {
     private static final String TAG = "BarFragment";
     private MainViewModel mMainViewModel;
     private Handler mHandler = new Handler();
-    private final NetworkChangeReceiver networkChangeReceiver = new NetworkChangeReceiver();
+    private BroadcastReceiver networkChangeReceiver;
 
     public static BarFragment newInstance() {
         return new BarFragment();
@@ -45,8 +45,23 @@ public class BarFragment extends BaseBindingFragment<FragmentBarBinding> {
 
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
-        getActivity().registerReceiver(networkChangeReceiver, intentFilter);
-        binding.tvIp.setText("本机IP：" + HardWareUtils.getHostIP());
+        getActivity().registerReceiver(networkChangeReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                viewModel.flushIpAddress();
+            }
+        }, intentFilter);
+        viewModel.IpAddress.observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(String s) {
+                if (!TextUtils.isEmpty(s)) {
+                    binding.tvIp.setText("本机IP：" + s);
+                } else {
+                    binding.tvIp.setText("无网络连接");
+                }
+            }
+        });
+
         //viewModel.UserCounts.observe(this, integer -> binding.tvUserCounts.setText("人数：" + (integer == null ? "0 " : ("" + integer))));
         //viewModel.UserCounts.setValue(PersonModel.allCounts());
         mMainViewModel = new ViewModelProvider(getActivity()).get(MainViewModel.class);
@@ -75,15 +90,17 @@ public class BarFragment extends BaseBindingFragment<FragmentBarBinding> {
                     Glide.with(binding.ivImage).load(attendanceData.CutImage).into(binding.ivImage);
                     binding.tvName.setText(String.valueOf(attendanceData.UserName));
                     TTSSpeechManager.getInstance().speak(AppConfig.WelcomeWords);
+                    getView().setBackgroundColor(0xFF32CD32);
                     mHandler.removeCallbacksAndMessages(null);
                     mHandler.postDelayed(() -> {
                         Glide.with(binding.ivImage).load(R.drawable.logo).centerCrop().into(binding.ivImage);
-                        binding.tvName.setText(R.string.text_name);
+                        binding.tvName.setText("");
+                        getView().setBackgroundColor(0xFF000000);
                         viewModel.setNewUserReset();
                     }, AppConfig.CloseDoorDelay);
                 }
             } else {
-                Toast.makeText(getContext(), "" + attendance.getMsg(), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getContext(), "" + attendance.getMsg(), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -98,10 +115,10 @@ public class BarFragment extends BaseBindingFragment<FragmentBarBinding> {
         getActivity().unregisterReceiver(networkChangeReceiver);
     }
 
-    static class NetworkChangeReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            //Toast.makeText(context, "网络状态改变", Toast.LENGTH_SHORT).show();
-        }
-    }
+    //    static class NetworkChangeReceiver extends BroadcastReceiver {
+    //        @Override
+    //        public void onReceive(Context context, Intent intent) {
+    //            //Toast.makeText(context, "网络状态改变", Toast.LENGTH_SHORT).show();
+    //        }
+    //    }
 }

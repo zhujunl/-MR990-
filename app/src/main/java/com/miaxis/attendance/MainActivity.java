@@ -2,6 +2,7 @@ package com.miaxis.attendance;
 
 import android.Manifest;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.WindowManager;
 import android.widget.Toast;
 
@@ -14,6 +15,7 @@ import com.miaxis.common.activity.BaseBindingFragmentActivity;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 public class MainActivity extends BaseBindingFragmentActivity<ActivityMainBinding> {
@@ -39,11 +41,24 @@ public class MainActivity extends BaseBindingFragmentActivity<ActivityMainBindin
         replace(R.id.container, PermissionFragment.newInstance(permissions));
         //TODO: 2021/8/31 测试
         //replace(R.id.container, AdvertisingFragment.newInstance());
-        mMainViewModel.isIdle.observe(this, aBoolean -> {
-            if (aBoolean) {
-                replace(R.id.container, AdvertisingFragment.newInstance());
-            }else {
-                replace(R.id.container, HomeFragment.newInstance());
+        mMainViewModel.isIdle.observe(this, new Observer<Boolean>() {
+
+            private final Handler mHandler = new Handler();
+
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                boolean isIdleValue = aBoolean != null && aBoolean;
+                mHandler.removeCallbacksAndMessages(null);
+                if (isIdleValue) {
+                    mHandler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            replace(R.id.container, AdvertisingFragment.newInstance());
+                        }
+                    }, AppConfig.IdleTimeOut);
+                } else {
+                    replace(R.id.container, HomeFragment.newInstance());
+                }
             }
         });
 

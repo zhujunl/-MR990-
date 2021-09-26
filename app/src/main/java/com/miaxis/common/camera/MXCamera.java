@@ -29,7 +29,7 @@ public class MXCamera implements Camera.AutoFocusCallback, Camera.PreviewCallbac
     private Camera mCamera;
     private int mCameraId;
     private int orientation;
-
+    private static final int errorCounts = 2;
 
     protected MXCamera() {
     }
@@ -53,14 +53,14 @@ public class MXCamera implements Camera.AutoFocusCallback, Camera.PreviewCallbac
         //        if (cameraId >= Camera.getNumberOfCameras()) {
         //            return -4;
         //        }
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < errorCounts; i++) {
             try {
                 this.mCameraId = cameraId;
                 this.mCamera = Camera.open(cameraId);
                 break;
             } catch (Exception e) {
                 e.printStackTrace();
-                Log.e(TAG,""+e);
+                Log.e(TAG, "" + e);
                 SystemClock.sleep(500);
             }
         }
@@ -212,9 +212,11 @@ public class MXCamera implements Camera.AutoFocusCallback, Camera.PreviewCallbac
         }
         if (this.isPreview) {
             try {
+                Log.e(TAG, "resume: " + mCameraId);
                 this.mCamera.startPreview();
             } catch (Exception e) {
                 e.printStackTrace();
+                Log.e(TAG, "resume: " + e);
             }
         }
         return 0;
@@ -225,9 +227,11 @@ public class MXCamera implements Camera.AutoFocusCallback, Camera.PreviewCallbac
             return -1;
         }
         try {
+            Log.e(TAG, "pause: " + mCameraId);
             this.mCamera.stopPreview();
         } catch (Exception e) {
             e.printStackTrace();
+            Log.e(TAG, "pause: " + e);
         }
         return 0;
     }
