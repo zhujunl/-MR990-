@@ -21,6 +21,7 @@ import androidx.lifecycle.ViewModelProvider;
 public class MainActivity extends BaseBindingFragmentActivity<ActivityMainBinding> {
 
     private MainViewModel mMainViewModel;
+    private final Handler mHandler = new Handler();
 
     @Override
     protected int initLayout() {
@@ -39,12 +40,9 @@ public class MainActivity extends BaseBindingFragmentActivity<ActivityMainBindin
                 Manifest.permission.READ_PHONE_STATE,
                 Manifest.permission.ACCESS_WIFI_STATE};
         replace(R.id.container, PermissionFragment.newInstance(permissions));
-        //TODO: 2021/8/31 测试
+        //TODO: 2021/8/31 待解耦
         //replace(R.id.container, AdvertisingFragment.newInstance());
         mMainViewModel.isIdle.observe(this, new Observer<Boolean>() {
-
-            private final Handler mHandler = new Handler();
-
             @Override
             public void onChanged(Boolean aBoolean) {
                 boolean isIdleValue = aBoolean != null && aBoolean;
@@ -57,6 +55,17 @@ public class MainActivity extends BaseBindingFragmentActivity<ActivityMainBindin
                         }
                     }, AppConfig.IdleTimeOut);
                 } else {
+                    replace(R.id.container, HomeFragment.newInstance());
+                }
+            }
+        });
+
+        mMainViewModel.isIdleDetectStop.observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if (aBoolean != null && aBoolean) {
+                    mHandler.removeCallbacksAndMessages(null);
+                }else {
                     replace(R.id.container, HomeFragment.newInstance());
                 }
             }
@@ -87,6 +96,9 @@ public class MainActivity extends BaseBindingFragmentActivity<ActivityMainBindin
         if (mMainViewModel != null) {
             mMainViewModel.stopHttpServer();
             mMainViewModel.destroy();
+        }
+        if (mHandler!=null){
+            mHandler.removeCallbacksAndMessages(null);
         }
     }
 }

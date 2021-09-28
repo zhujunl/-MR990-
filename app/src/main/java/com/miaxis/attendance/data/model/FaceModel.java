@@ -24,7 +24,7 @@ public class FaceModel {
         for (Face face : all) {
             if (face != null && !TextUtils.isEmpty(face.UserId)) {
                 Face put = FaceModel.FaceMapCache.put(face.UserId, face);
-                if (put!=null){
+                if (put != null) {
                     long delete = AppDataBase.getInstance().FaceDao().delete(put);
                 }
             }
@@ -38,11 +38,11 @@ public class FaceModel {
         long insert = AppDataBase.getInstance().FaceDao().insert(face);
         if (insert > 0) {
             Face put = FaceModel.FaceMapCache.put(face.UserId, face);
-            if (put!=null){
+            if (put != null) {
                 long delete = AppDataBase.getInstance().FaceDao().delete(put);
             }
         }
-        face.id=insert;
+        face.id = insert;
         return insert;
     }
 
@@ -51,9 +51,9 @@ public class FaceModel {
             return -99;
         }
         long update = AppDataBase.getInstance().FaceDao().update(face);
-        if (update>0){
+        if (update > 0) {
             Face put = FaceModel.FaceMapCache.put(face.UserId, face);
-            if (put!=null){
+            if (put != null) {
                 long delete = AppDataBase.getInstance().FaceDao().delete(put);
             }
         }
@@ -70,6 +70,19 @@ public class FaceModel {
         }
         return delete;
     }
+
+    //    public static long delete(List<Long> faceIds) {
+    //        if (ListUtils.isNullOrEmpty(faceIds)) {
+    //            return -99;
+    //        }
+    //        for (long faceId : faceIds) {
+    //            long delete = AppDataBase.getInstance().FaceDao().delete(faceId);
+    //            if (delete > 0) {
+    //                FaceModel.FaceMapCache.remove(face.UserId);
+    //            }
+    //        }
+    //        return delete;
+    //    }
 
     public static long delete(String userId) {
         if (TextUtils.isEmpty(userId)) {
@@ -106,6 +119,19 @@ public class FaceModel {
         }
         return FaceModel.FaceMapCache.get(userId);
         //return AppDataBase.getInstance().FaceDao().findByUserID(userID);
+    }
+
+    public static Face findByID(long id) {
+        //        if (id <= 0) {
+        //            return null;
+        //        }
+        //return FaceModel.FaceMapCache.get(userId);
+        List<Face> byID = AppDataBase.getInstance().FaceDao().findByID(id);
+        if (ListUtils.isNullOrEmpty(byID)) {
+            return null;
+        } else {
+            return byID.get(0);
+        }
     }
 
     public static List<Face> findPage(int pageSize, int offset) {

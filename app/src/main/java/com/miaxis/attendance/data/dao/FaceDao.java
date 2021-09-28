@@ -25,8 +25,11 @@ public interface FaceDao {
     @Query("SELECT * FROM Face ORDER BY Face.id DESC")
     List<Face> findAll();
 
-    @Query("SELECT * FROM Face WHERE Face.userID=:userID")
+    @Query("SELECT * FROM Face WHERE Face.userID=:userID LIMIT 1")
     List<Face> findByUserID(String userID);
+
+    @Query("SELECT * FROM Face WHERE Face.id=:id LIMIT 1")
+    List<Face> findByID(long id);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insert(Face face);

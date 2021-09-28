@@ -384,7 +384,6 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
                     return;
                 }
                 LocalImage captureLocalImage = new LocalImage();
-                captureLocalImage.Type = 2;
                 captureLocalImage.LocalPath = capturePath;
                 captureLocalImage.id = LocalImageModel.insert(captureLocalImage);
                 if (captureLocalImage.id <= 0) {
@@ -404,7 +403,6 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
                     return;
                 }
                 LocalImage cutLocalImage = new LocalImage();
-                cutLocalImage.Type = 5;
                 cutLocalImage.LocalPath = cutPath;
                 cutLocalImage.id = LocalImageModel.insert(cutLocalImage);
                 if (cutLocalImage.id <= 0) {
@@ -476,7 +474,6 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
             return;
         }
         LocalImage captureLocalImage = new LocalImage();
-        captureLocalImage.Type = 2;
         captureLocalImage.LocalPath = capturePath;
         captureLocalImage.id = LocalImageModel.insert(captureLocalImage);
         if (captureLocalImage.id <= 0) {
@@ -494,7 +491,6 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
             return;
         }
         LocalImage cutLocalImage = new LocalImage();
-        cutLocalImage.Type = 5;
         cutLocalImage.LocalPath = cutPath;
         cutLocalImage.id = LocalImageModel.insert(cutLocalImage);
         if (cutLocalImage.id <= 0) {

@@ -77,13 +77,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            tools:text="@string/text_name"
             android:textColor="@color/white"
             android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/iv_image" />
+            app:layout_constraintTop_toBottomOf="@+id/iv_image"
+            tools:text="@string/text_name" />
 
 
         <TextView
@@ -91,13 +91,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/white"
-            app:layout_constraintBottom_toTopOf="@id/tv_ip"
+            app:layout_constraintBottom_toTopOf="@id/fl_ip"
             app:layout_constraintLeft_toLeftOf="parent"
             tools:text="@string/text_ip" />
 
 
-        <TextView
-            android:id="@+id/tv_ip"
+        <FrameLayout
+            android:id="@+id/fl_ip"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/white"
@@ -112,6 +112,13 @@
             android:layout_height="24dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintRight_toRightOf="parent" />
+
+        <com.miaxis.attendance.ui.bar.widget.ClickableLayout
+            android:id="@+id/cl_click"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

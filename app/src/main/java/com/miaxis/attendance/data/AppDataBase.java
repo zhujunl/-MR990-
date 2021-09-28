@@ -52,17 +52,17 @@ public class AppDataBase {
                         super.onOpen(db);
                     }
                 })
-                //.addMigrations(MIGRATION_9_10)
+                //.addMigrations(MIGRATION_2_3)
                 .fallbackToDestructiveMigration()
                 .build();
     }
 
-    //    static final Migration MIGRATION_9_10 = new Migration(9, 10) {
-    //        @Override
-    //        public void migrate(SupportSQLiteDatabase database) {
-    //            database.execSQL("ALTER TABLE Express ADD COLUMN phone TEXT");
-    //        }
-    //    };
+    //static final Migration MIGRATION_2_3 = new Migration(2, 3) {
+    //    @Override
+    //    public void migrate(SupportSQLiteDatabase database) {
+    //        database.execSQL("ALTER TABLE Finger ADD COLUMN Position INT");
+    //    }
+    //};
 
     public FaceDao FaceDao() {
         return this.mDB.FaceDao();

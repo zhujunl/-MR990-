@@ -18,9 +18,9 @@ android {
         javaCompileOptions {
             annotationProcessorOptions {
                 arguments = [
-                        "room.schemaLocation":"$projectDir/schemas".toString(),
-                        "room.incremental":"true",
-                        "room.expandProjection":"true"]
+                        "room.schemaLocation"  : "$projectDir/schemas".toString(),
+                        "room.incremental"     : "true",
+                        "room.expandProjection": "true"]
             }
         }
     }
@@ -48,12 +48,16 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.debug
             buildConfigField 'boolean', 'IS_DEBUG', 'true'
+            buildConfigField 'boolean', 'SKIP_PREPARE', 'false'
+            buildConfigField 'int', 'CAMERA_ERROR_COUNTS', '2'
         }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
             buildConfigField 'boolean', 'IS_DEBUG', 'false'
+            buildConfigField 'boolean', 'SKIP_PREPARE', 'false'
+            buildConfigField 'int', 'CAMERA_ERROR_COUNTS', '2'
         }
     }
     compileOptions {

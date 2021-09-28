@@ -1,12 +1,8 @@
 package com.miaxis.attendance.ui.bar;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
-import android.text.TextUtils;
+import android.view.View;
 
 import com.bumptech.glide.Glide;
 import com.miaxis.attendance.MainViewModel;
@@ -15,12 +11,14 @@ import com.miaxis.attendance.config.AppConfig;
 import com.miaxis.attendance.data.bean.AttendanceBean;
 import com.miaxis.attendance.databinding.FragmentBarBinding;
 import com.miaxis.attendance.tts.TTSSpeechManager;
+import com.miaxis.attendance.ui.bar.widget.ClickableLayout;
+import com.miaxis.attendance.ui.manager.ManagerFragment;
+import com.miaxis.attendance.ui.net.NetFragment;
 import com.miaxis.common.activity.BaseBindingFragment;
 import com.miaxis.common.response.ZZResponse;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 public class BarFragment extends BaseBindingFragment<FragmentBarBinding> {
@@ -28,7 +26,6 @@ public class BarFragment extends BaseBindingFragment<FragmentBarBinding> {
     private static final String TAG = "BarFragment";
     private MainViewModel mMainViewModel;
     private Handler mHandler = new Handler();
-    private BroadcastReceiver networkChangeReceiver;
 
     public static BarFragment newInstance() {
         return new BarFragment();
@@ -42,25 +39,7 @@ public class BarFragment extends BaseBindingFragment<FragmentBarBinding> {
     @Override
     protected void initView(@NonNull FragmentBarBinding binding, @Nullable Bundle savedInstanceState) {
         BarViewModel viewModel = new ViewModelProvider(this).get(BarViewModel.class);
-
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
-        getActivity().registerReceiver(networkChangeReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                viewModel.flushIpAddress();
-            }
-        }, intentFilter);
-        viewModel.IpAddress.observe(this, new Observer<String>() {
-            @Override
-            public void onChanged(String s) {
-                if (!TextUtils.isEmpty(s)) {
-                    binding.tvIp.setText("本机IP：" + s);
-                } else {
-                    binding.tvIp.setText("无网络连接");
-                }
-            }
-        });
+        replaceChild(R.id.fl_ip, NetFragment.newInstance());
 
         //viewModel.UserCounts.observe(this, integer -> binding.tvUserCounts.setText("人数：" + (integer == null ? "0 " : ("" + integer))));
         //viewModel.UserCounts.setValue(PersonModel.allCounts());
@@ -103,6 +82,12 @@ public class BarFragment extends BaseBindingFragment<FragmentBarBinding> {
                 //Toast.makeText(getContext(), "" + attendance.getMsg(), Toast.LENGTH_SHORT).show();
             }
         });
+        binding.clClick.setOnClickListener(new ClickableLayout.OnComboClickListener() {
+            @Override
+            protected void onComboClick(View v) {
+                replaceParent(R.id.container, ManagerFragment.newInstance());
+            }
+        });
     }
 
     @Override
@@ -112,7 +97,6 @@ public class BarFragment extends BaseBindingFragment<FragmentBarBinding> {
         mMainViewModel.httpServerStatus.removeObservers(this);
         mMainViewModel.mAttendance.removeObservers(this);
         mMainViewModel.mAttendance.setValue(null);
-        getActivity().unregisterReceiver(networkChangeReceiver);
     }
 
     //    static class NetworkChangeReceiver extends BroadcastReceiver {

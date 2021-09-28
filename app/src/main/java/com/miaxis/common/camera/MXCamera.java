@@ -9,6 +9,7 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.view.SurfaceHolder;
 
+import com.miaxis.attendance.BuildConfig;
 import com.miaxis.common.response.ZZResponse;
 import com.miaxis.common.utils.BitmapUtils;
 
@@ -29,7 +30,7 @@ public class MXCamera implements Camera.AutoFocusCallback, Camera.PreviewCallbac
     private Camera mCamera;
     private int mCameraId;
     private int orientation;
-    private static final int errorCounts = 2;
+    private static final int errorCounts = BuildConfig.CAMERA_ERROR_COUNTS;
 
     protected MXCamera() {
     }

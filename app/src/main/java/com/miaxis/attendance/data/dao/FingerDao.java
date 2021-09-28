@@ -25,8 +25,11 @@ public interface FingerDao {
     @Query("SELECT * FROM Finger ORDER BY Finger.id DESC")
     List<Finger> findAll();
 
-    @Query("SELECT * FROM Finger WHERE Finger.userID=:userID")
+    @Query("SELECT * FROM Finger WHERE Finger.userID=:userID LIMIT 1")
     List<Finger> findByUserID(String userID);
+
+    @Query("SELECT * FROM Finger WHERE Finger.id=:id LIMIT 1")
+    List<Finger> findByID(long id);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insert(Finger finger);

@@ -58,6 +58,8 @@ public class App extends Application {
             @Override
             public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {
                 if (activity.getClass() == MainActivity.class) {
+                    //MR990Device.getInstance().setUsbDebug(BuildConfig.IS_DEBUG);
+                    //MR990Device.getInstance().setWifiDebug(BuildConfig.IS_DEBUG);
                     MR990Device.getInstance().CameraPower(true);
                     MR990Device.getInstance().FingerPower(true);
                 }
@@ -66,6 +68,8 @@ public class App extends Application {
             @Override
             public void onActivityDestroyed(@NonNull Activity activity) {
                 if (activity.getClass() == MainActivity.class) {
+                    //MR990Device.getInstance().setUsbDebug(BuildConfig.IS_DEBUG);
+                    //MR990Device.getInstance().setWifiDebug(BuildConfig.IS_DEBUG);
                     MR990Device.getInstance().CameraPower(false);
                     MR990Device.getInstance().FingerPower(false);
                     TTSSpeechManager.getInstance().free();

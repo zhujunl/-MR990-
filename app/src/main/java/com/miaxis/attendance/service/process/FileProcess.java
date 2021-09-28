@@ -57,7 +57,6 @@ public class FileProcess {
                 return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_ERROR, "save image failed");
             }
             LocalImage localImage = new LocalImage();
-            localImage.Type = 1;
             localImage.LocalPath = savePath;
             localImage.id = LocalImageModel.insert(localImage);
             return MxResponse.CreateSuccess(localImage.id);

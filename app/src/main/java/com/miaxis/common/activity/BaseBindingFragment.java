@@ -47,6 +47,13 @@ public abstract class BaseBindingFragment<V extends ViewDataBinding> extends Fra
 
     }
 
+    public void onBackPressed() {
+        FragmentActivity activity = getActivity();
+        if (activity!=null){
+            activity.onBackPressed();
+        }
+    }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();

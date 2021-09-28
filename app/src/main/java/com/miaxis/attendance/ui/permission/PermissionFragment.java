@@ -3,8 +3,10 @@ package com.miaxis.attendance.ui.permission;
 import android.os.Bundle;
 
 import com.miaxis.attendance.App;
+import com.miaxis.attendance.BuildConfig;
 import com.miaxis.attendance.R;
 import com.miaxis.attendance.databinding.FragmentPermissionBinding;
+import com.miaxis.attendance.ui.home.HomeFragment;
 import com.miaxis.attendance.ui.prepare.PrepareFragment;
 import com.miaxis.common.activity.BaseBindingFragment;
 import com.tbruyelle.rxpermissions3.RxPermissions;
@@ -57,8 +59,11 @@ public class PermissionFragment extends BaseBindingFragment<FragmentPermissionBi
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(result -> {
                                     if (MXResult.isSuccess(result)) {
-                                        //replaceParent(R.id.container, HomeFragment.newInstance());
-                                        replaceParent(R.id.container, PrepareFragment.newInstance());
+                                        if (BuildConfig.SKIP_PREPARE) {
+                                            replaceParent(R.id.container, HomeFragment.newInstance());
+                                        } else {
+                                            replaceParent(R.id.container, PrepareFragment.newInstance());
+                                        }
                                     } else {
                                         new AlertDialog.Builder(getContext()).setMessage("初始化失败。").setPositiveButton("退出", (dialog, which) -> {
                                             dialog.dismiss();

@@ -20,6 +20,9 @@ public class MxResponseCode {
     public static String MSG_ILLEGAL_PARAMETER = "illegal parameter";
 
 
+    public static int CODE_OPERATION_FAILED = 2;
+    public static String MSG_OPERATION_FAILED = "some operations failed";
+
     public static int CODE_OPERATION_ERROR = -2;
     public static String MSG_OPERATION_ERROR = "operation failed";
 

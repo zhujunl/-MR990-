@@ -4,7 +4,6 @@ package com.miaxis.attendance.data.model;
 import com.miaxis.attendance.data.AppDataBase;
 import com.miaxis.attendance.data.entity.LocalImage;
 import com.miaxis.common.utils.FileUtils;
-import com.miaxis.common.utils.ListUtils;
 
 import java.util.Collection;
 import java.util.List;
@@ -12,8 +11,13 @@ import java.util.List;
 public class LocalImageModel {
 
     public static long insert(LocalImage localImage) {
+        if (localImage != null) {
+            localImage.create_time = System.currentTimeMillis();
+        }
         long insert = AppDataBase.getInstance().LocalImageDao().insert(localImage);
-        localImage.id = insert;
+        if (localImage != null) {
+            localImage.id = insert;
+        }
         return insert;
     }
 
@@ -22,7 +26,7 @@ public class LocalImageModel {
     }
 
     public static void delete(LocalImage localImage) {
-        if (localImage!=null){
+        if (localImage != null) {
             FileUtils.delete(localImage.LocalPath);
         }
         AppDataBase.getInstance().LocalImageDao().delete(localImage);
@@ -30,10 +34,6 @@ public class LocalImageModel {
 
     public static void delete(long id) {
         AppDataBase.getInstance().LocalImageDao().delete(id);
-    }
-
-    public static void delete(String userId) {
-        AppDataBase.getInstance().LocalImageDao().delete(userId);
     }
 
     public static void deleteList(Collection<LocalImage> list) {
@@ -44,36 +44,12 @@ public class LocalImageModel {
         }
     }
 
-    public static void deleteFaceImage(String userId) {
-        AppDataBase.getInstance().LocalImageDao().deleteFace(userId);
-    }
-
-    public static void deleteFingerImage(String userId) {
-        AppDataBase.getInstance().LocalImageDao().deleteFinger(userId);
-    }
-
     public static void deleteAll() {
         AppDataBase.getInstance().LocalImageDao().deleteAll();
     }
 
     public static List<LocalImage> findAll() {
         return AppDataBase.getInstance().LocalImageDao().findAll();
-    }
-
-    public static LocalImage findFaceImageByUserId(String UserId) {
-        List<LocalImage> faceImageByUserId = AppDataBase.getInstance().LocalImageDao().findFaceImageByUserId(UserId);
-        if (ListUtils.isNullOrEmpty(faceImageByUserId)) {
-            return null;
-        }
-        return faceImageByUserId.get(0);
-    }
-
-    public static LocalImage findFingerImageByUserId(String UserId) {
-        List<LocalImage> fingerImageByUserId = AppDataBase.getInstance().LocalImageDao().findFingerImageByUserId(UserId);
-        if (ListUtils.isNullOrEmpty(fingerImageByUserId)) {
-            return null;
-        }
-        return fingerImageByUserId.get(0);
     }
 
     public static int allCounts() {
@@ -84,8 +60,12 @@ public class LocalImageModel {
         return AppDataBase.getInstance().LocalImageDao().findByID(id);
     }
 
-    public static List<LocalImage> findByUserId(String userId) {
-        return AppDataBase.getInstance().LocalImageDao().findByUserId(userId);
+    public static List<LocalImage> findByLocalPath(String localPath) {
+        return AppDataBase.getInstance().LocalImageDao().findByLocalPath(localPath);
+    }
+
+    public static List<LocalImage> findByRemotePath(String remotePath) {
+        return AppDataBase.getInstance().LocalImageDao().findByRemotePath(remotePath);
     }
 
     public static List<LocalImage> findPage(int pageSize, int offset) {

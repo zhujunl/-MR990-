@@ -75,7 +75,6 @@ public class FingerViewModel extends ViewModel implements MR990FingerStrategy.Re
         }
 
         LocalImage captureLocalImage = new LocalImage();
-        captureLocalImage.Type = 2;
         captureLocalImage.LocalPath = capturePath;
         captureLocalImage.id = LocalImageModel.insert(captureLocalImage);
         if (captureLocalImage.id <= 0) {

@@ -1,5 +1,7 @@
 package com.miaxis.attendance.data.entity;
 
+import java.util.List;
+
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
@@ -40,15 +42,38 @@ public class Person {
      */
     public boolean Enable;//是否启用
     /**
-     * 人脸图片ID
+     * 人脸ID
      */
+    public List<Long> faceIds;
+    /**
+     * 指纹ID
+     */
+    public List<Long> fingerIds;
 
     public long create_time;//创建时间
     public long update_time;//修改时间
 
     public Person() {
-        this.create_time=System.currentTimeMillis();
+        this.create_time = System.currentTimeMillis();
     }
+
+
+    //    @Entity(foreignKeys = @ForeignKey(entity = Company.class,parentColumns = "id",childColumns = "emp_id",onDelete = CASCADE),
+    //            indices = @Index(value={"emp_id"},unique = true))
+    //    public class Department {
+    //        @PrimaryKey(autoGenerate = true)
+    //        private int id;
+    //        private String dept;
+    //        @ColumnInfo(name = "emp_id")
+    //        private int empId;
+    //
+    //        public Department(String dept, int empId) {
+    //            this.dept = dept;
+    //            this.empId = empId;
+    //        }
+    //        //省略了getter/setter方法
+    //    }
+
 
     @Override
     public String toString() {
@@ -60,8 +85,11 @@ public class Person {
                 ", Gender='" + Gender + '\'' +
                 ", IdCardNumber='" + IdCardNumber + '\'' +
                 ", Enable=" + Enable +
-                ", create_time='" + create_time + '\'' +
-                ", update_time='" + update_time + '\'' +
+                ", faceId=" + faceIds +
+                ", fingerIds=" + fingerIds +
+                ", create_time=" + create_time +
+                ", update_time=" + update_time +
                 '}';
     }
+
 }

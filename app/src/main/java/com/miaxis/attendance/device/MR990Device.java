@@ -72,4 +72,23 @@ public class MR990Device {
         intent.putExtra("value", enable);
         App.getInstance().sendBroadcast(intent);
     }
+
+    /**
+     * 开启USB调试
+     */
+    public void setUsbDebug(boolean enable) {
+        Intent intent = new Intent("com.miaxis.power");
+        intent.putExtra("type", 0x01);
+        intent.putExtra("value", enable);
+        App.getInstance().sendBroadcast(intent);
+    }
+
+    /**
+     * 开启WIFI调试
+     */
+    public void setWifiDebug(boolean enable) {
+        Intent intent = new Intent("com.miaxis.debug.wifi");
+        intent.putExtra("value", enable);
+        App.getInstance().sendBroadcast(intent);
+    }
 }

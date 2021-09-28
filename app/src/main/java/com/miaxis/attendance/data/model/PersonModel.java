@@ -7,16 +7,18 @@ import com.miaxis.common.utils.ListUtils;
 
 import java.util.List;
 
+import timber.log.Timber;
+
 public class PersonModel {
 
     public static long insert(Person person) {
         long insert = AppDataBase.getInstance().PersonDao().insert(person);
-        person.id=insert;
+        person.id = insert;
         return insert;
     }
 
-    public static void update(Person person) {
-        AppDataBase.getInstance().PersonDao().update(person);
+    public static long update(Person person) {
+       return AppDataBase.getInstance().PersonDao().update(person);
     }
 
     public static void delete(Person person) {
@@ -51,8 +53,11 @@ public class PersonModel {
         return byUserID.get(0);
     }
 
-    public static List<Person> findPage(int pageSize, int offset) {
-        return AppDataBase.getInstance().PersonDao().findPage(pageSize, offset);
+    public static List<Person> findPage(int pageSize, int page) {
+        Timber.e("findPage  pageSize:%s   page:%s", pageSize, page);
+        List<Person> page1 = AppDataBase.getInstance().PersonDao().findPage(pageSize, pageSize * (page - 1));
+        Timber.e("findPage  counts:%s", page1.size());
+        return page1;
     }
 
 }

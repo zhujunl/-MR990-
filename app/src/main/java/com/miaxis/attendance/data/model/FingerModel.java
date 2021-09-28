@@ -71,11 +71,16 @@ public class FingerModel {
     }
 
     public static void delete(Finger finger) {
-        AppDataBase.getInstance().FingerDao().delete(finger);
+        int delete = AppDataBase.getInstance().FingerDao().delete(finger);
+        //FingerModel.FingerMapCache.get()
     }
 
     public static int delete(String userId) {
-        return AppDataBase.getInstance().FingerDao().delete(userId);
+        int delete = AppDataBase.getInstance().FingerDao().delete(userId);
+        if (userId != null) {
+            FingerModel.FingerMapCache.remove(userId);
+        }
+        return delete;
     }
 
     public static void delete(List<Finger> fingers) {
@@ -107,12 +112,25 @@ public class FingerModel {
         return FingerModel.FingerMapCache.size();
     }
 
-    public static Finger findByUserID(String userId) {
-        //return AppDataBase.getInstance().FingerDao().findByUserID(userId);
-        if (TextUtils.isEmpty(userId)) {
+    public static List<Finger> findByUserID(String userId) {
+        return AppDataBase.getInstance().FingerDao().findByUserID(userId);
+        //        if (TextUtils.isEmpty(userId)) {
+        //            return null;
+        //        }
+        //        return FingerModel.FingerMapCache.get(userId);
+    }
+
+    public static Finger findByID(long id) {
+        List<Finger> byID = AppDataBase.getInstance().FingerDao().findByID(id);
+        if (ListUtils.isNullOrEmpty(byID)) {
             return null;
+        } else {
+            return byID.get(0);
         }
-        return FingerModel.FingerMapCache.get(userId);
+        //        if (TextUtils.isEmpty(userId)) {
+        //            return null;
+        //        }
+        //        return FingerModel.FingerMapCache.get(userId);
     }
 
     public static List<Finger> findPage(int pageSize, int offset) {

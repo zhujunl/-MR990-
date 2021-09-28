@@ -1,6 +1,7 @@
 package com.miaxis.attendance.service.transform;
 
 import android.graphics.BitmapFactory;
+import android.text.TextUtils;
 
 import com.miaxis.attendance.config.AppConfig;
 import com.miaxis.attendance.data.entity.Face;
@@ -27,11 +28,15 @@ import org.zz.api.MXImageToolsAPI;
 import org.zz.api.MXResult;
 import org.zz.api.MxImage;
 
-import java.util.AbstractMap;
+import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
+import java.util.Map;
 import java.util.Random;
+import java.util.Set;
+
+import timber.log.Timber;
 
 /**
  * @author Tank
@@ -46,157 +51,6 @@ public class PersonTransform {
 
     private static final Random RANDOM = new Random();
 
-    //    public static MxResponse<?> insert(User user) {
-    //        if (user == null || user.isIllegal()) {
-    //            return MxResponse.CreateFail(MxResponseCode.CODE_ILLEGAL_PARAMETER, MxResponseCode.MSG_ILLEGAL_PARAMETER);
-    //        }
-    //        if (StringUtils.isNullOrEmpty(user.url_face)) {
-    //            return MxResponse.CreateFail(MxResponseCode.CODE_ILLEGAL_PARAMETER, "face image url can not be null or empty");
-    //        }
-    //        if (ListUtils.isNullOrEmpty(user.getUrl_fingers())) {
-    //            return MxResponse.CreateFail(MxResponseCode.CODE_ILLEGAL_PARAMETER, "finger images can not be null or empty");
-    //        }
-    //        for (User.Finger finger : user.getUrl_fingers()) {
-    //            if (finger.isIllegal()) {
-    //                return MxResponse.CreateFail(MxResponseCode.CODE_ILLEGAL_PARAMETER, "finger data is illegal");
-    //            }
-    //        }
-    //        Person person = PersonModel.findByUserID(String.valueOf(user.id));
-    //        if (person != null) {
-    //            return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_ERROR, "already exists");
-    //        }
-    //        String facePath = AppConfig.Path_FaceImage + "face_" + user.id + "_" + RANDOM.nextLong() + ".jpeg";
-    //        ZZResponse<?> downloadFace = new DownloadClient()
-    //                .bindDownloadInfo(user.url_face, facePath)
-    //                .bindDownloadTimeOut(3 * 1000, 3 * 1000)
-    //                .download();
-    //        if (!ZZResponse.isSuccess(downloadFace)) {
-    //            return MxResponse.CreateFail(downloadFace.getCode(), downloadFace.getMsg());
-    //        }
-    //        BitmapFactory.Options options = new BitmapFactory.Options();
-    //        options.inJustDecodeBounds = true;
-    //        BitmapFactory.decodeFile(facePath, options);
-    //        if (options.outWidth <= 0 || options.outHeight <= 0) {
-    //            FileUtils.delete(facePath);
-    //            return MxResponse.CreateFail(MxResponseCode.Code_Illegal_Image_Face, MxResponseCode.Msg_Illegal_Image_Face);
-    //        }
-    //        List<String> fingerList = new ArrayList<>();
-    //        if (user.getUrl_fingers() != null) {
-    //            for (User.Finger finger : user.getUrl_fingers()) {
-    //                String fingerPath = AppConfig.Path_FingerImage + "finger_" + user.id + "_" + finger.position + "_" + RANDOM.nextLong() + ".jpeg";
-    //                ZZResponse<?> downloadFinger = new DownloadClient()
-    //                        .bindDownloadInfo(finger.url, fingerPath)
-    //                        .bindDownloadTimeOut(3 * 1000, 3 * 1000)
-    //                        .download();
-    //                if (!ZZResponse.isSuccess(downloadFinger)) {
-    //                    FileUtils.delete(facePath);
-    //                    FileUtils.delete(fingerList);
-    //                    return MxResponse.CreateFail(MxResponseCode.Code_Illegal_Image_Finger, downloadFinger.getMsg());
-    //                } else {
-    //                    BitmapFactory.Options fingerOptions = new BitmapFactory.Options();
-    //                    fingerOptions.inJustDecodeBounds = true;
-    //                    BitmapFactory.decodeFile(fingerPath, fingerOptions);
-    //                    if (fingerOptions.outWidth <= 0 || fingerOptions.outHeight <= 0) {
-    //                        FileUtils.delete(facePath);
-    //                        FileUtils.delete(fingerList);
-    //                        return MxResponse.CreateFail(MxResponseCode.Code_Illegal_Image_Finger, MxResponseCode.Msg_Illegal_Image_Finger);
-    //                    } else {
-    //                        fingerList.add(fingerPath);
-    //                    }
-    //                }
-    //            }
-    //        }
-    //
-    //        MxResponse<byte[]> featureExtract = doFaceProcess(facePath);
-    //        if (!MxResponse.isSuccess(featureExtract)) {
-    //            FileUtils.delete(facePath);
-    //            FileUtils.delete(fingerList);
-    //            return featureExtract;
-    //        }
-    //        List<Finger> fingers = new ArrayList<>();
-    //        for (String localPath : fingerList) {
-    //            MXResult<MxImage> imageLoad = MXImageToolsAPI.getInstance().ImageLoad(localPath, 1);
-    //            if (!MXResult.isSuccess(imageLoad)) {
-    //                FileUtils.delete(facePath);
-    //                FileUtils.delete(fingerList);
-    //                return MxResponse.CreateFail(imageLoad.getCode(), imageLoad.getMsg());
-    //            }
-    //            MxImage fingerImage = imageLoad.getData();
-    //            MXResult<byte[]> extractFeature = MR990FingerStrategy.getInstance().extractFeature(fingerImage.buffer, fingerImage.width, fingerImage.height);
-    //            if (!MXResult.isSuccess(extractFeature)) {
-    //                Timber.e("imageLoad:%s", imageLoad);
-    //                FileUtils.delete(facePath);
-    //                FileUtils.delete(fingerList);
-    //                return MxResponse.CreateFail(extractFeature.getCode(), extractFeature.getMsg());
-    //            }
-    //            Finger finger = new Finger();
-    //            finger.UserId = "" + user.id;
-    //            finger.FingerFeature = extractFeature.getData();
-    //            fingers.add(finger);
-    //        }
-    //
-    //        LocalImage localImage = new LocalImage();
-    //        localImage.UserId = "" + user.id;
-    //        localImage.Type = 1;
-    //        localImage.LocalPath = facePath;
-    //        localImage.id = LocalImageModel.insert(localImage);
-    //        if (localImage.id <= 0) {
-    //            FileUtils.delete(facePath);
-    //            FileUtils.delete(fingerList);
-    //            return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_ERROR, "insert face image failed");
-    //        }
-    //
-    //        for (String fingerPath : fingerList) {
-    //            LocalImage finger = new LocalImage();
-    //            finger.UserId = "" + user.id;
-    //            finger.Type = 1;
-    //            finger.LocalPath = fingerPath;
-    //            finger.id = LocalImageModel.insert(finger);
-    //            if (finger.id <= 0) {
-    //                FileUtils.delete(facePath);
-    //                FileUtils.delete(fingerList);
-    //                FingerModel.delete(fingers);
-    //                return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_ERROR, "insert finger image failed");
-    //            }
-    //        }
-    //        person = new Person();
-    //        person.UserId = "" + user.id;
-    //        person.IdCardNumber = user.id_number;
-    //        person.Number = user.id_number;
-    //        person.Name = user.name;
-    //        person.id = PersonModel.insert(person);
-    //        if (person.id <= 0) {
-    //            LocalImageModel.delete(localImage);
-    //            FileUtils.delete(facePath);
-    //            FileUtils.delete(fingerList);
-    //            return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_ERROR, "insert person failed");
-    //        }
-    //        for (Finger finger : fingers) {
-    //            finger.id = FingerModel.insert(finger);
-    //            if (finger.id <= 0) {
-    //                PersonModel.delete(person);
-    //                FileUtils.delete(facePath);
-    //                FileUtils.delete(fingerList);
-    //                FingerModel.delete(fingers);
-    //                return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_ERROR, "insert finger failed");
-    //            }
-    //        }
-    //        Face face = new Face();
-    //        face.UserId = "" + user.id;
-    //        face.FaceFeature = featureExtract.getData();
-    //        face.id = FaceModel.insert(face);
-    //        if (face.id <= 0) {
-    //            PersonModel.delete(person);
-    //            FaceModel.delete(face);
-    //            LocalImageModel.delete(localImage);
-    //            FingerModel.delete(fingers);
-    //            FileUtils.delete(facePath);
-    //            FileUtils.delete(fingerList);
-    //            return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_ERROR, "insert face failed");
-    //        }
-    //        return MxResponse.CreateSuccess(person);
-    //    }
-
     public static MxResponse<?> insert(User user) {
         if (user == null || user.isIllegal()) {
             return MxResponse.CreateFail(MxResponseCode.CODE_ILLEGAL_PARAMETER, MxResponseCode.MSG_ILLEGAL_PARAMETER);
@@ -206,28 +60,34 @@ public class PersonTransform {
         if (person != null) {
             return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_ERROR, "already exists");
         }
-        MxResponse<Face> faceMxResponse = processFace(userId, user.url_face);
-        if (!MxResponse.isSuccess(faceMxResponse)) {
-            return faceMxResponse;
-        }
-        MxResponse<AbstractMap.SimpleEntry<List<Finger>, List<LocalImage>>> fingerMxResponse = processFinger(userId, user.getUrl_fingers());
-        if (!MxResponse.isSuccess(fingerMxResponse)) {
-            FaceModel.delete(faceMxResponse.getData());
-            return fingerMxResponse;
-        }
         person = new Person();
         person.UserId = userId;
+
         person.IdCardNumber = user.id_number;
         person.Number = user.id_number;
         person.Name = user.name;
         person.id = PersonModel.insert(person);
         if (person.id <= 0) {
             PersonModel.delete(person);
+            return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_FAILED, "insert person failed");
+        }
+        MxResponse<Face> faceMxResponse = processFace(userId, user.url_face);
+        if (!MxResponse.isSuccess(faceMxResponse)) {
+            return faceMxResponse;
+        }
+        MxResponse<List<Long>> listMxResponse = processFingers(userId, user.getUrl_fingers());
+        if (!MxResponse.isSuccess(listMxResponse)) {
+            return listMxResponse;
+        }
+        List<Long> list = new ArrayList<>();
+        list.add(faceMxResponse.getData().faceImageId);
+        person.faceIds = list;
+        person.fingerIds = listMxResponse.getData();
+        long update = PersonModel.update(person);
+        if (update <= 0) {
+            PersonModel.delete(person);
             FaceModel.delete(faceMxResponse.getData());
-            AbstractMap.SimpleEntry<List<Finger>, List<LocalImage>> data = fingerMxResponse.getData();
-            FingerModel.delete(data.getKey());
-            LocalImageModel.deleteList(data.getValue());
-            return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_ERROR, "insert person failed");
+            return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_FAILED, "insert person failed");
         }
         return MxResponse.CreateSuccess();
     }
@@ -249,13 +109,56 @@ public class PersonTransform {
             return MxResponse.CreateFail(faceQuality.getCode(), faceQuality.getMsg());
         }
         if (faceQuality.getData() < MXFaceIdAPI.getInstance().FaceQuality) {
-            return MxResponse.CreateFail(MxResponseCode.Code_Illegal_Image_Face, "low quality,"+faceQuality.getData());
+            return MxResponse.CreateFail(MxResponseCode.Code_Illegal_Image_Face, "low quality," + faceQuality.getData());
         }
         MXResult<byte[]> featureExtract = MXFaceIdAPI.getInstance().mxFeatureExtract(decode, image.width, image.height, maxFace);
         if (!MXResult.isSuccess(featureExtract)) {
             return MxResponse.CreateFail(featureExtract.getCode(), featureExtract.getMsg());
         }
         return MxResponse.CreateSuccess(featureExtract.getData());
+    }
+
+    private static MxResponse<LocalImage> doImageProcess(boolean faceMod, String url_face) {
+        List<LocalImage> byRemotePath = LocalImageModel.findByRemotePath(url_face);
+        boolean needDownload = ListUtils.isNullOrEmpty(byRemotePath) ||
+                StringUtils.isNullOrEmpty(byRemotePath.get(0).LocalPath) ||
+                !new File(byRemotePath.get(0).LocalPath).exists();
+        if (needDownload) {
+            String savePath = (faceMod ? (AppConfig.Path_FaceImage + "face_") : (AppConfig.Path_FingerImage + "finger_")) + System.currentTimeMillis() + "_" + Math.abs(RANDOM.nextInt()) + ".jpeg";
+            ZZResponse<?> download = new DownloadClient()
+                    .bindDownloadInfo(url_face, savePath)
+                    .bindDownloadTimeOut(5 * 1000, 5 * 1000)
+                    .download();
+            Timber.e("doFaceImageProcess: download:%s", download);
+            if (!ZZResponse.isSuccess(download)) {
+                return MxResponse.CreateFail(download.getCode(), download.getMsg());
+            }
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+            BitmapFactory.decodeFile(savePath, options);
+            if (options.outWidth <= 0 || options.outHeight <= 0) {
+                FileUtils.delete(savePath);
+                return MxResponse.CreateFail(faceMod ? MxResponseCode.Code_Illegal_Image_Face : MxResponseCode.Code_Illegal_Image_Finger,
+                        faceMod ? MxResponseCode.Msg_Illegal_Image_Face : MxResponseCode.Msg_Illegal_Image_Finger);
+            }
+            LocalImage localImage;
+            if (ListUtils.isNullOrEmpty(byRemotePath)) {
+                localImage = new LocalImage();
+            } else {
+                localImage = byRemotePath.get(0);
+            }
+            localImage.RemotePath = url_face;
+            localImage.LocalPath = savePath;
+            localImage.id = LocalImageModel.insert(localImage);
+            Timber.e("processFace: LocalImageModel.insert:%s", localImage);
+            if (localImage.id <= 0) {
+                FileUtils.delete(savePath);
+                return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_ERROR, "insert image failed");
+            }
+            return MxResponse.CreateSuccess(localImage);
+        } else {
+            return MxResponse.CreateSuccess(byRemotePath.get(0));
+        }
     }
 
     private static MxResponse<Face> processFace(String userId, String url_face) {
@@ -265,111 +168,111 @@ public class PersonTransform {
         if (StringUtils.isNullOrEmpty(url_face)) {
             return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_ERROR, "image url can not be null or empty");
         }
-        boolean needUpdateFaceImage = false;
-        LocalImage faceImageByUserId = LocalImageModel.findFaceImageByUserId("" + userId);
-        if (faceImageByUserId == null) {
-            needUpdateFaceImage = true;
-        } else {
-            needUpdateFaceImage = !Objects.equals(url_face, faceImageByUserId.RemotePath);
+        MxResponse<LocalImage> doImageProcess = doImageProcess(true, url_face);
+        if (!MxResponse.isSuccess(doImageProcess)) {
+            return MxResponse.CreateFail(doImageProcess.getCode(), doImageProcess.getMessage());
         }
-        if (needUpdateFaceImage) {
-            String facePath = AppConfig.Path_FaceImage + userId + "_" + System.currentTimeMillis() + "_" + RANDOM.nextInt() + ".jpeg";
-            ZZResponse<?> download = new DownloadClient()
-                    .bindDownloadInfo(url_face, facePath)
-                    .bindDownloadTimeOut(5 * 1000, 5 * 1000)
-                    .download();
-            if (!ZZResponse.isSuccess(download)) {
-                return MxResponse.CreateFail(download.getCode(), download.getMsg());
-            }
-            MxResponse<byte[]> featureExtract = doFaceProcess(facePath);
+        LocalImage faceImage = doImageProcess.getData();
+        Face temp = FaceModel.findByUserID(userId);
+        Face face = temp == null ? new Face() : temp;
+        if (face.id <= 0 || face.faceImageId != faceImage.id) {
+            MxResponse<byte[]> featureExtract = doFaceProcess(faceImage.LocalPath);
+            Timber.e("processFace: processFace:%s", featureExtract);
             if (!MxResponse.isSuccess(featureExtract)) {
-                FileUtils.delete(facePath);
+                LocalImageModel.delete(faceImage);
                 return MxResponse.CreateFail(featureExtract);
             }
-            Face face = new Face();
+            face.faceImageId = faceImage.id;
             face.UserId = userId;
             face.FaceFeature = featureExtract.getData();
             face.id = FaceModel.insert(face);
+            Timber.e("processFace: processFace:%s", face);
             if (face.id <= 0) {
-                FileUtils.delete(facePath);
+                LocalImageModel.delete(faceImage);
                 return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_ERROR, "insert face failed");
             }
-            return MxResponse.CreateSuccess(face);
-        } else {
-            return MxResponse.CreateSuccess();
         }
+        return MxResponse.CreateSuccess(face);
     }
 
-    private static MxResponse<AbstractMap.SimpleEntry<List<Finger>, List<LocalImage>>> processFinger(String userId, List<User.Finger> url_fingers) {
+    private static MxResponse<List<Long>> processFingers(String userId, List<User.Finger> url_fingers) {
         if (StringUtils.isNullOrEmpty(userId)) {
             return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_ERROR, "user id error");
         }
-        //HashMap<Finger, LocalImage> fingerLocalImage = new HashMap<>();
-        List<Finger> fingerList = new ArrayList<>();
-        List<LocalImage> imageList = new ArrayList<>();
-        AbstractMap.SimpleEntry<List<Finger>, List<LocalImage>> listListSimpleEntry = new AbstractMap.SimpleEntry<>(fingerList, imageList);
+        List<Long> list = new ArrayList<>();
+        List<Finger> fingers = FingerModel.findByUserID(userId);
         if (ListUtils.isNullOrEmpty(url_fingers)) {
-            FingerModel.delete(userId);
-            LocalImageModel.deleteFingerImage(userId);
+            for (Finger finger : fingers) {
+                FingerModel.delete(finger);
+                LocalImageModel.delete(finger.fingerImageId);
+            }
+            return MxResponse.CreateSuccess(list);
         } else {
-            for (User.Finger uFinger : url_fingers) {
-                String fingerPath = AppConfig.Path_FingerImage + "finger_" + userId + "_" + uFinger.position + "_" + RANDOM.nextLong() + ".jpeg";
-                ZZResponse<?> downloadFinger = new DownloadClient()
-                        .bindDownloadInfo(uFinger.url, fingerPath)
-                        .bindDownloadTimeOut(5 * 1000, 5 * 1000)
-                        .download();
-                if (!ZZResponse.isSuccess(downloadFinger)) {
-                    LocalImageModel.deleteList(imageList);
-                    FingerModel.delete(fingerList);
-                    return MxResponse.CreateFail(MxResponseCode.Code_Illegal_Image_Finger, downloadFinger.getMsg());
-                } else {
-                    BitmapFactory.Options fingerOptions = new BitmapFactory.Options();
-                    fingerOptions.inJustDecodeBounds = true;
-                    BitmapFactory.decodeFile(fingerPath, fingerOptions);
-                    if (fingerOptions.outWidth <= 0 || fingerOptions.outHeight <= 0) {
-                        LocalImageModel.deleteList(imageList);
-                        FingerModel.delete(fingerList);
-                        return MxResponse.CreateFail(MxResponseCode.Code_Illegal_Image_Finger, MxResponseCode.Msg_Illegal_Image_Finger);
-                    } else {
-                        LocalImage localImage = new LocalImage();
-                        localImage.UserId = userId;
-                        localImage.Type = 3;
-                        localImage.LocalPath = fingerPath;
-                        localImage.id = LocalImageModel.insert(localImage);
-                        if (localImage.id <= 0) {
-                            LocalImageModel.deleteList(imageList);
-                            FingerModel.delete(fingerList);
-                            return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_ERROR, "insert image failed");
-                        }
-                        imageList.add(localImage);
-                        MXResult<MxImage> imageLoad = MXImageToolsAPI.getInstance().ImageLoad(fingerPath, 1);
-                        if (!MXResult.isSuccess(imageLoad)) {
-                            LocalImageModel.deleteList(imageList);
-                            FingerModel.delete(fingerList);
-                            return MxResponse.CreateFail(imageLoad.getCode(), imageLoad.getMsg());
-                        }
-                        MxImage fingerImage = imageLoad.getData();
-                        MXResult<byte[]> extractFeature = MR990FingerStrategy.getInstance().extractFeature(fingerImage.buffer, fingerImage.width, fingerImage.height);
-                        if (!MXResult.isSuccess(extractFeature)) {
-                            LocalImageModel.deleteList(imageList);
-                            FingerModel.delete(fingerList);
-                            return MxResponse.CreateFail(extractFeature.getCode(), extractFeature.getMsg());
-                        }
-                        Finger finger = new Finger();
-                        finger.UserId = userId;
-                        finger.FingerFeature = extractFeature.getData();
-                        finger.id = FingerModel.insert(finger);
-                        if (finger.id <= 0) {
-                            LocalImageModel.deleteList(imageList);
-                            FingerModel.delete(fingerList);
-                            return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_ERROR, "insert finger failed");
-                        }
-                        fingerList.add(finger);
+            //下载所有指纹图片
+            HashMap<Long, LocalImage> downloadMap = new HashMap<>();
+            for (User.Finger fingerBean : url_fingers) {
+                if (fingerBean.isIllegal()) {
+                    return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_ERROR, "finger data error");
+                }
+                MxResponse<LocalImage> doImageProcess = doImageProcess(false, fingerBean.url);
+                if (!MxResponse.isSuccess(doImageProcess)) {
+                    return MxResponse.CreateFail(doImageProcess.getCode(), doImageProcess.getMessage());
+                }
+                LocalImage data = doImageProcess.getData();
+                downloadMap.put(data.id, data);
+            }
+            //封装指纹数据
+            HashMap<Long, Finger> fingerMap = new HashMap<>();
+            for (Finger finger : fingers) {
+                fingerMap.put(finger.id, finger);
+            }
+
+            //从下载的指纹图片中查找已有指纹图片ID,如果本地指纹图片ID不在下载的图片中，则说明该指纹需要被删除
+            Set<Map.Entry<Long, Finger>> fingersEntries = fingerMap.entrySet();
+            for (Map.Entry<Long, Finger> entry : fingersEntries) {
+                Long key = entry.getKey();
+                LocalImage localImage = downloadMap.get(key);
+                if (localImage == null) {//说明指纹需要被删除
+                    Finger value = entry.getValue();
+                    FingerModel.delete(value);
+                    LocalImageModel.delete(value.fingerImageId);
+                }
+                fingerMap.remove(key);
+            }
+
+            //从下载的指纹图片中查找没有提取过指纹特征的图片，然后提取特征
+            Set<Map.Entry<Long, LocalImage>> downloadEntries = downloadMap.entrySet();
+            for (Map.Entry<Long, LocalImage> entry : downloadEntries) {
+                Long key = entry.getKey();
+                Finger finger = fingerMap.get(key);
+                if (finger == null) {
+                    LocalImage localImage = entry.getValue();
+                    MXResult<MxImage> imageLoad = MXImageToolsAPI.getInstance().ImageLoad(localImage.LocalPath, 1);
+                    if (!MXResult.isSuccess(imageLoad)) {
+                        LocalImageModel.delete(localImage);
+                        return MxResponse.CreateFail(imageLoad.getCode(), imageLoad.getMsg());
+                    }
+                    MxImage fingerImage = imageLoad.getData();
+                    MXResult<byte[]> extractFeature = MR990FingerStrategy.getInstance().extractFeature(fingerImage.buffer, fingerImage.width, fingerImage.height);
+                    if (!MXResult.isSuccess(extractFeature)) {
+                        LocalImageModel.delete(localImage);
+                        return MxResponse.CreateFail(extractFeature.getCode(), extractFeature.getMsg());
+                    }
+                    finger = new Finger();
+                    finger.UserId = userId;
+                    finger.Position = getPositionFromList(localImage.RemotePath, url_fingers);
+                    finger.fingerImageId = localImage.id;
+                    finger.FingerFeature = extractFeature.getData();
+                    finger.id = FingerModel.insert(finger);
+                    if (finger.id <= 0) {
+                        LocalImageModel.delete(localImage);
+                        return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_ERROR, "insert finger failed");
                     }
                 }
+                list.add(key);
             }
         }
-        return MxResponse.CreateSuccess(listListSimpleEntry);
+        return MxResponse.CreateSuccess(list);
     }
 
     public static MxResponse<?> update(User user) {
@@ -385,12 +288,15 @@ public class PersonTransform {
         if (!MxResponse.isSuccess(faceMxResponse)) {
             return faceMxResponse;
         }
-        MxResponse<AbstractMap.SimpleEntry<List<Finger>, List<LocalImage>>> fingerMxResponse = processFinger(userId, user.getUrl_fingers());
-        if (!MxResponse.isSuccess(fingerMxResponse)) {
-            FaceModel.delete(faceMxResponse.getData());
-            return fingerMxResponse;
+        MxResponse<List<Long>> listMxResponse = processFingers(userId, user.getUrl_fingers());
+        if (!MxResponse.isSuccess(listMxResponse)) {
+            return listMxResponse;
         }
+        List<Long> list = new ArrayList<>();
+        list.add(faceMxResponse.getData().faceImageId);
         person.UserId = userId;
+        person.faceIds = list;
+        person.fingerIds = listMxResponse.getData();
         person.IdCardNumber = user.id_number;
         person.Number = user.id_number;
         person.Name = user.name;
@@ -398,114 +304,9 @@ public class PersonTransform {
         if (person.id <= 0) {
             PersonModel.delete(person);
             FaceModel.delete(faceMxResponse.getData());
-            AbstractMap.SimpleEntry<List<Finger>, List<LocalImage>> data = fingerMxResponse.getData();
-            FingerModel.delete(data.getKey());
-            LocalImageModel.deleteList(data.getValue());
-            return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_ERROR, "insert person failed");
+            return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_FAILED, "insert person failed");
         }
         return MxResponse.CreateSuccess();
-        //        String facePath = AppConfig.Path_FaceImage + user.id + "_" + System.currentTimeMillis() + "_" + RANDOM.nextInt() + ".jpeg";
-        //        ZZResponse<?> download = new DownloadClient()
-        //                .bindDownloadInfo(user.url_face, facePath)
-        //                .bindDownloadTimeOut(3 * 1000, 3 * 1000)
-        //                .download();
-        //        if (!ZZResponse.isSuccess(download)) {
-        //            return MxResponse.CreateFail(download.getCode(), download.getMsg());
-        //        }
-
-        //        List<String> fingerList = new ArrayList<>();
-        //        for (User.Finger finger : user.getUrl_fingers()) {
-        //            String fingerPath = AppConfig.Path_FingerImage + "finger_" + user.id + "_" + finger.position + "_" + RANDOM.nextLong() + ".jpeg";
-        //            ZZResponse<?> downloadFinger = new DownloadClient()
-        //                    .bindDownloadInfo(finger.url, fingerPath)
-        //                    .bindDownloadTimeOut(3 * 1000, 3 * 1000)
-        //                    .download();
-        //            if (!ZZResponse.isSuccess(downloadFinger)) {
-        //                FileUtils.delete(facePath);
-        //                FileUtils.delete(fingerList);
-        //                return MxResponse.CreateFail(MxResponseCode.Code_Illegal_Image_Finger, downloadFinger.getMsg());
-        //            } else {
-        //                BitmapFactory.Options fingerOptions = new BitmapFactory.Options();
-        //                fingerOptions.inJustDecodeBounds = true;
-        //                BitmapFactory.decodeFile(fingerPath, fingerOptions);
-        //                if (fingerOptions.outWidth <= 0 || fingerOptions.outHeight <= 0) {
-        //                    FileUtils.delete(facePath);
-        //                    FileUtils.delete(fingerList);
-        //                    return MxResponse.CreateFail(MxResponseCode.Code_Illegal_Image_Finger, MxResponseCode.Msg_Illegal_Image_Finger);
-        //                } else {
-        //                    fingerList.add(fingerPath);
-        //                }
-        //            }
-        //        }
-
-        //        MxResponse<byte[]> featureExtract = doFaceProcess(facePath);
-        //        if (!MxResponse.isSuccess(featureExtract)) {
-        //            FileUtils.delete(facePath);
-        //            FileUtils.delete(fingerList);
-        //            return featureExtract;
-        //        }
-
-        //        List<Finger> fingers = new ArrayList<>();
-        //        for (String localPath : fingerList) {
-        //            MXResult<MxImage> imageLoad = MXImageToolsAPI.getInstance().ImageLoad(localPath, 1);
-        //            if (!MXResult.isSuccess(imageLoad)) {
-        //                FileUtils.delete(facePath);
-        //                FileUtils.delete(fingerList);
-        //                return MxResponse.CreateFail(imageLoad.getCode(), imageLoad.getMsg());
-        //            }
-        //            MxImage fingerImage = imageLoad.getData();
-        //            MXResult<byte[]> extractFeature = MR990FingerStrategy.getInstance().extractFeature(fingerImage.buffer, fingerImage.width, fingerImage.height);
-        //            if (!MXResult.isSuccess(extractFeature)) {
-        //                FileUtils.delete(facePath);
-        //                FileUtils.delete(fingerList);
-        //                return MxResponse.CreateFail(extractFeature.getCode(), extractFeature.getMsg());
-        //            }
-        //            Finger finger = new Finger();
-        //            finger.UserId = "" + user.id;
-        //            finger.FingerFeature = extractFeature.getData();
-        //            fingers.add(finger);
-        //        }
-
-        //        LocalImage localImage = new LocalImage();
-        //        localImage.UserId = "" + user.id;
-        //        localImage.Type = 1;
-        //        localImage.LocalPath = facePath;
-        //        localImage.id = LocalImageModel.insert(localImage);
-        //        if (localImage.id <= 0) {
-        //            LocalImageModel.delete(localImage);
-        //            FingerModel.delete(fingers);
-        //            FileUtils.delete(facePath);
-        //            FileUtils.delete(fingerList);
-        //            return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_ERROR, "insert image failed");
-        //        }
-
-        //        person.UserId = "" + user.id;
-        //        person.IdCardNumber = user.id_number;
-        //        person.Number = user.id_number;
-        //        person.Name = user.name;
-        //        person.id = PersonModel.insert(person);
-        //        if (person.id <= 0) {
-        //            PersonModel.delete(person);
-        //            LocalImageModel.delete(localImage);
-        //            FingerModel.delete(fingers);
-        //            FileUtils.delete(facePath);
-        //            FileUtils.delete(fingerList);
-        //            return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_ERROR, "insert person failed");
-        //        }
-        //        Face face = new Face();
-        //        face.UserId = "" + user.id;
-        //        face.FaceFeature = featureExtract.getData();
-        //        face.id = FaceModel.insert(face);
-        //        if (face.id <= 0) {
-        //            PersonModel.delete(person);
-        //            FaceModel.delete(face);
-        //            LocalImageModel.delete(localImage);
-        //            FingerModel.delete(fingers);
-        //            FileUtils.delete(facePath);
-        //            FileUtils.delete(fingerList);
-        //            return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_ERROR, "insert face failed");
-        //        }
-        //        return MxResponse.CreateSuccess();
     }
 
     public static MxResponse<?> delete(User user) {
@@ -518,10 +319,19 @@ public class PersonTransform {
         }
         FaceModel.delete(person.UserId);
         FingerModel.delete(person.UserId);
-        List<LocalImage> byUserId = LocalImageModel.findByUserId(person.UserId);
-        for (LocalImage localImage : byUserId) {
-            FileUtils.delete(localImage.LocalPath);
-            LocalImageModel.delete(localImage);
+        List<Long> faceIds = person.faceIds;
+        for (long faceId : faceIds) {
+            Face face = FaceModel.findByID(faceId);
+            if (face != null) {
+                LocalImageModel.delete(face.faceImageId);
+            }
+        }
+        List<Long> fingerIds = person.fingerIds;
+        for (long fingerId : fingerIds) {
+            Finger finger = FingerModel.findByID(fingerId);
+            if (finger != null) {
+                LocalImageModel.delete(finger.fingerImageId);
+            }
         }
         PersonModel.delete(person);
         return MxResponse.CreateSuccess();
@@ -536,15 +346,6 @@ public class PersonTransform {
         if (person == null) {
             person = new Person();
         }
-        MxResponse<Face> faceMxResponse = processFace(userId, user.url_face);
-        if (!MxResponse.isSuccess(faceMxResponse)) {
-            return faceMxResponse;
-        }
-        MxResponse<AbstractMap.SimpleEntry<List<Finger>, List<LocalImage>>> fingerMxResponse = processFinger(userId, user.getUrl_fingers());
-        if (!MxResponse.isSuccess(fingerMxResponse)) {
-            FaceModel.delete(faceMxResponse.getData());
-            return fingerMxResponse;
-        }
         person.UserId = userId;
         person.IdCardNumber = user.id_number;
         person.Number = user.id_number;
@@ -552,14 +353,38 @@ public class PersonTransform {
         person.id = PersonModel.insert(person);
         if (person.id <= 0) {
             PersonModel.delete(person);
+            return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_FAILED, "insert person failed");
+        }
+        MxResponse<Face> faceMxResponse = processFace(userId, user.url_face);
+        if (!MxResponse.isSuccess(faceMxResponse)) {
+            return faceMxResponse;
+        }
+        MxResponse<List<Long>> listMxResponse = processFingers(userId, user.getUrl_fingers());
+        if (!MxResponse.isSuccess(listMxResponse)) {
+            return listMxResponse;
+        }
+        List<Long> list = new ArrayList<>();
+        list.add(faceMxResponse.getData().faceImageId);
+        person.faceIds = list;
+        person.fingerIds = listMxResponse.getData();
+        long update = PersonModel.update(person);
+        if (update <= 0) {
+            PersonModel.delete(person);
             FaceModel.delete(faceMxResponse.getData());
-            AbstractMap.SimpleEntry<List<Finger>, List<LocalImage>> data = fingerMxResponse.getData();
-            FingerModel.delete(data.getKey());
-            LocalImageModel.deleteList(data.getValue());
-            return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_ERROR, "insert person failed");
+            return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_FAILED, "insert person failed");
         }
         return MxResponse.CreateSuccess();
     }
 
-
+    private static int getPositionFromList(String url, List<User.Finger> url_fingers) {
+        if (ListUtils.isNullOrEmpty(url_fingers) || TextUtils.isEmpty(url)) {
+            return -1;
+        }
+        for (User.Finger finger : url_fingers) {
+            if (url.equals(finger.url)) {
+                return finger.position;
+            }
+        }
+        return -2;
+    }
 }
