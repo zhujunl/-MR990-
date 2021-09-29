@@ -16,6 +16,14 @@ public class HttpResponse<T> {
         this.result = result;
     }
 
+    public static <T> HttpResponse<T> createSuccess(T data) {
+        return new HttpResponse<T>(SuccessCode, "Success", data);
+    }
+
+    public static<T> HttpResponse<T> createFail(String code, String message) {
+        return new HttpResponse<>(code, message, null);
+    }
+
     public boolean isSuccess() {
         return HttpResponse.SuccessCode.equals(this.code);
     }

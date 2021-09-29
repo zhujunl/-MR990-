@@ -18,10 +18,10 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class ManagerFragment extends BaseBindingFragment<FragmentManagerBinding> {
+public class ManagerFragment extends BaseBindingFragment<FragmentManagerBinding> implements PageNotifyInterface{
 
     private static final String TAG = "ManagerFragment";
-
+    ManagerViewModel viewModel;
     public static ManagerFragment newInstance() {
         return new ManagerFragment();
     }
@@ -33,7 +33,7 @@ public class ManagerFragment extends BaseBindingFragment<FragmentManagerBinding>
 
     @Override
     protected void initView(@NonNull FragmentManagerBinding binding, @Nullable Bundle savedInstanceState) {
-        ManagerViewModel viewModel = new ViewModelProvider(this).get(ManagerViewModel.class);
+        viewModel = new ViewModelProvider(this).get(ManagerViewModel.class);
         viewModel.MxUserList.observe(this, new Observer<List<MxUser>>() {
             @Override
             public void onChanged(List<MxUser> mxUsers) {
@@ -73,7 +73,7 @@ public class ManagerFragment extends BaseBindingFragment<FragmentManagerBinding>
         });
 
         binding.rvList.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
-        binding.rvList.setAdapter(new UserAdapter());
+        binding.rvList.setAdapter(new UserAdapter().bind(this));
         viewModel.next();
     }
 
@@ -82,4 +82,8 @@ public class ManagerFragment extends BaseBindingFragment<FragmentManagerBinding>
         super.onDestroyView();
     }
 
+    @Override
+    public void onFlush() {
+        viewModel.flush();
+    }
 }

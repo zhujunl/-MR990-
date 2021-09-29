@@ -33,7 +33,7 @@ public class TimeView extends AppCompatTextView {
     @SuppressLint("SimpleDateFormat")
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
     @SuppressLint("SimpleDateFormat")
-    private final SimpleDateFormat simpleWeekFormat = new SimpleDateFormat("E");
+    private final SimpleDateFormat simpleWeekFormat = new SimpleDateFormat("EEEE");
 
     private BroadcastReceiver broadcastReceiver;
 

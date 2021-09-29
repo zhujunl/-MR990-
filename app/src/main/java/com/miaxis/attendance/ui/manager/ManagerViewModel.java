@@ -110,6 +110,14 @@ public class ManagerViewModel extends ViewModel {
         return value;
     }
 
+    private int normalGet() {
+        Integer value = this.PagerIndex.getValue();
+        if (value == null) {
+            value = 0;
+        }
+        return value;
+    }
+
     private String findFaceImagePath(Person person) {
         String facePath = null;
         if (!ListUtils.isNullOrEmpty(person.faceIds)) {
@@ -140,4 +148,28 @@ public class ManagerViewModel extends ViewModel {
         return fingerPathList;
     }
 
+    public void flush() {
+        Disposable subscribe = Observable.create((ObservableOnSubscribe<List<MxUser>>) emitter -> {
+            List<Person> page = PersonModel.findPage(pageSize, normalGet());
+            List<MxUser> list = new ArrayList<>();
+            if (!ListUtils.isNullOrEmpty(page)) {
+                for (Person person : page) {
+                    list.add(new MxUser(
+                            person.UserId,
+                            person.Name,
+                            person.Number,
+                            findFaceImagePath(person),
+                            findFingerImagePath(person)
+                    ));
+                }
+            }
+            emitter.onNext(list);
+        }).subscribeOn(Schedulers.from(App.getInstance().threadExecutor))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(list -> {
+                    MxUserList.setValue(list);
+                }, throwable -> {
+                    ErrorMsg.setValue("" + throwable);
+                });
+    }
 }

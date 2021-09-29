@@ -338,6 +338,7 @@ public class PersonTransform {
     }
 
     public static MxResponse<?> insertOrUpdate(User user) {
+        Timber.e("insertOrUpdate   user:  %s",user);
         if (user == null || user.isIllegal()) {
             return MxResponse.CreateFail(MxResponseCode.CODE_ILLEGAL_PARAMETER, MxResponseCode.MSG_ILLEGAL_PARAMETER);
         }
@@ -356,10 +357,12 @@ public class PersonTransform {
             return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_FAILED, "insert person failed");
         }
         MxResponse<Face> faceMxResponse = processFace(userId, user.url_face);
+        Timber.e("insertOrUpdate   processFace:  %s",faceMxResponse);
         if (!MxResponse.isSuccess(faceMxResponse)) {
             return faceMxResponse;
         }
         MxResponse<List<Long>> listMxResponse = processFingers(userId, user.getUrl_fingers());
+        Timber.e("insertOrUpdate   processFingers:  %s",listMxResponse);
         if (!MxResponse.isSuccess(listMxResponse)) {
             return listMxResponse;
         }

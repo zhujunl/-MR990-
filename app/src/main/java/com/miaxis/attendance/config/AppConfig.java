@@ -30,7 +30,7 @@ public class AppConfig {
     /**
      * 自动关门时间
      */
-    public static final long CloseDoorDelay = 8 * 1000L;
+    public static final long CloseDoorDelay = 3 * 1000L;
 
     /**
      * 空闲超时时间
@@ -52,6 +52,6 @@ public class AppConfig {
     /**
      * 默认欢迎提示语
      */
-    public static String WelcomeWords = "考勤成功";
+    public static String WelcomeWords = "验证通过";
 
 }

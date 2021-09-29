@@ -13,7 +13,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:background="@color/black"
+        android:background="@drawable/bg_bar"
         tools:context=".ui.bar.BarFragment">
 
         <com.miaxis.attendance.widget.TimeView
@@ -44,17 +44,30 @@
             app:time_format="time"
             tools:text="11:11" />
 
+        <!--        <com.miaxis.attendance.widget.TimeView-->
+        <!--            android:id="@+id/tv_week"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:layout_marginStart="5dp"-->
+        <!--            android:layout_marginBottom="5dp"-->
+        <!--            android:textColor="@color/white"-->
+        <!--            android:textSize="20sp"-->
+        <!--            android:textStyle="bold"-->
+        <!--            app:layout_constraintBottom_toBottomOf="@id/tv_time"-->
+        <!--            app:layout_constraintLeft_toRightOf="@id/tv_time"-->
+        <!--            app:time_format="week"-->
+        <!--            tools:text="周一" />-->
+
         <com.miaxis.attendance.widget.TimeView
             android:id="@+id/tv_week"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:layout_marginBottom="5dp"
             android:textColor="@color/white"
             android:textSize="20sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@id/tv_time"
-            app:layout_constraintLeft_toRightOf="@id/tv_time"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_time"
             app:time_format="week"
             tools:text="周一" />
 
@@ -108,10 +121,40 @@
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/iv_cloud"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginBottom="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/iv_cloud1" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/iv_cloud1"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginBottom="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toRightOf="@+id/iv_cloud"
+            app:layout_constraintRight_toLeftOf="@id/iv_cloud2" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/iv_cloud2"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginBottom="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toRightOf="@id/iv_cloud1"
+            app:layout_constraintRight_toLeftOf="@id/iv_cloud3" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/iv_cloud3"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginBottom="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toRightOf="@id/iv_cloud2"
             app:layout_constraintRight_toRightOf="parent" />
+
 
         <com.miaxis.attendance.ui.bar.widget.ClickableLayout
             android:id="@+id/cl_click"
@@ -119,6 +162,7 @@
             android:layout_height="100dp"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

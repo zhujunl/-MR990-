@@ -33,7 +33,7 @@ public class PrepareFragment extends BaseBindingFragment<FragmentPrepareBinding>
     protected void initView(@NonNull FragmentPrepareBinding binding, @Nullable Bundle savedInstanceState) {
         PrepareViewModel viewModel = new ViewModelProvider(this).get(PrepareViewModel.class);
         viewModel.progressMsg.observe(this, s -> {
-            binding.btnCancel.setVisibility(View.GONE);
+            binding.btnSkip.setVisibility(View.GONE);
             binding.btnTry.setVisibility(View.GONE);
             binding.tvProgress.setText("" + s);
         });
@@ -41,12 +41,14 @@ public class PrepareFragment extends BaseBindingFragment<FragmentPrepareBinding>
             if (aBoolean) {
                 replaceParent(R.id.container, HomeFragment.newInstance());
             } else {
-                binding.btnCancel.setVisibility(View.VISIBLE);
+                binding.btnSkip.setVisibility(View.VISIBLE);
                 binding.btnTry.setVisibility(View.VISIBLE);
             }
         });
         binding.btnTry.setOnClickListener(v -> viewModel.init());
-        binding.btnCancel.setOnClickListener(v -> finish());
+        binding.btnSkip.setOnClickListener(v -> {
+            replaceParent(R.id.container, HomeFragment.newInstance());
+        });
         binding.tvMsg.setMovementMethod(ScrollingMovementMethod.getInstance());
         viewModel.msg.observe(this, binding.tvMsg::setText);
         viewModel.init();

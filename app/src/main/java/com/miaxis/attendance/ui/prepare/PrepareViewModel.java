@@ -65,9 +65,15 @@ public class PrepareViewModel extends ViewModel {
                         success++;
                     } else {
                         failed++;
-                        msg.postValue((msg.getValue() == null ? "" : msg.getValue()) + "添加失败，姓名：" + user.name + "，错误：" + mxResponse.getMessage() + "\n");
+                        msg.postValue((msg.getValue() == null ? "" :
+                                msg.getValue()) + "添加失败，姓名：" + user.name + "，错误：" + mxResponse.getMessage() + "\n");
+                        HttpResponse<?> response = HttpApi.exceptionReport(user.id, mxResponse.getMessage());
+                        Timber.e("exceptionReport:%s", response);
+                        //msg.postValue((msg.getValue() == null ? "" :
+                        //        "上传错误信息" + (response.isSuccess() ? "成功" : "," + response.message) + "\n"));
                     }
                     progressMsg.postValue("总共：" + total + "   成功：" + success + "   失败：" + failed);
+                    break;
                 }
                 emitter.onNext(success >= total);
             }

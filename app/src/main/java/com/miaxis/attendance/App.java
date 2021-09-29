@@ -70,6 +70,7 @@ public class App extends Application {
                 if (activity.getClass() == MainActivity.class) {
                     //MR990Device.getInstance().setUsbDebug(BuildConfig.IS_DEBUG);
                     //MR990Device.getInstance().setWifiDebug(BuildConfig.IS_DEBUG);
+                    MR990FingerStrategy.getInstance().release();
                     MR990Device.getInstance().CameraPower(false);
                     MR990Device.getInstance().FingerPower(false);
                     TTSSpeechManager.getInstance().free();

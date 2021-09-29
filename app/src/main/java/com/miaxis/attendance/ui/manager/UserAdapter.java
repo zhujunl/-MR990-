@@ -27,6 +27,13 @@ public class UserAdapter extends RecyclerView.Adapter<UserViewHolder> {
     public UserAdapter() {
     }
 
+    private PageNotifyInterface pageNotifyInterface;
+
+    public UserAdapter bind(PageNotifyInterface pageNotifyInterface) {
+        this.pageNotifyInterface = pageNotifyInterface;
+        return this;
+    }
+
     public void setMxUsers(List<MxUser> list) {
         mMxUsers = list;
         notifyDataSetChanged();
@@ -41,7 +48,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull UserViewHolder holder, int position) {
-        holder.bind(mMxUsers.get(position));
+        holder.bind(pageNotifyInterface).bind(mMxUsers.get(position));
     }
 
     @Override

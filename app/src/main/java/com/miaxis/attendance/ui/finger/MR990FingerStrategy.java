@@ -115,6 +115,35 @@ public class MR990FingerStrategy {
         });
     }
 
+    /**
+     * 待优化
+     */
+    public void readFingerOnly(ReadFingerImageCallBack readFingerCallBack) {
+        App.getInstance().threadExecutor.execute(() -> {
+            if (!this.mxMscBigFingerApi.getDeviceInfo().isSuccess()) {
+                readFingerCallBack.onError(new Exception("设备不可用"));
+            } else {
+                this.isCancel = false;
+                long start = System.currentTimeMillis();
+                while (!this.isCancel && this.mxMscBigFingerApi != null && (System.currentTimeMillis() - start) <= 5000) {
+                    Result<MxImage> result = this.mxMscBigFingerApi.getFingerImageBig(1000);
+                    Timber.d("getFingerImageBig:%s", result);
+                    if (!this.isCancel && result.isSuccess()) {
+                        MxImage image = result.data;
+                        byte[] feature = mxFingerAlg.extractFeature(image.data, image.width, image.height);
+                        if (feature != null) {
+                            readFingerCallBack.onReadFinger(image,feature);
+                            return;
+                        }
+                    }
+                }
+                if (!this.isCancel) {
+                    readFingerCallBack.onError(new Exception("采集失败"));
+                }
+            }
+        });
+    }
+
     public void pause() {
         this.isWaite = true;
     }
@@ -152,6 +181,15 @@ public class MR990FingerStrategy {
          */
         void onFeatureMatch(MxImage image, byte[] feature, Finger finger, Bitmap bitmap);
 
+    }
+
+    public interface ReadFingerImageCallBack {
+        /**
+         * 读到指纹
+         */
+        void onReadFinger(MxImage finger,byte[] feature);
+
+        void onError(Exception e);
     }
 
 }
