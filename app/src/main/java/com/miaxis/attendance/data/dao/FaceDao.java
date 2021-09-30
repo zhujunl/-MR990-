@@ -22,7 +22,7 @@ import androidx.room.Update;
 @Dao
 public interface FaceDao {
 
-    @Query("SELECT * FROM Face ORDER BY Face.id DESC")
+    @Query("SELECT * FROM Face ORDER BY Face.id ASC")
     List<Face> findAll();
 
     @Query("SELECT * FROM Face WHERE Face.userID=:userID LIMIT 1")
@@ -52,7 +52,7 @@ public interface FaceDao {
     @Query("SELECT COUNT(*) FROM Face")
     int allCounts();
 
-    @Query("SELECT * FROM Face ORDER BY Face.id DESC LIMIT :pageSize OFFSET :offset")
+    @Query("SELECT * FROM Face ORDER BY Face.id ASC LIMIT :pageSize OFFSET :offset")
     List<Face> findPage(int pageSize, int offset);
 
 }

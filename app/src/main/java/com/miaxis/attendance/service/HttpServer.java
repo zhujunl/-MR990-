@@ -47,7 +47,7 @@ public class HttpServer extends NanoHTTPD {
                     return process.process(session);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Timber.e("Exception:%s", e.getMessage());
+                    Timber.e("Exception:%s", e);
                     return NanoHTTPD.newFixedLengthResponse(
                             Response.Status.INTERNAL_ERROR, NanoHTTPD.MIME_PLAINTEXT, "" + e.getMessage());
                 }

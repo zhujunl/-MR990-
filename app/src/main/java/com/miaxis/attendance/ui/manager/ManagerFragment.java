@@ -18,10 +18,11 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class ManagerFragment extends BaseBindingFragment<FragmentManagerBinding> implements PageNotifyInterface{
+public class ManagerFragment extends BaseBindingFragment<FragmentManagerBinding> implements PageNotifyInterface {
 
     private static final String TAG = "ManagerFragment";
     ManagerViewModel viewModel;
+
     public static ManagerFragment newInstance() {
         return new ManagerFragment();
     }
@@ -46,8 +47,7 @@ public class ManagerFragment extends BaseBindingFragment<FragmentManagerBinding>
         viewModel.PagerIndex.observe(this, new Observer<Integer>() {
             @Override
             public void onChanged(Integer integer) {
-                Toast.makeText(getActivity(),""+integer, Toast.LENGTH_SHORT).show();
-                binding.btnPrevious.setEnabled(integer > 1);
+                Toast.makeText(getActivity(), "第" + integer + "页", Toast.LENGTH_SHORT).show();
             }
         });
         MainViewModel mainViewModel = new ViewModelProvider(getActivity()).get(MainViewModel.class);
@@ -72,9 +72,23 @@ public class ManagerFragment extends BaseBindingFragment<FragmentManagerBinding>
             }
         });
 
+        viewModel.NextEnable.observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                binding.btnNext.setEnabled(aBoolean != null && aBoolean);
+            }
+        });
+
+        viewModel.PreviousEnable.observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                binding.btnPrevious.setEnabled(aBoolean != null && aBoolean);
+            }
+        });
+
         binding.rvList.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
         binding.rvList.setAdapter(new UserAdapter().bind(this));
-        viewModel.next();
+        viewModel.flush();
     }
 
     @Override

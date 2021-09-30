@@ -10,7 +10,7 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:background="@color/black"
+        android:background="@color/black"
         tools:context=".ui.preview.PreviewFragment">
 
         <com.miaxis.attendance.widget.CameraTextureView

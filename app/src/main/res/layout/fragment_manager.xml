@@ -41,6 +41,15 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginBottom="5dp"
+            android:text="@string/title_finger"
+            app:layout_constraintBottom_toBottomOf="@id/tv_title"
+            app:layout_constraintLeft_toRightOf="@id/tv_title" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_list"
             android:layout_width="0dp"
@@ -48,18 +57,18 @@
             android:layout_marginStart="30dp"
             android:layout_marginEnd="10dp"
             android:layout_marginBottom="10dp"
-            tools:background="@color/black"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@id/btn_previous"
-            app:layout_constraintTop_toBottomOf="@+id/tv_title" />
+            app:layout_constraintTop_toBottomOf="@+id/tv_title"
+            tools:background="@color/black" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_previous"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/btn_previous"
             android:layout_marginEnd="5dp"
+            android:text="@string/btn_previous"
             app:layout_constraintLeft_toRightOf="@id/rv_list"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="@id/rv_list" />

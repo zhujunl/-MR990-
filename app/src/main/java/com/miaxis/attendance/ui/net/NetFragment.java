@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.text.TextUtils;
 
+import com.bumptech.glide.Glide;
 import com.miaxis.attendance.R;
 import com.miaxis.attendance.databinding.FragmentNetBinding;
 import com.miaxis.common.activity.BaseBindingFragment;
@@ -42,18 +43,21 @@ public class NetFragment extends BaseBindingFragment<FragmentNetBinding> {
             }
         }, intentFilter);
         viewModel.IpAddress.observe(this, s -> {
-            if (!TextUtils.isEmpty(s)) {
-                binding.tvIp.setText("本机IP：" + s);
-            } else {
-                binding.tvIp.setText("无网络连接");
-            }
+            //if (!TextUtils.isEmpty(s)) {
+            //    binding.tvIp.setText("本机IP：" + s);
+            //} else {
+            //    binding.tvIp.setText("无网络连接");
+            //}
+            Glide.with(binding.ivIp)
+                    .load(TextUtils.isEmpty(s) ? R.drawable.ic_ethernet_unable : R.drawable.ic_ethernet_enable)
+                    .into(binding.ivIp);
         });
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        if (networkChangeReceiver!=null){
+        if (networkChangeReceiver != null) {
             getActivity().unregisterReceiver(networkChangeReceiver);
         }
     }

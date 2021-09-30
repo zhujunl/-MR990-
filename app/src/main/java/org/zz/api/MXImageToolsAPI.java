@@ -148,20 +148,20 @@ public class MXImageToolsAPI {
      */
     public MXResult<MxImage> ImageLoad(String imagePath, int channel) {
         if (StringUtils.isNullOrEmpty(imagePath) || channel <= 0) {
-            return MXResult.CreateFail(-1, "加载图片参数不合法");
+            return MXResult.CreateFail(-1, "加载图片参数不合法," + imagePath);
         }
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(imagePath, options);
         if (options.outWidth <= 0 || options.outHeight <= 0) {
-            return MXResult.CreateFail(-1, "图片加载失败");
+            return MXResult.CreateFail(-1, "图片加载失败," + imagePath);
         }
         byte[] out = new byte[options.outWidth * options.outHeight * channel];
         int[] width = new int[1];
         int[] height = new int[1];
         int imageLoad = this.mMxImageTool.ImageLoad(imagePath, channel, out, width, height);
         if (imageLoad != 1) {
-            return MXResult.CreateFail(-2, "加载图片操作失败");
+            return MXResult.CreateFail(-2, "加载图片操作失败," + imagePath);
         }
         return MXResult.CreateSuccess(new MxImage(width[0], height[0], out));
     }

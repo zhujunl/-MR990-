@@ -22,7 +22,7 @@ import androidx.room.Update;
 @Dao
 public interface FingerDao {
 
-    @Query("SELECT * FROM Finger ORDER BY Finger.id DESC")
+    @Query("SELECT * FROM Finger ORDER BY Finger.id ASC")
     List<Finger> findAll();
 
     @Query("SELECT * FROM Finger WHERE Finger.userID=:userID LIMIT 1")
@@ -52,7 +52,7 @@ public interface FingerDao {
     @Query("SELECT COUNT(*) FROM Finger")
     int allCounts();
 
-    @Query("SELECT * FROM Finger ORDER BY Finger.id DESC LIMIT :pageSize OFFSET :offset")
+    @Query("SELECT * FROM Finger ORDER BY Finger.id ASC LIMIT :pageSize OFFSET :offset")
     List<Finger> findPage(int pageSize, int offset);
 
 }

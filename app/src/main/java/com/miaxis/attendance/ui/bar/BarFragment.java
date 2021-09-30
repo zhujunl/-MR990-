@@ -13,6 +13,7 @@ import com.miaxis.attendance.databinding.FragmentBarBinding;
 import com.miaxis.attendance.tts.TTSSpeechManager;
 import com.miaxis.attendance.ui.bar.widget.ClickableLayout;
 import com.miaxis.attendance.ui.manager.ManagerFragment;
+import com.miaxis.attendance.ui.net.NetFragment;
 import com.miaxis.common.activity.BaseBindingFragment;
 import com.miaxis.common.response.ZZResponse;
 
@@ -38,30 +39,28 @@ public class BarFragment extends BaseBindingFragment<FragmentBarBinding> {
     @Override
     protected void initView(@NonNull FragmentBarBinding binding, @Nullable Bundle savedInstanceState) {
         BarViewModel viewModel = new ViewModelProvider(this).get(BarViewModel.class);
-        //        replaceChild(R.id.fl_ip, NetFragment.newInstance());
+        replaceChild(R.id.fl_ip, NetFragment.newInstance());
         //viewModel.UserCounts.observe(this, integer ->
         // binding.tvUserCounts.setText("人数：" + (integer == null ? "0 " : ("" + integer))));
         //viewModel.UserCounts.setValue(PersonModel.allCounts());
         mMainViewModel = new ViewModelProvider(getActivity()).get(MainViewModel.class);
         mMainViewModel.startService.setValue(true);
-        //        mMainViewModel.httpServerStatus.observe(this, integer -> {
-        //            switch (integer) {
-        //                case 1:
-        //                    binding.ivCloud.setImageResource(R.drawable.ic_baseline_cloud_done);
-        //                    break;
-        //                case -1:
-        //                    binding.ivCloud.setImageResource(R.drawable.ic_baseline_cloud_error);
-        //                    break;
-        //                default:
-        //                    binding.ivCloud.setImageResource(R.drawable.ic_baseline_cloud_off);
-        //            }
-        //        });
+        mMainViewModel.httpServerStatus.observe(this, integer -> {
+            switch (integer) {
+                case 1:
+                    binding.ivCloud.setImageResource(R.drawable.ic_baseline_cloud_done);
+                    break;
+                case -1:
+                    binding.ivCloud.setImageResource(R.drawable.ic_baseline_cloud_error);
+                    break;
+                default:
+                    binding.ivCloud.setImageResource(R.drawable.ic_baseline_cloud_off);
+            }
+        });
 
-        binding.ivCloud.setImageResource(R.drawable.ic_baseline_cloud_done);
-        binding.ivCloud1.setImageResource(R.drawable.ic_baseline_cloud_error);
-        binding.ivCloud2.setImageResource(R.drawable.ic_baseline_cloud_off);
-        binding.ivCloud3.setImageResource(R.drawable.ic_baseline_cloud_done);
-
+        //binding.ivCloud.setImageResource(R.drawable.ic_baseline_cloud_done);
+        binding.ivCloud2.setImageResource(R.drawable.ic_power_enable);
+        //binding.ivCloud3.setImageResource(R.drawable.ic_baseline_cloud_done);
 
         mMainViewModel.mAttendance.observe(this, attendance -> {
             if (attendance == null) {
@@ -91,6 +90,8 @@ public class BarFragment extends BaseBindingFragment<FragmentBarBinding> {
         binding.clClick.setOnClickListener(new ClickableLayout.OnComboClickListener() {
             @Override
             protected void onComboClick(View v) {
+
+
                 replaceParent(R.id.container, ManagerFragment.newInstance());
             }
         });

@@ -114,6 +114,9 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
                             for (MXFace mxFace : data) {
                                 list.add(mxFace.getFaceRectF());
                             }
+                            if (!ListUtils.isNullOrEmpty(data)) {
+                                this.StartCountdown.postValue(true);
+                            }
                             boolean b = this.CurrentMxImage_Rgb.compareAndSet(null, new AbstractMap.SimpleEntry<>(mxImage, MXFaceIdAPI.getInstance().getMaxFace(data)));
                             emitter.onNext(list);
                             return;
@@ -129,7 +132,6 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
                     if (ListUtils.isNullOrEmpty(list)) {
                         this.faceRect.postValue(null);
                     } else {
-                        this.StartCountdown.setValue(true);
                         boolean isNirEnable = this.IsNirEnable.get();
                         if (isNirEnable) {
                             this.IsNirEnable.set(false);
@@ -233,26 +235,26 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
      */
     public void showRgbCameraPreview(SurfaceTexture surface) {
         Disposable subscribe = Observable.create((ObservableOnSubscribe<ZZResponse<MXCamera>>) emitter -> {
-            ZZResponse<?> init = CameraHelper.getInstance().init(2);
-            Timber.e("init:" + init);
-            if (ZZResponse.isSuccess(init)) {
-                ZZResponse<MXCamera> mxCamera = CameraHelper.getInstance().createOrFindMXCamera(CameraConfig.Camera_RGB);
-                Timber.e("createMXCamera:" + mxCamera);
-                if (ZZResponse.isSuccess(mxCamera)) {
-                    MXCamera camera = mxCamera.getData();
-                    int startTexture = camera.startTexture(surface);
-                    Timber.e("startTexture:" + startTexture);
-                    if (startTexture == 0) {
-                        emitter.onNext(mxCamera);
-                    } else {
-                        emitter.onNext(ZZResponse.CreateFail(startTexture, "Preview failed"));
-                    }
-                } else {
+            //            ZZResponse<?> init = CameraHelper.getInstance().init(2);
+            //            Timber.e("init:" + init);
+            //            if (ZZResponse.isSuccess(init)) {
+            ZZResponse<MXCamera> mxCamera = CameraHelper.getInstance().createOrFindMXCamera(CameraConfig.Camera_RGB);
+            Timber.e("createMXCamera:" + mxCamera);
+            if (ZZResponse.isSuccess(mxCamera)) {
+                MXCamera camera = mxCamera.getData();
+                int startTexture = camera.startTexture(surface);
+                Timber.e("startTexture:" + startTexture);
+                if (startTexture == 0) {
                     emitter.onNext(mxCamera);
+                } else {
+                    emitter.onNext(ZZResponse.CreateFail(startTexture, "Preview failed"));
                 }
             } else {
-                emitter.onNext(ZZResponse.CreateFail(init));
+                emitter.onNext(mxCamera);
             }
+            //            } else {
+            //                emitter.onNext(ZZResponse.CreateFail(init));
+            //            }
         }).subscribeOn(Schedulers.from(App.getInstance().threadExecutor))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(camera -> {
@@ -370,14 +372,14 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
                     return;
                 }
                 Person person = PersonModel.findByUserID(tempFace.UserId);
-                if (person==null) {
+                if (person == null) {
                     saveFailedAttendance(rgbImage, rgbFace);
                     emitter.onNext(ZZResponse.CreateFail(-82, "该人员不存在，UserId：" + tempFace.UserId));
                     return;
                 }
                 //识别通过
 
-                String capturePath = AppConfig.Path_CaptureImage +"face"+"_"+ person.UserId + "_" + System.currentTimeMillis() + ".jpeg";
+                String capturePath = AppConfig.Path_CaptureImage + "face" + "_" + person.UserId + "_" + System.currentTimeMillis() + ".jpeg";
                 MXResult<?> save = MXImageToolsAPI.getInstance().ImageSave(capturePath, rgbImage.buffer, rgbImage.width, rgbImage.height, 3);
                 if (!MXResult.isSuccess(save)) {
                     emitter.onNext(ZZResponse.CreateFail(save.getCode(), save.getMsg()));
@@ -468,7 +470,7 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
 
     private void saveFailedAttendance(MxImage rgbImage, MXFace rgbFace) {
         long currentTimeMillis = System.currentTimeMillis();
-        String capturePath = AppConfig.Path_CaptureImage +"face"+"_"+ "temp_" + currentTimeMillis + ".jpeg";
+        String capturePath = AppConfig.Path_CaptureImage + "face" + "_" + "temp_" + currentTimeMillis + ".jpeg";
         MXResult<?> save = MXImageToolsAPI.getInstance().ImageSave(capturePath, rgbImage.buffer, rgbImage.width, rgbImage.height, 3);
         if (!MXResult.isSuccess(save)) {
             return;

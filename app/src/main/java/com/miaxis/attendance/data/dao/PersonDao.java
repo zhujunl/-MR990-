@@ -22,7 +22,7 @@ import androidx.room.Update;
 @Dao
 public interface PersonDao {
 
-    @Query("SELECT * FROM Person ORDER BY Person.id DESC")
+    @Query("SELECT * FROM Person ORDER BY Person.id ASC")
     List<Person> findAll();
 
     @Query("SELECT * FROM Person WHERE Person.userID=:userID")
@@ -49,7 +49,7 @@ public interface PersonDao {
     @Query("SELECT COUNT(*) FROM Person")
     int allCounts();
 
-    @Query("SELECT * FROM Person ORDER BY Person.id DESC LIMIT :pageSize OFFSET :offset")
+    @Query("SELECT * FROM Person ORDER BY Person.id ASC LIMIT :pageSize OFFSET :offset")
     List<Person> findPage(int pageSize, int offset);
 
 }

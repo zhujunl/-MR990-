@@ -22,7 +22,7 @@ import androidx.room.Update;
 @Dao
 public interface LocalImageDao {
 
-    @Query("SELECT * FROM LocalImage ORDER BY LocalImage.id DESC")
+    @Query("SELECT * FROM LocalImage ORDER BY LocalImage.id ASC")
     List<LocalImage> findAll();
 
     @Query("SELECT * FROM LocalImage WHERE LocalImage.id=:id LIMIT 1")
@@ -52,7 +52,7 @@ public interface LocalImageDao {
     @Query("SELECT COUNT(*) FROM LocalImage")
     int allCounts();
 
-    @Query("SELECT * FROM LocalImage ORDER BY LocalImage.id DESC LIMIT :pageSize OFFSET :offset")
+    @Query("SELECT * FROM LocalImage ORDER BY LocalImage.id ASC LIMIT :pageSize OFFSET :offset")
     List<LocalImage> findPage(int pageSize, int offset);
 
 }

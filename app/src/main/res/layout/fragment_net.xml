@@ -10,15 +10,22 @@
             type="com.miaxis.attendance.ui.net.NetViewModel" />
     </data>
 
-    <TextView
-        android:id="@+id/tv_ip"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/white"
-        tools:background="@color/black"
-        tools:context=".ui.net.NetFragment"
-        tools:text="@string/text_ip">
+    <!--    <TextView-->
+    <!--        android:id="@+id/tv_ip"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:textColor="@color/white"-->
+    <!--        tools:background="@color/black"-->
+    <!--        tools:context=".ui.net.NetFragment"-->
+    <!--        tools:text="@string/text_ip">-->
 
-    </TextView>
+    <!--    </TextView>-->
+
+    <ImageView
+        android:id="@+id/iv_ip"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.net.NetFragment"
+        tools:text="@string/text_ip" />
 
 </layout>

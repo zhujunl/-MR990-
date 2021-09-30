@@ -31,6 +31,7 @@ import org.zz.api.MxImage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -118,18 +119,17 @@ public class PersonTransform {
         return MxResponse.CreateSuccess(featureExtract.getData());
     }
 
-    private static MxResponse<LocalImage> doImageProcess(boolean faceMod, String url_face) {
-        List<LocalImage> byRemotePath = LocalImageModel.findByRemotePath(url_face);
+    private static MxResponse<LocalImage> doImageProcess(boolean faceMod, String remoteUrl) {
+        List<LocalImage> byRemotePath = LocalImageModel.findByRemotePath(remoteUrl);
         boolean needDownload = ListUtils.isNullOrEmpty(byRemotePath) ||
                 StringUtils.isNullOrEmpty(byRemotePath.get(0).LocalPath) ||
                 !new File(byRemotePath.get(0).LocalPath).exists();
         if (needDownload) {
             String savePath = (faceMod ? (AppConfig.Path_FaceImage + "face_") : (AppConfig.Path_FingerImage + "finger_")) + System.currentTimeMillis() + "_" + Math.abs(RANDOM.nextInt()) + ".jpeg";
             ZZResponse<?> download = new DownloadClient()
-                    .bindDownloadInfo(url_face, savePath)
+                    .bindDownloadInfo(remoteUrl, savePath)
                     .bindDownloadTimeOut(5 * 1000, 5 * 1000)
                     .download();
-            Timber.e("doFaceImageProcess: download:%s", download);
             if (!ZZResponse.isSuccess(download)) {
                 return MxResponse.CreateFail(download.getCode(), download.getMsg());
             }
@@ -141,16 +141,16 @@ public class PersonTransform {
                 return MxResponse.CreateFail(faceMod ? MxResponseCode.Code_Illegal_Image_Face : MxResponseCode.Code_Illegal_Image_Finger,
                         faceMod ? MxResponseCode.Msg_Illegal_Image_Face : MxResponseCode.Msg_Illegal_Image_Finger);
             }
+
             LocalImage localImage;
             if (ListUtils.isNullOrEmpty(byRemotePath)) {
                 localImage = new LocalImage();
             } else {
                 localImage = byRemotePath.get(0);
             }
-            localImage.RemotePath = url_face;
+            localImage.RemotePath = remoteUrl;
             localImage.LocalPath = savePath;
             localImage.id = LocalImageModel.insert(localImage);
-            Timber.e("processFace: LocalImageModel.insert:%s", localImage);
             if (localImage.id <= 0) {
                 FileUtils.delete(savePath);
                 return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_ERROR, "insert image failed");
@@ -177,30 +177,30 @@ public class PersonTransform {
         Face face = temp == null ? new Face() : temp;
         if (face.id <= 0 || face.faceImageId != faceImage.id) {
             MxResponse<byte[]> featureExtract = doFaceProcess(faceImage.LocalPath);
-            Timber.e("processFace: processFace:%s", featureExtract);
             if (!MxResponse.isSuccess(featureExtract)) {
-                LocalImageModel.delete(faceImage);
                 return MxResponse.CreateFail(featureExtract);
             }
             face.faceImageId = faceImage.id;
             face.UserId = userId;
             face.FaceFeature = featureExtract.getData();
             face.id = FaceModel.insert(face);
-            Timber.e("processFace: processFace:%s", face);
             if (face.id <= 0) {
-                LocalImageModel.delete(faceImage);
                 return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_ERROR, "insert face failed");
             }
         }
         return MxResponse.CreateSuccess(face);
     }
 
+    /**
+     * @return 返回指纹ID列表
+     */
     private static MxResponse<List<Long>> processFingers(String userId, List<User.Finger> url_fingers) {
         if (StringUtils.isNullOrEmpty(userId)) {
             return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_ERROR, "user id error");
         }
         List<Long> list = new ArrayList<>();
         List<Finger> fingers = FingerModel.findByUserID(userId);
+        Timber.e("processFingers   fingers:%s", fingers);
         if (ListUtils.isNullOrEmpty(url_fingers)) {
             for (Finger finger : fingers) {
                 FingerModel.delete(finger);
@@ -226,18 +226,22 @@ public class PersonTransform {
             for (Finger finger : fingers) {
                 fingerMap.put(finger.id, finger);
             }
-
+            Timber.e("processFingers   fingerMap:%s", fingerMap);
             //从下载的指纹图片中查找已有指纹图片ID,如果本地指纹图片ID不在下载的图片中，则说明该指纹需要被删除
-            Set<Map.Entry<Long, Finger>> fingersEntries = fingerMap.entrySet();
-            for (Map.Entry<Long, Finger> entry : fingersEntries) {
-                Long key = entry.getKey();
-                LocalImage localImage = downloadMap.get(key);
-                if (localImage == null) {//说明指纹需要被删除
-                    Finger value = entry.getValue();
-                    FingerModel.delete(value);
-                    LocalImageModel.delete(value.fingerImageId);
+            Iterator<Map.Entry<Long, Finger>> iterator = fingerMap.entrySet().iterator();
+            while (iterator.hasNext()) {
+                Map.Entry<Long, Finger> next = iterator.next();
+                Timber.e("processFingers   next:%s", next);
+                Finger finger = next.getValue();
+                if (finger != null) {
+                    LocalImage localImage = downloadMap.get(finger.fingerImageId);
+                    if (localImage == null) {//说明指纹需要被删除
+                        Timber.e("processFingers   delete:%s", finger);
+                        FingerModel.delete(finger);
+                        LocalImageModel.delete(finger.fingerImageId);
+                        iterator.remove();
+                    }
                 }
-                fingerMap.remove(key);
             }
 
             //从下载的指纹图片中查找没有提取过指纹特征的图片，然后提取特征
@@ -249,13 +253,11 @@ public class PersonTransform {
                     LocalImage localImage = entry.getValue();
                     MXResult<MxImage> imageLoad = MXImageToolsAPI.getInstance().ImageLoad(localImage.LocalPath, 1);
                     if (!MXResult.isSuccess(imageLoad)) {
-                        LocalImageModel.delete(localImage);
                         return MxResponse.CreateFail(imageLoad.getCode(), imageLoad.getMsg());
                     }
                     MxImage fingerImage = imageLoad.getData();
                     MXResult<byte[]> extractFeature = MR990FingerStrategy.getInstance().extractFeature(fingerImage.buffer, fingerImage.width, fingerImage.height);
                     if (!MXResult.isSuccess(extractFeature)) {
-                        LocalImageModel.delete(localImage);
                         return MxResponse.CreateFail(extractFeature.getCode(), extractFeature.getMsg());
                     }
                     finger = new Finger();
@@ -265,11 +267,10 @@ public class PersonTransform {
                     finger.FingerFeature = extractFeature.getData();
                     finger.id = FingerModel.insert(finger);
                     if (finger.id <= 0) {
-                        LocalImageModel.delete(localImage);
                         return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_ERROR, "insert finger failed");
                     }
                 }
-                list.add(key);
+                list.add(finger.id);
             }
         }
         return MxResponse.CreateSuccess(list);
@@ -319,6 +320,8 @@ public class PersonTransform {
         }
         FaceModel.delete(person.UserId);
         FingerModel.delete(person.UserId);
+        PersonModel.delete(person);
+
         List<Long> faceIds = person.faceIds;
         for (long faceId : faceIds) {
             Face face = FaceModel.findByID(faceId);
@@ -333,12 +336,10 @@ public class PersonTransform {
                 LocalImageModel.delete(finger.fingerImageId);
             }
         }
-        PersonModel.delete(person);
         return MxResponse.CreateSuccess();
     }
 
     public static MxResponse<?> insertOrUpdate(User user) {
-        Timber.e("insertOrUpdate   user:  %s",user);
         if (user == null || user.isIllegal()) {
             return MxResponse.CreateFail(MxResponseCode.CODE_ILLEGAL_PARAMETER, MxResponseCode.MSG_ILLEGAL_PARAMETER);
         }
@@ -357,12 +358,10 @@ public class PersonTransform {
             return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_FAILED, "insert person failed");
         }
         MxResponse<Face> faceMxResponse = processFace(userId, user.url_face);
-        Timber.e("insertOrUpdate   processFace:  %s",faceMxResponse);
         if (!MxResponse.isSuccess(faceMxResponse)) {
             return faceMxResponse;
         }
         MxResponse<List<Long>> listMxResponse = processFingers(userId, user.getUrl_fingers());
-        Timber.e("insertOrUpdate   processFingers:  %s",listMxResponse);
         if (!MxResponse.isSuccess(listMxResponse)) {
             return listMxResponse;
         }
@@ -385,7 +384,7 @@ public class PersonTransform {
         }
         for (User.Finger finger : url_fingers) {
             if (url.equals(finger.url)) {
-                return finger.position;
+                return finger.location;
             }
         }
         return -2;

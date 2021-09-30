@@ -33,6 +33,7 @@ public class UserViewHolder extends RecyclerView.ViewHolder {
     }
 
     private PageNotifyInterface pageNotifyInterface;
+
     public UserViewHolder bind(PageNotifyInterface pageNotifyInterface) {
         this.pageNotifyInterface = pageNotifyInterface;
         return this;
@@ -49,7 +50,7 @@ public class UserViewHolder extends RecyclerView.ViewHolder {
         tv_work.setText(String.valueOf(mxUser.number));
 
         ImageView iv_face = itemView.findViewById(R.id.iv_face);
-        Glide.with(iv_face).load(mxUser.face).into(iv_face);
+        Glide.with(iv_face).load(mxUser.face).error(R.drawable.logo).into(iv_face);
 
         List<String> fingers = mxUser.fingers;
         LinearLayout ll_fingers = itemView.findViewById(R.id.ll_fingers);
@@ -63,22 +64,17 @@ public class UserViewHolder extends RecyclerView.ViewHolder {
                 Glide.with(finger).load(TextUtils.isEmpty(path) ? R.drawable.ic_baseline_fingerprint_24 : path)
                         .error(R.drawable.ic_baseline_fingerprint_24).into(finger);
             }
-        } else {
-            ImageView finger = (ImageView) LayoutInflater.from(ll_fingers.getContext())
-                    .inflate(R.layout.view_finger, ll_fingers, false);
-            ll_fingers.addView(finger);
-            finger.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    try {
-                        new FingerCaptureDialog(v.getContext(), mxUser).bind(pageNotifyInterface).show();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    //RecyclerView.Adapter<? extends RecyclerView.ViewHolder> bindingAdapter = getBindingAdapter();
-                }
-            });
         }
+        ImageView finger = (ImageView) LayoutInflater.from(ll_fingers.getContext())
+                .inflate(R.layout.view_finger, ll_fingers, false);
+        ll_fingers.addView(finger);
+        finger.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new FingerCaptureDialog(v.getContext(), mxUser).bind(pageNotifyInterface).show();
+                //RecyclerView.Adapter<? extends RecyclerView.ViewHolder> bindingAdapter = getBindingAdapter();
+            }
+        });
     }
 
 

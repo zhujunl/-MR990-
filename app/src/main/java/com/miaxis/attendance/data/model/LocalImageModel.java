@@ -4,8 +4,8 @@ package com.miaxis.attendance.data.model;
 import com.miaxis.attendance.data.AppDataBase;
 import com.miaxis.attendance.data.entity.LocalImage;
 import com.miaxis.common.utils.FileUtils;
+import com.miaxis.common.utils.ListUtils;
 
-import java.util.Collection;
 import java.util.List;
 
 public class LocalImageModel {
@@ -28,25 +28,30 @@ public class LocalImageModel {
     public static void delete(LocalImage localImage) {
         if (localImage != null) {
             FileUtils.delete(localImage.LocalPath);
+            AppDataBase.getInstance().LocalImageDao().delete(localImage);
         }
-        AppDataBase.getInstance().LocalImageDao().delete(localImage);
     }
 
     public static void delete(long id) {
-        AppDataBase.getInstance().LocalImageDao().delete(id);
-    }
-
-    public static void deleteList(Collection<LocalImage> list) {
-        if (list != null && !list.isEmpty()) {
-            for (LocalImage localImage : list) {
+        List<LocalImage> byID = findByID(id);
+        if (!ListUtils.isNullOrEmpty(byID)) {
+            for (LocalImage localImage : byID) {
                 delete(localImage);
             }
         }
     }
 
-    public static void deleteAll() {
-        AppDataBase.getInstance().LocalImageDao().deleteAll();
-    }
+    //    public static void deleteList(Collection<LocalImage> list) {
+    //        if (list != null && !list.isEmpty()) {
+    //            for (LocalImage localImage : list) {
+    //                delete(localImage);
+    //            }
+    //        }
+    //    }
+
+    //    public static void deleteAll() {
+    //        AppDataBase.getInstance().LocalImageDao().deleteAll();
+    //    }
 
     public static List<LocalImage> findAll() {
         return AppDataBase.getInstance().LocalImageDao().findAll();

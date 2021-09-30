@@ -22,7 +22,7 @@ import androidx.room.Update;
 @Dao
 public interface AttendanceDao {
 
-    @Query("SELECT * FROM Attendance ORDER BY Attendance.id DESC")
+    @Query("SELECT * FROM Attendance ORDER BY Attendance.id ASC")
     List<Attendance> findAll();
 
     @Query("SELECT * FROM Attendance WHERE Attendance.Upload!=1 ORDER BY Attendance.id DESC Limit 1")
@@ -49,7 +49,7 @@ public interface AttendanceDao {
     @Query("SELECT COUNT(*) FROM Attendance")
     int allCounts();
 
-    @Query("SELECT * FROM Attendance ORDER BY Attendance.id DESC LIMIT :pageSize OFFSET :offset")
+    @Query("SELECT * FROM Attendance ORDER BY Attendance.id ASC LIMIT :pageSize OFFSET :offset")
     List<Attendance> findPage(int pageSize, int offset);
 
 }

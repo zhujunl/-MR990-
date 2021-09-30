@@ -12,6 +12,7 @@ import com.miaxis.attendance.data.model.AttendanceModel;
 import com.miaxis.attendance.data.model.LocalImageModel;
 import com.miaxis.attendance.data.model.PersonModel;
 import com.miaxis.common.response.ZZResponse;
+import com.miaxis.common.utils.FileUtils;
 import com.mx.finger.common.MxImage;
 import com.mx.finger.utils.RawBitmapUtils;
 
@@ -68,6 +69,7 @@ public class FingerViewModel extends ViewModel implements MR990FingerStrategy.Re
         if (capturePath == null) {
             capturePath = AppConfig.Path_CaptureImage + "finger" + "_temp_" + System.currentTimeMillis() + ".bmp";
         }
+        FileUtils.initFile(capturePath);
         int saveBMP = RawBitmapUtils.saveBMP(capturePath, image.data, image.width, image.height);
         Timber.e("saveBMP:%s", saveBMP);
         if (saveBMP != 0) {

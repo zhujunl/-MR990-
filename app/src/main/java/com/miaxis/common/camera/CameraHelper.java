@@ -90,7 +90,7 @@ public class CameraHelper {
         return ZZResponse.CreateFail(MXCameraErrorCode.CODE_FAIL_CAMERA_ID_NOT_FOUND, null);
     }
 
-    private synchronized void addMXCamera(MXCamera mxCamera) {
+    private void addMXCamera(MXCamera mxCamera) {
         if (mxCamera == null) {
             return;
         }

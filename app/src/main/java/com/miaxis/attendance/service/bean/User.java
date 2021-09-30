@@ -89,22 +89,22 @@ public class User {
 
     public static class Finger {
 
-        public int position;
+        public int location;
         public String url;
 
         public Finger() {
         }
 
         public boolean isIllegal() {
-            return this.position < 0 ||
-                    this.position > 9 ||
+            return this.location < 0 ||
+                    this.location > 9 ||
                     StringUtils.isNullOrEmpty(this.url);
         }
 
         @Override
         public String toString() {
             return "Finger{" +
-                    ", position=" + position +
+                    "position=" + location +
                     ", url='" + url + '\'' +
                     '}';
         }

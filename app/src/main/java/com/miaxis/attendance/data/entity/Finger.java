@@ -41,6 +41,7 @@ public class Finger {
                 "id=" + id +
                 ", UserId='" + UserId + '\'' +
                 ", Position='" + Position + '\'' +
+                ", fingerImageId='" + fingerImageId + '\'' +
                 ", FingerFeature=" + (FingerFeature == null ? null : FingerFeature.length) +
                 ", create_time=" + create_time +
                 ", update_time=" + update_time +

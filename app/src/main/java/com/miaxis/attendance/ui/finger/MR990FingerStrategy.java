@@ -93,9 +93,9 @@ public class MR990FingerStrategy {
                         byte[] feature = mxFingerAlg.extractFeature(image.data, image.width, image.height);
                         Timber.d("extractFeature:%s", (feature == null ? null : feature.length));
                         readFingerCallBack.onExtractFeature(image, feature);
-                        HashMap<String, Finger> all = FingerModel.findAll();
+                        HashMap<Long, Finger> all = FingerModel.findAll();
                         Finger temp = null;
-                        for (Map.Entry<String, Finger> entry : all.entrySet()) {
+                        for (Map.Entry<Long, Finger> entry : all.entrySet()) {
                             Finger finger = entry.getValue();
                             if (!this.isCancel && !this.isWaite && !ArrayUtils.isNullOrEmpty(finger.FingerFeature) &&
                                     !ArrayUtils.isNullOrEmpty(feature)) {

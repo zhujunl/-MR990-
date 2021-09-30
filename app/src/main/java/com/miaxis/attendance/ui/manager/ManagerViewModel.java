@@ -9,6 +9,7 @@ import com.miaxis.attendance.data.model.FaceModel;
 import com.miaxis.attendance.data.model.FingerModel;
 import com.miaxis.attendance.data.model.LocalImageModel;
 import com.miaxis.attendance.data.model.PersonModel;
+import com.miaxis.attendance.data.model.page.BasePage;
 import com.miaxis.common.utils.ListUtils;
 
 import java.util.ArrayList;
@@ -25,19 +26,21 @@ import io.reactivex.schedulers.Schedulers;
 public class ManagerViewModel extends ViewModel {
 
     public MutableLiveData<List<MxUser>> MxUserList = new MutableLiveData<>();
-    public MutableLiveData<Integer> PagerIndex = new MutableLiveData<>(0);
-    public MutableLiveData<Integer> MaxPageIndex = new MutableLiveData<>();
+    public MutableLiveData<Integer> PagerIndex = new MutableLiveData<>(1);
+    public MutableLiveData<Boolean> NextEnable = new MutableLiveData<>();
+    public MutableLiveData<Boolean> PreviousEnable = new MutableLiveData<>();
 
     public MutableLiveData<String> ErrorMsg = new MutableLiveData<>();
-    private int pageSize = 6;
+    private final int pageSize = 6;
 
     public ManagerViewModel() {
     }
 
     public void previous() {
         Disposable subscribe = Observable.create((ObservableOnSubscribe<List<MxUser>>) emitter -> {
-            List<Person> page = PersonModel.findPage(pageSize, decrementAndGet());
+            BasePage<Person> userPage = PersonModel.findPage(pageSize, decrementAndGet());
             List<MxUser> list = new ArrayList<>();
+            List<Person> page = userPage.pageData();
             if (!ListUtils.isNullOrEmpty(page)) {
                 for (Person person : page) {
                     list.add(new MxUser(
@@ -49,14 +52,17 @@ public class ManagerViewModel extends ViewModel {
                     ));
                 }
             }
-            emitter.onNext(list);
+            PreviousEnable.postValue(userPage.position() > 1);
+            NextEnable.postValue(userPage.position() < userPage.getTotal());
+            if (ListUtils.isNullOrEmpty(list)) {
+                throw new Exception("没有数据了");
+            } else {
+                emitter.onNext(list);
+            }
         }).subscribeOn(Schedulers.from(App.getInstance().threadExecutor))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(list -> {
                     MxUserList.setValue(list);
-                    if (ListUtils.isNullOrEmpty(list)) {
-                        int i = incrementAndGet();
-                    }
                 }, throwable -> {
                     incrementAndGet();
                     ErrorMsg.setValue("" + throwable);
@@ -65,8 +71,9 @@ public class ManagerViewModel extends ViewModel {
 
     public void next() {
         Disposable subscribe = Observable.create((ObservableOnSubscribe<List<MxUser>>) emitter -> {
-            List<Person> page = PersonModel.findPage(pageSize, incrementAndGet());
+            BasePage<Person> userPage = PersonModel.findPage(pageSize, incrementAndGet());
             List<MxUser> list = new ArrayList<>();
+            List<Person> page = userPage.pageData();
             if (!ListUtils.isNullOrEmpty(page)) {
                 for (Person person : page) {
                     list.add(new MxUser(
@@ -78,14 +85,17 @@ public class ManagerViewModel extends ViewModel {
                     ));
                 }
             }
-            emitter.onNext(list);
+            PreviousEnable.postValue(userPage.position() > 1);
+            NextEnable.postValue(userPage.position() < userPage.getTotal());
+            if (ListUtils.isNullOrEmpty(list)) {
+                throw new Exception("没有数据了");
+            } else {
+                emitter.onNext(list);
+            }
         }).subscribeOn(Schedulers.from(App.getInstance().threadExecutor))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(list -> {
                     MxUserList.setValue(list);
-                    if (ListUtils.isNullOrEmpty(list)) {
-                        decrementAndGet();
-                    }
                 }, throwable -> {
                     decrementAndGet();
                     ErrorMsg.setValue("" + throwable);
@@ -150,8 +160,9 @@ public class ManagerViewModel extends ViewModel {
 
     public void flush() {
         Disposable subscribe = Observable.create((ObservableOnSubscribe<List<MxUser>>) emitter -> {
-            List<Person> page = PersonModel.findPage(pageSize, normalGet());
+            BasePage<Person> userPage = PersonModel.findPage(pageSize, normalGet());
             List<MxUser> list = new ArrayList<>();
+            List<Person> page = userPage.pageData();
             if (!ListUtils.isNullOrEmpty(page)) {
                 for (Person person : page) {
                     list.add(new MxUser(
@@ -163,6 +174,8 @@ public class ManagerViewModel extends ViewModel {
                     ));
                 }
             }
+            PreviousEnable.postValue(userPage.position() > 1);
+            NextEnable.postValue(userPage.position() < userPage.getTotal());
             emitter.onNext(list);
         }).subscribeOn(Schedulers.from(App.getInstance().threadExecutor))
                 .observeOn(AndroidSchedulers.mainThread())
