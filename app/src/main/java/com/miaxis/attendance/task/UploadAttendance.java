@@ -66,6 +66,7 @@ public class UploadAttendance implements Runnable {
                                 uploadImagePath = body.result;
                                 localImage.RemotePath = uploadImagePath;
                                 LocalImageModel.update(localImage);
+                                boolean delete = file.delete();
                             }
                         } else {
                             uploadImagePath = localImage.RemotePath;
@@ -96,7 +97,7 @@ public class UploadAttendance implements Runnable {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                Timber.e("Exception:" + e);
+                Timber.e("UploadAttendance Exception:" + e);
             }
         }
     }

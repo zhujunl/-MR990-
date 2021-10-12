@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.view.View;
 
 import com.bumptech.glide.Glide;
+import com.miaxis.attendance.BuildConfig;
 import com.miaxis.attendance.MainViewModel;
 import com.miaxis.attendance.R;
 import com.miaxis.attendance.config.AppConfig;
@@ -87,14 +88,14 @@ public class BarFragment extends BaseBindingFragment<FragmentBarBinding> {
                 //Toast.makeText(getContext(), "" + attendance.getMsg(), Toast.LENGTH_SHORT).show();
             }
         });
-        binding.clClick.setOnClickListener(new ClickableLayout.OnComboClickListener() {
-            @Override
-            protected void onComboClick(View v) {
-
-
-                replaceParent(R.id.container, ManagerFragment.newInstance());
-            }
-        });
+        if (BuildConfig.IS_DEBUG){
+            binding.clClick.setOnClickListener(new ClickableLayout.OnComboClickListener() {
+                @Override
+                protected void onComboClick(View v) {
+                    replaceParent(R.id.container, ManagerFragment.newInstance());
+                }
+            });
+        }
     }
 
     @Override

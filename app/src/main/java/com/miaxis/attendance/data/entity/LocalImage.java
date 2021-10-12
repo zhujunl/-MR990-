@@ -35,7 +35,7 @@ public class LocalImage {
     public String toString() {
         return "LocalImage{" +
                 "id=" + id +
-                //                ", Type=" + Type +
+                //", Type=" + Type +
                 ", LocalPath='" + LocalPath + '\'' +
                 ", RemotePath='" + RemotePath + '\'' +
                 ", create_time=" + create_time +

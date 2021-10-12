@@ -66,6 +66,14 @@ public class App extends Application {
             }
 
             @Override
+            public void onActivityStopped(@NonNull Activity activity) {
+                super.onActivityStopped(activity);
+                if (activity.getClass() == MainActivity.class) {
+                    activity.finish();
+                }
+            }
+
+            @Override
             public void onActivityDestroyed(@NonNull Activity activity) {
                 if (activity.getClass() == MainActivity.class) {
                     //MR990Device.getInstance().setUsbDebug(BuildConfig.IS_DEBUG);
