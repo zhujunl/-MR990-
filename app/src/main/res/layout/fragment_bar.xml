@@ -83,7 +83,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:shapeAppearanceOverlay="@style/roundedCornerImageStyle"
             app:strokeColor="@color/white"
-            app:strokeWidth="2dp" />
+            app:strokeWidth="1dp" />
 
         <TextView
             android:id="@+id/tv_name"

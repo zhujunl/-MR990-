@@ -14,9 +14,7 @@ import timber.log.Timber;
 public class PersonModel {
 
     public static long insert(Person person) {
-        long insert = AppDataBase.getInstance().PersonDao().insert(person);
-        person.id = insert;
-        return insert;
+        return AppDataBase.getInstance().PersonDao().insert(person);
     }
 
     public static long update(Person person) {

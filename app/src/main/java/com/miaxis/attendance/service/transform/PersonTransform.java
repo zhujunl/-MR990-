@@ -174,6 +174,7 @@ public class PersonTransform {
         }
         LocalImage faceImage = doImageProcess.getData();
         Face temp = FaceModel.findByUserID(userId);
+        Timber.e("processFace  find local Face:%s", temp);
         Face face = temp == null ? new Face() : temp;
         if (face.id <= 0 || face.faceImageId != faceImage.id) {
             MxResponse<byte[]> featureExtract = doFaceProcess(faceImage.LocalPath);
@@ -184,6 +185,7 @@ public class PersonTransform {
             face.UserId = userId;
             face.FaceFeature = featureExtract.getData();
             face.id = FaceModel.insert(face);
+            Timber.e("processFace insert or update Face:%s", face);
             if (face.id <= 0) {
                 return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_ERROR, "insert face failed");
             }
@@ -200,7 +202,7 @@ public class PersonTransform {
         }
         List<Long> list = new ArrayList<>();
         List<Finger> fingers = FingerModel.findByUserID(userId);
-        Timber.e("processFingers   fingers:%s", fingers);
+        Timber.e("processFingers  find local fingers:%s", fingers);
         if (ListUtils.isNullOrEmpty(url_fingers)) {
             for (Finger finger : fingers) {
                 FingerModel.delete(finger);
@@ -226,7 +228,7 @@ public class PersonTransform {
             for (Finger finger : fingers) {
                 fingerMap.put(finger.id, finger);
             }
-            Timber.e("processFingers   fingerMap:%s", fingerMap);
+            Timber.e("processFingers  need update fingerMap:%s", fingerMap);
             //从下载的指纹图片中查找已有指纹图片ID,如果本地指纹图片ID不在下载的图片中，则说明该指纹需要被删除
             Iterator<Map.Entry<Long, Finger>> iterator = fingerMap.entrySet().iterator();
             while (iterator.hasNext()) {
@@ -343,6 +345,7 @@ public class PersonTransform {
         if (user == null || user.isIllegal()) {
             return MxResponse.CreateFail(MxResponseCode.CODE_ILLEGAL_PARAMETER, MxResponseCode.MSG_ILLEGAL_PARAMETER);
         }
+        Timber.e("insertOrUpdate   User:%s", user);
         String userId = String.valueOf(user.id);
         Person person = PersonModel.findByUserID(userId);
         if (person == null) {
@@ -352,11 +355,6 @@ public class PersonTransform {
         person.IdCardNumber = user.id_number;
         person.Number = user.id_number;
         person.Name = user.name;
-        person.id = PersonModel.insert(person);
-        if (person.id <= 0) {
-            PersonModel.delete(person);
-            return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_FAILED, "insert person failed");
-        }
         MxResponse<Face> faceMxResponse = processFace(userId, user.url_face);
         if (!MxResponse.isSuccess(faceMxResponse)) {
             return faceMxResponse;
@@ -366,16 +364,16 @@ public class PersonTransform {
             return listMxResponse;
         }
         List<Long> list = new ArrayList<>();
-        list.add(faceMxResponse.getData().faceImageId);
+        list.add(faceMxResponse.getData().id);
         person.faceIds = list;
         person.fingerIds = listMxResponse.getData();
-        long update = PersonModel.update(person);
-        if (update <= 0) {
+        person.id = PersonModel.insert(person);
+        if (person.id <= 0) {
             PersonModel.delete(person);
             FaceModel.delete(faceMxResponse.getData());
             return MxResponse.CreateFail(MxResponseCode.CODE_OPERATION_FAILED, "insert person failed");
         }
-        return MxResponse.CreateSuccess();
+        return MxResponse.CreateSuccess(person.id);
     }
 
     private static int getPositionFromList(String url, List<User.Finger> url_fingers) {

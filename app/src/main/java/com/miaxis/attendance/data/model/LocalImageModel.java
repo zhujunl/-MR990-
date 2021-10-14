@@ -8,6 +8,8 @@ import com.miaxis.common.utils.ListUtils;
 
 import java.util.List;
 
+import timber.log.Timber;
+
 public class LocalImageModel {
 
     public static long insert(LocalImage localImage) {
@@ -18,14 +20,17 @@ public class LocalImageModel {
         if (localImage != null) {
             localImage.id = insert;
         }
+        Timber.e("insert:%s", localImage);
         return insert;
     }
 
     public static void update(LocalImage localImage) {
+        Timber.e("update:%s", localImage);
         AppDataBase.getInstance().LocalImageDao().update(localImage);
     }
 
     public static void delete(LocalImage localImage) {
+        Timber.e("delete:%s", localImage);
         if (localImage != null) {
             FileUtils.delete(localImage.LocalPath);
             AppDataBase.getInstance().LocalImageDao().delete(localImage);
@@ -33,6 +38,7 @@ public class LocalImageModel {
     }
 
     public static void delete(long id) {
+        Timber.e("delete:%s", id);
         List<LocalImage> byID = findByID(id);
         if (!ListUtils.isNullOrEmpty(byID)) {
             for (LocalImage localImage : byID) {
@@ -62,6 +68,7 @@ public class LocalImageModel {
     }
 
     public static List<LocalImage> findByID(long id) {
+        Timber.e("findByID:%s", id);
         return AppDataBase.getInstance().LocalImageDao().findByID(id);
     }
 

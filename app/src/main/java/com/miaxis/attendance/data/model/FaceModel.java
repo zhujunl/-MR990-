@@ -11,6 +11,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+import timber.log.Timber;
+
 public class FaceModel {
 
     private static final ConcurrentHashMap<String, Face> FaceMapCache = new ConcurrentHashMap<>();
@@ -43,10 +45,12 @@ public class FaceModel {
             }
         }
         face.id = insert;
+        Timber.e("FaceModel insert face:%s", face);
         return insert;
     }
 
     public static long update(Face face) {
+        Timber.e("FaceModel update face:%s", face);
         if (Face.isIllegal(face)) {
             return -99;
         }
@@ -61,6 +65,7 @@ public class FaceModel {
     }
 
     public static long delete(Face face) {
+        Timber.e("FaceModel Delete face:%s", face);
         if (Face.isIllegal(face)) {
             return -99;
         }
@@ -85,6 +90,7 @@ public class FaceModel {
     //    }
 
     public static long delete(String userId) {
+        Timber.e("FaceModel Delete userId:%s", userId);
         if (TextUtils.isEmpty(userId)) {
             return -99;
         }

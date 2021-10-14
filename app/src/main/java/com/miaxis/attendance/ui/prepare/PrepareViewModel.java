@@ -5,6 +5,7 @@ import com.miaxis.attendance.App;
 import com.miaxis.attendance.api.HttpApi;
 import com.miaxis.attendance.api.HttpResponse;
 import com.miaxis.attendance.api.bean.UserBean;
+import com.miaxis.attendance.data.entity.Person;
 import com.miaxis.attendance.data.model.FaceModel;
 import com.miaxis.attendance.data.model.FingerModel;
 import com.miaxis.attendance.data.model.PersonModel;
@@ -13,6 +14,7 @@ import com.miaxis.attendance.service.bean.User;
 import com.miaxis.attendance.service.transform.PersonTransform;
 import com.miaxis.common.utils.ListUtils;
 
+import java.util.HashMap;
 import java.util.List;
 
 import androidx.lifecycle.MutableLiveData;
@@ -67,8 +69,10 @@ public class PrepareViewModel extends ViewModel {
                         user.department_id = "" + userBean.departmentId;
                         user.url_face = userBean.basePic;
                         user.url_fingers = gson.toJson(userBean.fingerList);
+                        Timber.e("insertOrUpdate:%s", "-----------------------");
                         MxResponse<?> mxResponse = PersonTransform.insertOrUpdate(user);
                         Timber.e("insertOrUpdate:%s", mxResponse);
+                        Timber.e("insertOrUpdate:%s", "+++++++++++++++++++++++");
                         if (MxResponse.isSuccess(mxResponse)) {
                             success++;
                         } else {
@@ -85,8 +89,8 @@ public class PrepareViewModel extends ViewModel {
                             //break;
                         }
                         index++;
-                        //break;
                     }
+                    processPersonNeedDelete(result);
                     emitter.onNext(success >= total);
                 }
             }
@@ -99,6 +103,36 @@ public class PrepareViewModel extends ViewModel {
                     msg.setValue("" + throwable.getMessage());
                     result.setValue(false);
                 });
+    }
+
+    /**
+     * 根据远程数据删除本地数据
+     *
+     * @param result 远程数据列表
+     */
+    private void processPersonNeedDelete(List<UserBean> result) {
+        if (ListUtils.isNullOrEmpty(result)) {
+            PersonModel.deleteAll();
+            FingerModel.deleteAll();
+            FaceModel.deleteAll();
+            return;
+        }
+        List<Person> local = PersonModel.findAll();
+        if (!ListUtils.isNullOrEmpty(local)) {
+            HashMap<String, UserBean> remote = new HashMap<>();
+            for (UserBean userBean : result) {
+                remote.put("" + userBean.id, userBean);
+            }
+            for (Person person : local) {
+                UserBean userBean = remote.get(person.UserId);
+                if (userBean == null) {
+                    Timber.e("processPersonNeedDelete:%s", person);
+                    PersonModel.delete(person);
+                    FingerModel.delete(person.UserId);
+                    FaceModel.delete(person.UserId);
+                }
+            }
+        }
     }
 
 }
