@@ -55,26 +55,40 @@ public class UserViewHolder extends RecyclerView.ViewHolder {
         List<String> fingers = mxUser.fingers;
         LinearLayout ll_fingers = itemView.findViewById(R.id.ll_fingers);
         ll_fingers.removeAllViews();
+        for (int i = 0; i < 2; i++) {
+            View view = LayoutInflater.from(ll_fingers.getContext())
+                    .inflate(R.layout.view_finger, ll_fingers, false);
+            TextView tv_finger = view.findViewById(R.id.tv_finger);
+            tv_finger.setText(tv_finger.getResources().getString(R.string.text_finger) + "" + (i + 1));
+            view.findViewById(R.id.iv_finger).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    new FingerCaptureDialog(v.getContext(), mxUser).bind(pageNotifyInterface).show();
+                }
+            });
+            ll_fingers.addView(view);
+        }
+
 
         if (!ListUtils.isNullOrEmpty(fingers)) {
-            for (String path : fingers) {
-                ImageView finger = (ImageView) LayoutInflater.from(ll_fingers.getContext())
-                        .inflate(R.layout.view_finger, ll_fingers, false);
-                ll_fingers.addView(finger);
-                Glide.with(finger).load(TextUtils.isEmpty(path) ? R.drawable.ic_baseline_fingerprint_24 : path)
-                        .error(R.drawable.ic_baseline_fingerprint_24).into(finger);
+            for (int i = 0; i < fingers.size() && i < ll_fingers.getChildCount(); i++) {
+                View childAt = ll_fingers.getChildAt(i);
+                String path = fingers.get(i);
+                ImageView iv_finger = childAt.findViewById(R.id.iv_finger);
+                Glide.with(iv_finger).load(TextUtils.isEmpty(path) ? R.drawable.ic_baseline_fingerprint_24 : path)
+                        .error(R.drawable.ic_baseline_fingerprint_24).into(iv_finger);
             }
         }
-        ImageView finger = (ImageView) LayoutInflater.from(ll_fingers.getContext())
-                .inflate(R.layout.view_finger, ll_fingers, false);
-        ll_fingers.addView(finger);
-        finger.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new FingerCaptureDialog(v.getContext(), mxUser).bind(pageNotifyInterface).show();
-                //RecyclerView.Adapter<? extends RecyclerView.ViewHolder> bindingAdapter = getBindingAdapter();
-            }
-        });
+        //        ImageView finger = (ImageView) LayoutInflater.from(ll_fingers.getContext())
+        //                .inflate(R.layout.view_finger, ll_fingers, false);
+        //        ll_fingers.addView(finger);
+        //        finger.setOnClickListener(new View.OnClickListener() {
+        //            @Override
+        //            public void onClick(View v) {
+        //                new FingerCaptureDialog(v.getContext(), mxUser).bind(pageNotifyInterface).show();
+        //                //RecyclerView.Adapter<? extends RecyclerView.ViewHolder> bindingAdapter = getBindingAdapter();
+        //            }
+        //        });
     }
 
 
