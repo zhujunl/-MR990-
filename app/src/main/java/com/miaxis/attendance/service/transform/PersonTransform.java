@@ -105,12 +105,15 @@ public class PersonTransform {
             return MxResponse.CreateFail(mxResult.getCode(), mxResult.getMsg());
         }
         MXFace maxFace = MXFaceIdAPI.getInstance().getMaxFace(mxResult.getData());
+        if(maxFace==null){
+            return MxResponse.CreateFail(mxResult.getCode(), mxResult.getMsg());
+        }
         MXResult<Integer> faceQuality = MXFaceIdAPI.getInstance().mxFaceQuality(decode, image.width, image.height, maxFace);
         if (!MXResult.isSuccess(faceQuality)) {
             return MxResponse.CreateFail(faceQuality.getCode(), faceQuality.getMsg());
         }
         if (faceQuality.getData() < MXFaceIdAPI.getInstance().FaceQuality) {
-            return MxResponse.CreateFail(MxResponseCode.Code_Illegal_Image_Face, "low quality," + faceQuality.getData());
+            return MxResponse.CreateFail(MxResponseCode.Code_Illegal_Image_Face, "质量过低,当前：" + faceQuality.getData()+",低于"+MXFaceIdAPI.getInstance().FaceQuality);
         }
         MXResult<byte[]> featureExtract = MXFaceIdAPI.getInstance().mxFeatureExtract(decode, image.width, image.height, maxFace);
         if (!MXResult.isSuccess(featureExtract)) {

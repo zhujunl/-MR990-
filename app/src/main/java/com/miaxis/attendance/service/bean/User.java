@@ -50,8 +50,7 @@ public class User {
     public boolean isIllegal() {
         return this.id <= 0 ||
                 StringUtils.isNullOrEmpty(this.name) ||
-                StringUtils.isNullOrEmpty(this.job_no) ||
-                StringUtils.isNullOrEmpty(this.id_number);
+                StringUtils.isNullOrEmpty(this.job_no);
     }
 
     public List<Finger> getUrl_fingers() {

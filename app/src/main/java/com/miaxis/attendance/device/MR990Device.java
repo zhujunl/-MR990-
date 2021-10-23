@@ -58,6 +58,13 @@ public class MR990Device {
     }
 
     /**
+     * 指纹二代证上下电
+     */
+    public void EthernetPower(boolean enable) {
+        setPower(0x13, enable);
+    }
+
+    /**
      * LED灯上下电
      */
     public void LedPower(boolean enable) {
@@ -77,10 +84,7 @@ public class MR990Device {
      * 开启USB调试
      */
     public void setUsbDebug(boolean enable) {
-        Intent intent = new Intent("com.miaxis.power");
-        intent.putExtra("type", 0x01);
-        intent.putExtra("value", enable);
-        App.getInstance().sendBroadcast(intent);
+        setPower(0x01, enable);
     }
 
     /**

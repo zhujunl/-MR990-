@@ -24,7 +24,7 @@ public class MXFaceIdAPI {
     private MXFaceInfoEx[] FaceInfo_Nir;
     public final int FaceQuality = 80;
     public final int FaceLive = 65;
-    public final int FaceMinWidth = 80;
+    public final int FaceMinWidth = 50;
     public final float FaceMatch = 0.70F;
 
 
@@ -136,7 +136,7 @@ public class MXFaceIdAPI {
         int nRet = this.mJustouchFaceApi.detectFace(pImage, nWidth, nHeight, pFaceNum, this.FaceData_Rgb);
         if (nRet != 0) {
             pFaceNum[0] = 0;
-            return MXResult.CreateFail(nRet, "人脸检测失败");
+            return MXResult.CreateFail(nRet, Msg_Illegal_Detect_Face_Error);
         }
         MXFaceInfoEx.Ints2MXFaceInfoExs(pFaceNum[0], this.FaceData_Rgb, this.FaceInfo_Rgb);
         List<MXFace> infoList = new ArrayList<>();
@@ -148,8 +148,15 @@ public class MXFaceIdAPI {
                 infoList.add(new MXFace(info, mxFaceInfoEx));
             }
         }
-        return infoList.isEmpty() ? MXResult.CreateFail(nRet, "没有人脸") : MXResult.CreateSuccess(infoList);
+        return infoList.isEmpty() ? MXResult.CreateFail(Code_Illegal_NO_Face, Msg_Illegal_NO_Face) : MXResult.CreateSuccess(infoList);
     }
+
+    public static int Code_Illegal_Face_Init = -200;
+    public static String Msg_Illegal_Face_Init = "人脸算法初始化失败";
+    public static int Code_Illegal_NO_Face = -201;
+    public static String Msg_Illegal_NO_Face = "未检测到人脸";
+    public static int Code_Illegal_Detect_Face_Error = -202;
+    public static String Msg_Illegal_Detect_Face_Error = "人脸检测失败";
 
     public MXResult<List<MXFace>> mxDetectFaceNir(byte[] pImage, int nWidth, int nHeight) {
         if (!this.m_bInit) {

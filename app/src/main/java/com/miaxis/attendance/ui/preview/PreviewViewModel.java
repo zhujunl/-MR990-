@@ -1,5 +1,6 @@
 package com.miaxis.attendance.ui.preview;
 
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
 import android.os.Handler;
@@ -392,7 +393,12 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
                     emitter.onNext(ZZResponse.CreateFail(-70, "保存图片记录失败"));
                     return;
                 }
-                MXResult<MxImage> cutRect = MXImageToolsAPI.getInstance().ImageCutRect(rgbImage, rgbFace.getFaceRect());
+                Rect faceRect = rgbFace.getFaceRect();
+                faceRect.left = Math.max((int) (faceRect.left * 0.8F), 0);
+                faceRect.top = Math.max((int) (faceRect.top * 0.7F), 0);
+                faceRect.right = Math.min((int) (faceRect.right * 1.2F), 480);
+                faceRect.bottom = Math.min((int) (faceRect.bottom * 1.1F), 640);
+                MXResult<MxImage> cutRect = MXImageToolsAPI.getInstance().ImageCutRect(rgbImage, faceRect);
                 if (!MXResult.isSuccess(cutRect)) {
                     emitter.onNext(ZZResponse.CreateFail(cutRect.getCode(), cutRect.getMsg()));
                     return;

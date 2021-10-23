@@ -62,6 +62,7 @@ public class App extends Application {
                     //MR990Device.getInstance().setWifiDebug(BuildConfig.IS_DEBUG);
                     MR990Device.getInstance().CameraPower(true);
                     MR990Device.getInstance().FingerPower(true);
+                    MR990Device.getInstance().EthernetPower(true);
                 }
             }
 
