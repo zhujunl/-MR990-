@@ -74,11 +74,13 @@ public class BarFragment extends BaseBindingFragment<FragmentBarBinding> {
                     Glide.with(binding.ivImage).load(attendanceData.CutImage).into(binding.ivImage);
                     binding.tvName.setText(String.valueOf(attendanceData.UserName));
                     TTSSpeechManager.getInstance().speak(AppConfig.WelcomeWords);
+                    binding.tvStatus.setVisibility(View.VISIBLE);
                     //getView().setBackgroundColor(0xFF32CD32);
                     mHandler.removeCallbacksAndMessages(null);
                     mHandler.postDelayed(() -> {
                         Glide.with(binding.ivImage).load(R.drawable.logo).centerCrop().into(binding.ivImage);
                         binding.tvName.setText("");
+                        binding.tvStatus.setVisibility(View.GONE);
                         //getView().setBackgroundColor(getResources().getColor(R.color.blue));
                         //getView().setBackgroundResource(R.drawable.bg_bar);
                         viewModel.setNewUserReset();

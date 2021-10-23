@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">中正考勤</string>
 
+
+    <string name="text_verify_success">验证通过</string>
+
     <string name="text_name">姓名</string>
     <string name="text_work_number">工号</string>
 
