@@ -95,6 +95,7 @@ public class MR990FingerStrategy {
                         readFingerCallBack.onExtractFeature(image, feature);
                         HashMap<Long, Finger> all = FingerModel.findAll();
                         Finger temp = null;
+                        int index = 0;
                         for (Map.Entry<Long, Finger> entry : all.entrySet()) {
                             Finger finger = entry.getValue();
                             if (!this.isCancel && !this.isWaite && !ArrayUtils.isNullOrEmpty(finger.FingerFeature) &&
@@ -102,13 +103,17 @@ public class MR990FingerStrategy {
                                 int match = mxFingerAlg.match(finger.FingerFeature, feature, 3);
                                 if (!this.isCancel && !this.isWaite && match == 0) {
                                     temp = finger;
-                                    Timber.d("onFeatureMatch: %s", finger);
+                                    //Timber.d("onFeatureMatch: %s", finger);
                                     break;
                                 }
                             }
+                            index++;
                         }
-                        readFingerCallBack.onFeatureMatch(image, feature, temp, RawBitmapUtils.raw2Bimap(image.data, image.width, image.height));
-                        Timber.d("onFeatureMatch: end");
+                        if (!this.isCancel) {
+                            Timber.d("onFeatureMatch:   %s    %s", index, temp);
+                            readFingerCallBack.onFeatureMatch(image, feature, temp, RawBitmapUtils.raw2Bimap(image.data, image.width, image.height));
+                            Timber.d("onFeatureMatch: end");
+                        }
                     }
                 }
             }
@@ -132,7 +137,7 @@ public class MR990FingerStrategy {
                         MxImage image = result.data;
                         byte[] feature = mxFingerAlg.extractFeature(image.data, image.width, image.height);
                         if (feature != null) {
-                            readFingerCallBack.onReadFinger(image,feature);
+                            readFingerCallBack.onReadFinger(image, feature);
                             return;
                         }
                     }
@@ -187,7 +192,7 @@ public class MR990FingerStrategy {
         /**
          * 读到指纹
          */
-        void onReadFinger(MxImage finger,byte[] feature);
+        void onReadFinger(MxImage finger, byte[] feature);
 
         void onError(Exception e);
     }

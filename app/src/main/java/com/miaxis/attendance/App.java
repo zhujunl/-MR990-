@@ -46,14 +46,14 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         context = this;
-        if (BuildConfig.DEBUG) {
-            Timber.plant(new Timber.DebugTree() {
-                @Override
-                protected void log(int priority, String tag, @NotNull String message, Throwable t) {
-                    super.log(priority, "Mx" + tag, message, t);
-                }
-            });
-        }
+        //        if (BuildConfig.DEBUG) {
+        Timber.plant(new Timber.DebugTree() {
+            @Override
+            protected void log(int priority, String tag, @NotNull String message, Throwable t) {
+                super.log(priority, "Mx" + tag, message, t);
+            }
+        });
+        //        }
         registerActivityLifecycleCallbacks(new ActivityCallbacks() {
             @Override
             public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {
