@@ -55,17 +55,26 @@ public class FingerViewModel extends ViewModel implements MR990FingerStrategy.Re
     public void onExtractFeature(MxImage image, byte[] feature) {
     }
 
+    private String lastUserID;
+    private long lastTime;
+
     @Override
     public void onFeatureMatch(MxImage image, byte[] feature, Finger finger, Bitmap bitmap) {
         String capturePath = null;
         String UserId = null;
         Person person = null;
         if (finger != null) {
+            if (lastUserID != null && lastUserID.equals(finger.UserId) && (System.currentTimeMillis() - lastTime) <= AppConfig.verifyTimeOut) {
+                this.mAttendance.postValue(ZZResponse.CreateFail(-204, "重复识别"));
+                return;
+            }
+            lastUserID=finger.UserId;
             person = PersonModel.findByUserID(UserId = finger.UserId);
             if (person != null) {
                 capturePath = AppConfig.Path_CaptureImage + "finger" + "_" + person.UserId + "_" + System.currentTimeMillis() + ".bmp";
             }
         }
+        lastTime = System.currentTimeMillis();
         if (capturePath == null) {
             capturePath = AppConfig.Path_CaptureImage + "finger" + "_temp_" + System.currentTimeMillis() + ".bmp";
         }

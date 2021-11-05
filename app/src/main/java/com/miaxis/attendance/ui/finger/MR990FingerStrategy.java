@@ -113,6 +113,7 @@ public class MR990FingerStrategy {
                             Timber.d("onFeatureMatch:   %s    %s", index, temp);
                             readFingerCallBack.onFeatureMatch(image, feature, temp, RawBitmapUtils.raw2Bimap(image.data, image.width, image.height));
                             Timber.d("onFeatureMatch: end");
+
                         }
                     }
                 }

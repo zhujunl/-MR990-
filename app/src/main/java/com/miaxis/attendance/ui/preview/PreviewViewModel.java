@@ -304,6 +304,9 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
                 });
     }
 
+    private String lastUserID;
+    private long lastTime;
+
     /**
      * 处理活体和比对
      */
@@ -336,7 +339,8 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
                     return;
                 }
                 if (nirResult.getData() < MXFaceIdAPI.getInstance().FaceLive) {
-                    emitter.onNext(ZZResponse.CreateFail(-76, "非活体，value:" + nirResult.getData()));
+                    emitter.onNext(ZZResponse.CreateFail(-76, "非活体"));
+                    //emitter.onNext(ZZResponse.CreateFail(-76, "非活体，value:" + nirResult.getData()));
                     return;
                 }
 
@@ -369,13 +373,19 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
                 }
                 if (tempFloat < MXFaceIdAPI.getInstance().FaceMatch) {
                     saveFailedAttendance(rgbImage, rgbFace);
-                    emitter.onNext(ZZResponse.CreateFail(-81, "未找到，最大匹配值：" + tempFloat));
+                    emitter.onNext(ZZResponse.CreateFail(-81, "该人员未找到，最大匹配值：" + tempFloat));
                     return;
                 }
+                if (lastUserID != null && lastUserID.equals(tempFace.UserId) && (System.currentTimeMillis() - lastTime) <= AppConfig.verifyTimeOut) {
+                    emitter.onNext(ZZResponse.CreateFail(-83, "重复识别"));
+                    return;
+                }
+                lastUserID=tempFace.UserId;
+                lastTime = System.currentTimeMillis();
                 Person person = PersonModel.findByUserID(tempFace.UserId);
                 if (person == null) {
                     saveFailedAttendance(rgbImage, rgbFace);
-                    emitter.onNext(ZZResponse.CreateFail(-82, "该人员不存在，UserId：" + tempFace.UserId));
+                    emitter.onNext(ZZResponse.CreateFail(-82, "该人员不存在，人员ID：" + tempFace.UserId));
                     return;
                 }
                 //识别通过
@@ -417,7 +427,6 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
                     emitter.onNext(ZZResponse.CreateFail(-71, "保存人脸截图记录失败"));
                     return;
                 }
-
                 Attendance attendance = new Attendance();
                 attendance.UserId = person.UserId;
                 //attendance.BaseImage = person.FaceImage;

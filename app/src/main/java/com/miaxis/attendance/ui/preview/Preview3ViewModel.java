@@ -369,7 +369,8 @@ public class Preview3ViewModel extends ViewModel implements CameraPreviewCallbac
                     return;
                 }
                 if (nirResult.getData() < MXFaceIdAPI.getInstance().FaceLive) {
-                    emitter.onNext(ZZResponse.CreateFail(-76, "非活体，value:" + nirResult.getData()));
+                    emitter.onNext(ZZResponse.CreateFail(-76, "非活体"));
+                    //emitter.onNext(ZZResponse.CreateFail(-76, "非活体，value:" + nirResult.getData()));
                     return;
                 }
 

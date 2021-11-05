@@ -15,6 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class FingerModel {
 
     private static final ConcurrentHashMap<Long, Finger> FingerMapCache = new ConcurrentHashMap<>();
+    //    private static final ConcurrentHashMap<String,Finger> FingerMapCache = new ConcurrentHashMap<>();
 
     public static void init() {
         List<Finger> all = AppDataBase.getInstance().FingerDao().findAll();
@@ -24,9 +25,9 @@ public class FingerModel {
         for (Finger finger : all) {
             if (finger != null && !finger.isIllegal()) {
                 Finger old = FingerModel.FingerMapCache.put(finger.id, finger);
-                if (old != null) {
-                    long delete = AppDataBase.getInstance().FingerDao().delete(old);
-                }
+                //                if (old != null) {
+                //                    long delete = AppDataBase.getInstance().FingerDao().delete(old);
+                //                }
             }
         }
     }
@@ -35,27 +36,50 @@ public class FingerModel {
         if (Finger.isIllegal(finger)) {
             return -99;
         }
+        //        Finger old = findByUserIDAndPosition(finger.UserId, finger.Position);
+        //        if (old != null) {//该用户已经存在相同位置指纹数据
+        //            //判断指纹数据是否需要更新
+        //            //需要更新指纹数据
+        //            if (old.fingerImageId != finger.fingerImageId) {
+        //                delete(old);//删除原有数据
+        //            } else {//不需要更新
+        //                return old.id;
+        //            }
+        //        }
+        //        long insert = AppDataBase.getInstance().FingerDao().insert(finger);
+        //        if (insert > 0) {
+        //            finger.id = insert;
+        //            FingerModel.FingerMapCache.put(finger.id, finger);
+        //        }
+        //        return insert;
+
+
+        Finger old = findByUserIDAndPosition(finger.UserId, finger.Position);
+        if (old != null) {
+            delete(old);
+        }
         long insert = AppDataBase.getInstance().FingerDao().insert(finger);
         if (insert > 0) {
             finger.id = insert;
-            Finger old = FingerModel.FingerMapCache.put(finger.id, finger);
-            if (old != null) {
-                long delete = AppDataBase.getInstance().FingerDao().delete(old);
-            }
+            FingerModel.FingerMapCache.put(finger.id, finger);
+            //            Finger old = FingerModel.FingerMapCache.put(finger.id, finger);
+            //            if (old != null) {
+            //                long delete = AppDataBase.getInstance().FingerDao().delete(old);
+            //            }
         }
         return insert;
     }
 
-    public static long update(Finger finger) {
-        if (Finger.isIllegal(finger)) {
-            return -99;
-        }
-        int update = AppDataBase.getInstance().FingerDao().update(finger);
-        if (update > 0) {
-            Finger old = FingerModel.FingerMapCache.put(finger.id, finger);
-        }
-        return update;
-    }
+    //    private static long update(Finger finger) {
+    //        if (Finger.isIllegal(finger)) {
+    //            return -99;
+    //        }
+    //        int update = AppDataBase.getInstance().FingerDao().update(finger);
+    //        if (update > 0) {
+    //            Finger old = FingerModel.FingerMapCache.put(finger.id, finger);
+    //        }
+    //        return update;
+    //    }
 
     public static void delete(Finger finger) {
         if (finger != null) {
@@ -118,12 +142,29 @@ public class FingerModel {
         return list;
     }
 
+    //    public static Finger findByUser(String userId) {
+    //        List<Finger> userID = AppDataBase.getInstance().FingerDao().findByUserID(userId);
+    //        if (ListUtils.isNullOrEmpty(userID)) {
+    //
+    //        }
+    //
+    //    }
+
     public static Finger findByID(long id) {
         return FingerModel.FingerMapCache.get(id);
     }
 
     public static List<Finger> findPage(int pageSize, int offset) {
         return AppDataBase.getInstance().FingerDao().findPage(pageSize, offset);
+    }
+
+
+    public static Finger findByUserIDAndPosition(String userId, int position) {
+        List<Finger> byUserIDAndPosition = AppDataBase.getInstance().FingerDao().findByUserIDAndPosition(userId, position);
+        if (ListUtils.isNullOrEmpty(byUserIDAndPosition)) {
+            return null;
+        }
+        return byUserIDAndPosition.get(0);
     }
 
 }

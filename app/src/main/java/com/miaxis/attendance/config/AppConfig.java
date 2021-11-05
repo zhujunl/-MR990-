@@ -42,6 +42,7 @@ public class AppConfig {
      */
     public static final int Server_Port = 8090;
 
+    public static final long verifyTimeOut = 1000 * 5;
 
     /**
      * 设最大分贝

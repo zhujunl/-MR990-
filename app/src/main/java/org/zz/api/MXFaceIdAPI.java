@@ -25,7 +25,7 @@ public class MXFaceIdAPI {
     public final int FaceQuality = 80;
     public final int FaceLive = 65;
     public final int FaceMinWidth = 50;
-    public final float FaceMatch = 0.70F;
+    public final float FaceMatch = 0.75F;
 
 
     private MXFaceIdAPI() {
@@ -333,7 +333,8 @@ public class MXFaceIdAPI {
         }
         //2.可见光质量评价
         if (rgbResult.getData() < this.FaceQuality) {
-            return MXResult.CreateFail(-70, "人脸质量过低，值:" + rgbResult.getData());
+            //return MXResult.CreateFail(-70, "人脸质量过低，值:" + rgbResult.getData());
+            return MXResult.CreateFail(-70, "人脸质量过低");
         }
         //2.1 大姿态
         MXFaceInfoEx rgbFaceInfo = mxFace.getFaceInfo();

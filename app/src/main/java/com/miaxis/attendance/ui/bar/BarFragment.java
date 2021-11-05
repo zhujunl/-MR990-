@@ -3,6 +3,7 @@ package com.miaxis.attendance.ui.bar;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.miaxis.attendance.BuildConfig;
@@ -71,7 +72,11 @@ public class BarFragment extends BaseBindingFragment<FragmentBarBinding> {
                 mMainViewModel.openDoor();
                 AttendanceBean attendanceData = attendance.getData();
                 if (viewModel.isNewUser(attendance.getData())) {
-                    Glide.with(binding.ivImage).load(attendanceData.CutImage).into(binding.ivImage);
+                    if (attendanceData.Mode==1){
+                        Glide.with(binding.ivImage).load(attendanceData.CutImage).into(binding.ivImage);
+                    }else {
+                        Glide.with(binding.ivImage).load(R.drawable.ic_fingerprint).into(binding.ivImage);
+                    }
                     binding.tvName.setText(String.valueOf(attendanceData.UserName));
                     TTSSpeechManager.getInstance().speak(AppConfig.WelcomeWords);
                     binding.tvStatus.setVisibility(View.VISIBLE);
@@ -87,7 +92,9 @@ public class BarFragment extends BaseBindingFragment<FragmentBarBinding> {
                     }, AppConfig.CloseDoorDelay);
                 }
             } else {
-                //Toast.makeText(getContext(), "" + attendance.getMsg(), Toast.LENGTH_SHORT).show();
+                if (attendance.getCode() == -81 || attendance.getCode() == -82 || attendance.getCode() == -203){
+                    Toast.makeText(getContext(), "" + attendance.getMsg(), Toast.LENGTH_SHORT).show();
+                }
             }
         });
         if (BuildConfig.IS_DEBUG){
