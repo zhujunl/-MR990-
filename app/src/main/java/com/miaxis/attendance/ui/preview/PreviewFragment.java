@@ -38,7 +38,7 @@ public class PreviewFragment extends BaseBindingFragment<FragmentPreviewBinding>
     @Override
     protected void initView(@NonNull FragmentPreviewBinding binding, @Nullable Bundle savedInstanceState) {
         mViewModel = new ViewModelProvider(this).get(PreviewViewModel.class);
-
+        mViewModel.Fill_light(true);
         MainViewModel mainViewModel = new ViewModelProvider(getActivity()).get(MainViewModel.class);
         mViewModel.StartCountdown.observe(this, mainViewModel::timeOutReset);
 
@@ -110,6 +110,7 @@ public class PreviewFragment extends BaseBindingFragment<FragmentPreviewBinding>
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        mViewModel.Fill_light(false);
         mViewModel.faceRect.removeObservers(this);
         mViewModel.AttendanceBean.removeObservers(this);
         mViewModel.StartCountdown.removeObservers(this);

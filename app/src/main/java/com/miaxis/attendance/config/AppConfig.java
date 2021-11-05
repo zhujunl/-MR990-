@@ -30,7 +30,7 @@ public class AppConfig {
     /**
      * 自动关门时间
      */
-    public static final long CloseDoorDelay = 3 * 1000L;
+    public static final long CloseDoorDelay = 7 * 1000L;
 
     /**
      * 空闲超时时间

@@ -2,8 +2,11 @@ package com.miaxis.attendance.device;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.os.SystemClock;
 
 import com.miaxis.attendance.App;
+
+import org.zz.mr990Driver;
 
 /**
  * @author Tank
@@ -68,9 +71,10 @@ public class MR990Device {
      * LED灯上下电
      */
     public void LedPower(boolean enable) {
-        setPower(0x20, enable);// LED 绿⾊
-        setPower(0x21, enable);// LED 红⾊
-        setPower(0x22, enable);// LED 蓝⾊
+//        setPower(0x20, enable);// LED 绿⾊
+//        setPower(0x21, enable);// LED 红⾊
+//        setPower(0x22, enable);// LED 蓝⾊
+        mr990Driver.zzLightControl(enable?1:0,0);
     }
 
     private void setPower(int type, boolean enable) {

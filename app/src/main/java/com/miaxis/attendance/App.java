@@ -82,6 +82,7 @@ public class App extends Application {
                     MR990FingerStrategy.getInstance().release();
                     MR990Device.getInstance().CameraPower(false);
                     MR990Device.getInstance().FingerPower(false);
+                    MR990Device.getInstance().LedPower(false);
                     TTSSpeechManager.getInstance().free();
                     CameraHelper.getInstance().free();
                     System.exit(0);

@@ -17,6 +17,7 @@ import com.miaxis.attendance.data.model.AttendanceModel;
 import com.miaxis.attendance.data.model.FaceModel;
 import com.miaxis.attendance.data.model.LocalImageModel;
 import com.miaxis.attendance.data.model.PersonModel;
+import com.miaxis.attendance.device.MR990Device;
 import com.miaxis.common.camera.CameraConfig;
 import com.miaxis.common.camera.CameraHelper;
 import com.miaxis.common.camera.CameraPreviewCallback;
@@ -94,6 +95,10 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
     public PreviewViewModel() {
     }
 
+    /*补光灯控制*/
+    public void Fill_light(boolean enable){
+        MR990Device.getInstance().LedPower(enable);
+    }
     /**
      * 处理可见光视频帧数据
      */
