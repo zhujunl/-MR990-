@@ -2,11 +2,11 @@ package com.miaxis.attendance.device;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.os.SystemClock;
 
 import com.miaxis.attendance.App;
 
 import org.zz.mr990Driver;
+
 
 /**
  * @author Tank

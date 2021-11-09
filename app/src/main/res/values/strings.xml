@@ -5,6 +5,7 @@
     <string name="text_verify_success">验证通过</string>
 
     <string name="text_name">姓名</string>
+    <string name="text_tempFloat">相似度：1</string>
     <string name="text_work_number">工号</string>
 
     <string name="text_position">指纹位置：</string>

@@ -21,6 +21,7 @@ public class AppConfig {
     public static final String Path_CaptureImage = MainPath + "Image_Capture" + File.separator;
     public static final String Path_CutImage = MainPath + "Image_Cut" + File.separator;
     public static final String Path_DataBase = MainPath + "DataBase" + File.separator + "attendance.db";
+    public static final String Temp_File = MainPath + "Temp" + File.separator;
 
     /**
      * 设备ID
@@ -47,7 +48,7 @@ public class AppConfig {
     /**
      * 设最大分贝
      */
-    public static final int MaxAmplitude = 1000 * 5;
+    public static final int MaxAmplitude = 1000 * 2;
 
 
     /**

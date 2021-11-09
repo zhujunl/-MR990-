@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import com.miaxis.attendance.App;
 import com.miaxis.attendance.BuildConfig;
+import com.miaxis.attendance.MainViewModel;
 import com.miaxis.attendance.R;
 import com.miaxis.attendance.databinding.FragmentPermissionBinding;
 import com.miaxis.attendance.ui.home.HomeFragment;
@@ -16,6 +17,8 @@ import org.zz.api.MXResult;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.lifecycle.ViewModelProvider;
+
 import io.reactivex.Observable;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -51,6 +54,9 @@ public class PermissionFragment extends BaseBindingFragment<FragmentPermissionBi
                 .request(this.permissions)
                 .subscribe(aBoolean -> {
                     if (aBoolean) {
+                        MainViewModel mainViewModel = new ViewModelProvider(getActivity()).get(MainViewModel.class);
+                        mainViewModel.deleteFile();
+                        mainViewModel.StartThread();
                         io.reactivex.disposables.Disposable disposable = Observable.create((ObservableOnSubscribe<MXResult<?>>) emitter -> {
                             MXResult<?> initAlg = App.getInstance().init();
                             Timber.e("initAlg:" + initAlg);

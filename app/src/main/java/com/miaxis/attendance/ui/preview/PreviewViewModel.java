@@ -34,6 +34,7 @@ import org.zz.api.MXImageToolsAPI;
 import org.zz.api.MXResult;
 import org.zz.api.MxImage;
 
+import java.text.DecimalFormat;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -378,7 +379,7 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
                 }
                 if (tempFloat < MXFaceIdAPI.getInstance().FaceMatch) {
                     saveFailedAttendance(rgbImage, rgbFace);
-                    emitter.onNext(ZZResponse.CreateFail(-81, "该人员未找到，最大匹配值：" + tempFloat));
+                    emitter.onNext(ZZResponse.CreateFail(-81, "正在识别中，最大匹配值：" + tempFloat));
                     return;
                 }
                 if (lastUserID != null && lastUserID.equals(tempFace.UserId) && (System.currentTimeMillis() - lastTime) <= AppConfig.verifyTimeOut) {
@@ -457,6 +458,8 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
                 attendanceBean.CaptureImage = capturePath;
                 attendanceBean.CutImage = cutPath;
                 attendanceBean.UserName = person.Name;
+//                attendanceBean.tempFloat=new DecimalFormat("##0.00").format(tempFloat);
+                attendanceBean.tempFloat=tempFloat;
                 //attendanceBean.BaseImage = byID.get(0).LocalPath;
                 //开启门禁
                 emitter.onNext(ZZResponse.CreateSuccess(attendanceBean));
