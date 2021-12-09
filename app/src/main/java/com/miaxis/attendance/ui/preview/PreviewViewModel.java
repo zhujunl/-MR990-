@@ -460,6 +460,7 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
                 attendanceBean.UserName = person.Name;
 //                attendanceBean.tempFloat=new DecimalFormat("##0.00").format(tempFloat);
                 attendanceBean.tempFloat=tempFloat;
+                attendanceBean.tempType=0;
                 //attendanceBean.BaseImage = byID.get(0).LocalPath;
                 //开启门禁
                 emitter.onNext(ZZResponse.CreateSuccess(attendanceBean));

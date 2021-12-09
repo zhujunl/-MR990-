@@ -109,6 +109,7 @@ public class FingerViewModel extends ViewModel implements MR990FingerStrategy.Re
         attendanceBean.CaptureImage = capturePath;
         attendanceBean.CutImage = capturePath;
         attendanceBean.UserName = person == null ? null : person.Name;
+        attendanceBean.tempType=1;
         if (finger == null) {
             this.mAttendance.postValue(ZZResponse.CreateFail(-203, "人员未找到"));
         } else {

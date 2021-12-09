@@ -104,7 +104,9 @@ public class BarFragment extends BaseBindingFragment<FragmentBarBinding> {
                         Glide.with(binding.ivImage).load(R.drawable.ic_fingerprint).into(binding.ivImage);
                     }
                     binding.tvName.setText(String.valueOf(attendanceData.UserName));
-                    binding.tvTempFloat.setText("相似度："+viewModel.format(attendanceData.tempFloat));
+                    if(attendanceData.tempType==0){
+                        binding.tvTempFloat.setText("相似度："+viewModel.format(attendanceData.tempFloat));
+                    }
                     TTSSpeechManager.getInstance().speak(AppConfig.WelcomeWords);
                     binding.tvStatus.setVisibility(View.VISIBLE);
                     //getView().setBackgroundColor(0xFF32CD32);

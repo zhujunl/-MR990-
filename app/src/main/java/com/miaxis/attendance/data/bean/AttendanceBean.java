@@ -21,6 +21,7 @@ public class AttendanceBean {
     public String create_time;//创建时间
     public String update_time;//修改时间
     public float tempFloat;//相似度
+    public int tempType;//验证方式；0：人脸，1：指纹
 
     public AttendanceBean() {
     }

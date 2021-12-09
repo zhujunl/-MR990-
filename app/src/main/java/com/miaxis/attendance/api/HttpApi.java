@@ -19,7 +19,7 @@ import retrofit2.Response;
 
 public class HttpApi {
 
-    //public static final String BaseUrl = "http://192.168.5.164:8085/";
+    //public static final String BaseUrl = "http://192.168.5.139:8090/";//测试环境
     public static final String BaseUrl = "http://192.168.5.139:8085/";
 
     public static void init(Context context) {
