@@ -131,7 +131,7 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
                     }
                 }
             }
-            boolean compareAndSet = this.CurrentMxImage_Rgb.compareAndSet(null, null);
+            this.CurrentMxImage_Rgb.set(null);
             emitter.onNext(new ArrayList<>());
         }).subscribeOn(Schedulers.from(App.getInstance().threadExecutor))
                 .observeOn(AndroidSchedulers.mainThread())
@@ -148,7 +148,7 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
                     }
                     startRgbFrame();
                 }, throwable -> {
-                    boolean compareAndSet = this.CurrentMxImage_Rgb.compareAndSet(null, null);
+                   this.CurrentMxImage_Rgb.set(null);
                     this.faceRect.postValue(null);
                     startRgbFrame();
                 });
@@ -163,7 +163,7 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
             int enable = mxCamera.getData().setNextFrameEnable();
             this.IsCameraEnable_Rgb.setValue(ZZResponse.CreateSuccess());
         } else {
-            this.StartCountdown.setValue(false);
+            this.StartCountdown.postValue(false);
             this.IsCameraEnable_Rgb.setValue(ZZResponse.CreateFail(mxCamera.getCode(), mxCamera.getMsg()));
         }
     }
@@ -181,7 +181,7 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
                 this.IsCameraEnable_Nir.setValue(ZZResponse.CreateSuccess());
             } else {
                 this.IsNirEnable.set(true);
-                this.StartCountdown.setValue(false);
+                this.StartCountdown.postValue(false);
                 this.IsCameraEnable_Nir.setValue(ZZResponse.CreateFail(mxCamera.getCode(), mxCamera.getMsg()));
             }
         }
@@ -226,13 +226,13 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
                         this.IsNirFrameProcessing.set(false);
                         this.IsNirEnable.set(true);
                     } else {
-                        this.StartCountdown.setValue(true);
+                        this.StartCountdown.postValue(true);
                         processLiveAndMatch();
                     }
                 }, throwable -> {
-                    boolean compareAndSet = this.CurrentMxImage_Rgb.compareAndSet(null, null);
+                    this.CurrentMxImage_Rgb.set(null);
                     this.IsNirEnable.set(true);
-                    this.CurrentMxImage_Nir.compareAndSet(null, null);
+                    this.CurrentMxImage_Nir.set(null);
                     this.IsNirFrameProcessing.set(false);
                 });
     }
@@ -271,7 +271,7 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
                     }
                     startRgbFrame();
                 }, throwable -> {
-                    this.StartCountdown.setValue(false);
+                    this.StartCountdown.postValue(false);
                     this.IsCameraEnable_Rgb.setValue(ZZResponse.CreateFail(-99, throwable.getMessage()));
                 });
     }
@@ -542,7 +542,7 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
     }
 
     public void destroy() {
-        this.StartCountdown.setValue(false);
+        this.StartCountdown.postValue(false);
         CameraHelper.getInstance().stop();
         CameraHelper.getInstance().free();
     }

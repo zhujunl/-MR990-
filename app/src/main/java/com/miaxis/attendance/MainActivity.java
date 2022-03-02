@@ -55,14 +55,14 @@ public class MainActivity extends BaseBindingFragmentActivity<ActivityMainBindin
             @Override
             public void onChanged(Boolean aBoolean) {
                 boolean isIdleValue = aBoolean != null && aBoolean;
-                mHandler.removeCallbacksAndMessages(null);
+                //mHandler.removeCallbacksAndMessages(null);
                 if (isIdleValue) {
-                    mHandler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
+//                    mHandler.postDelayed(new Runnable() {
+//                        @Override
+//                        public void run() {
                             replace(R.id.container, AdvertisingFragment.newInstance());
-                        }
-                    }, AppConfig.IdleTimeOut);
+//                        }
+//                    }, AppConfig.IdleTimeOut);
                 } else {
                     replace(R.id.container, HomeFragment.newInstance());
                 }
@@ -102,6 +102,7 @@ public class MainActivity extends BaseBindingFragmentActivity<ActivityMainBindin
     @Override
     public void onDestroy() {
         super.onDestroy();
+        Log.e("MainActivity",":onDestroy");
         if (mMainViewModel != null) {
             mMainViewModel.stopHttpServer();
             mMainViewModel.destroy();
@@ -110,5 +111,29 @@ public class MainActivity extends BaseBindingFragmentActivity<ActivityMainBindin
         if (mHandler!=null){
             mHandler.removeCallbacksAndMessages(null);
         }
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        Log.e("MainActivity",":onCreate");
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    protected void onPause() {
+        Log.e("MainActivity",":onPause");
+        super.onPause();
+    }
+
+    @Override
+    protected void onStart() {
+        Log.e("MainActivity",":onStart");
+        super.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        Log.e("MainActivity",":onStop");
+        super.onStop();
     }
 }

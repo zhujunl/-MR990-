@@ -4,6 +4,7 @@ package com.miaxis.attendance.api;
 import android.content.Context;
 import android.text.TextUtils;
 
+import com.miaxis.attendance.BuildConfig;
 import com.miaxis.attendance.api.bean.UserBean;
 import com.miaxis.attendance.config.AppConfig;
 
@@ -20,7 +21,8 @@ import retrofit2.Response;
 public class HttpApi {
 
     //public static final String BaseUrl = "http://192.168.5.139:8090/";//测试环境
-    public static final String BaseUrl = "http://192.168.5.139:8085/";
+    //public static final String BaseUrl = "http://192.168.5.139:8085/";//正式环境
+    public static final String BaseUrl = BuildConfig.SERVER_URL;
 
     public static void init(Context context) {
         BaseAPI.getInstance().init(context);

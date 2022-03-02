@@ -9,8 +9,8 @@ android {
         applicationId "com.miaxis.attendance"
         minSdkVersion 26
         targetSdkVersion 29
-        versionCode 9
-        versionName "0.0.9"
+        versionCode 10
+        versionName "0.0.10"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         ndk {
             abiFilters 'armeabi-v7a'// 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64', 'mips', 'mips64'
@@ -50,6 +50,7 @@ android {
             buildConfigField 'boolean', 'IS_DEBUG', 'true'
             buildConfigField 'boolean', 'SKIP_PREPARE', 'false'
             buildConfigField 'int', 'CAMERA_ERROR_COUNTS', '2'
+            buildConfigField 'String', 'SERVER_URL', '"http://192.168.5.139:8090/"'//测试环境
         }
         release {
             minifyEnabled false
@@ -58,6 +59,7 @@ android {
             buildConfigField 'boolean', 'IS_DEBUG', 'false'
             buildConfigField 'boolean', 'SKIP_PREPARE', 'false'
             buildConfigField 'int', 'CAMERA_ERROR_COUNTS', '2'
+            buildConfigField 'String', 'SERVER_URL', '"http://192.168.5.139:8085/"'//正式环境
         }
     }
     compileOptions {
@@ -70,6 +72,7 @@ android {
 }
 
 dependencies {
+    implementation 'com.google.code.gson:gson:2.9.0'
 
 //    implementation 'org.aspectj:aspectjrt:1.9.8.M1'
 
@@ -146,4 +149,7 @@ dependencies {
 
     //log
     implementation 'com.jakewharton.timber:timber:4.7.1'
+
+    implementation 'com.tencent:mmkv:1.0.11'
+
 }
