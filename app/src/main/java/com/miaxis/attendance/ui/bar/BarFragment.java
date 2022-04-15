@@ -1,13 +1,8 @@
 package com.miaxis.attendance.ui.bar;
 
 import android.annotation.SuppressLint;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -28,23 +23,6 @@ import com.miaxis.common.response.ZZResponse;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileReader;
-import java.io.IOException;
-import java.sql.Time;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Observable;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import java.util.regex.Pattern;
-
-import io.reactivex.disposables.Disposable;
 
 public class BarFragment extends BaseBindingFragment<FragmentBarBinding> {
 
@@ -135,11 +113,6 @@ public class BarFragment extends BaseBindingFragment<FragmentBarBinding> {
                 }
             });
         }
-
-        mMainViewModel.mTemp.observe(this,tempBean -> {
-            binding.tvCpu.setText("CPU温度："+tempBean.getCpu()/10+"℃");
-            binding.tvBattery.setText("电池温度："+tempBean.getBattery()/1000+"℃");
-        });
     }
 
     @Override

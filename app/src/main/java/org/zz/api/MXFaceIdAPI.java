@@ -22,7 +22,7 @@ public class MXFaceIdAPI {
 
     private int[] FaceData_Nir;
     private MXFaceInfoEx[] FaceInfo_Nir;
-    public final int FaceQuality = 80;
+    public final int FaceQuality = 70;
     public final int FaceLive = 65;
     public final int FaceMinWidth = 50;
     public final float FaceMatch = 0.73001F;

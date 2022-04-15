@@ -1,11 +1,8 @@
 package com.miaxis.attendance;
 
 import android.Manifest;
-import android.hardware.ConsumerIrManager;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
-import android.os.SystemClock;
 import android.util.Log;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -16,16 +13,11 @@ import com.miaxis.attendance.ui.advertising.AdvertisingFragment;
 import com.miaxis.attendance.ui.home.HomeFragment;
 import com.miaxis.attendance.ui.permission.PermissionFragment;
 import com.miaxis.common.activity.BaseBindingFragmentActivity;
-import com.miaxis.common.utils.FileUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-
-import java.io.File;
-import java.nio.file.Files;
-import java.util.Date;
 
 public class MainActivity extends BaseBindingFragmentActivity<ActivityMainBinding> {
 
@@ -106,7 +98,6 @@ public class MainActivity extends BaseBindingFragmentActivity<ActivityMainBindin
         if (mMainViewModel != null) {
             mMainViewModel.stopHttpServer();
             mMainViewModel.destroy();
-            mMainViewModel.StopThread();
         }
         if (mHandler!=null){
             mHandler.removeCallbacksAndMessages(null);

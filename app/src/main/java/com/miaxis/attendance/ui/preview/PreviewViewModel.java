@@ -34,7 +34,6 @@ import org.zz.api.MXImageToolsAPI;
 import org.zz.api.MXResult;
 import org.zz.api.MxImage;
 
-import java.text.DecimalFormat;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -108,25 +107,34 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
             if (!MXFrame.isBufferEmpty(frame) && MXFrame.isSizeLegal(frame)) {
                 MXResult<byte[]> mxResult = MXImageToolsAPI.getInstance().YUV2RGB(frame.buffer, frame.width, frame.height);//MR90 10ms
                 if (MXResult.isSuccess(mxResult)) {
-                    MXResult<MxImage> imageRotate = MXImageToolsAPI.getInstance().ImageRotate(
-                            new MxImage(frame.width, frame.height, mxResult.getData()),
-                            CameraConfig.Camera_RGB.bufferOrientation);//MR90 15ms
-                    if (MXResult.isSuccess(imageRotate)) {
-                        MxImage mxImage = imageRotate.getData();
-                        MXResult<List<MXFace>> detectFace = MXFaceIdAPI.getInstance().mxDetectFace(
-                                mxImage.buffer, mxImage.width, mxImage.height);//MR90 40--100ms
-                        if (MXResult.isSuccess(detectFace)) {
-                            List<RectF> list = new ArrayList<>();
-                            List<MXFace> data = detectFace.getData();
-                            for (MXFace mxFace : data) {
-                                list.add(mxFace.getFaceRectF());
+                    MXResult<MxImage> imageZoom = MXImageToolsAPI.getInstance().ImageZoom(new MxImage(frame.width, frame.height, mxResult.getData()),
+                            frame.width / 2, frame.height / 2);
+                    if (MXResult.isSuccess(imageZoom)){
+                        MXResult<MxImage> imageRotate = MXImageToolsAPI.getInstance().ImageRotate(
+                                imageZoom.getData(),
+                                CameraConfig.Camera_RGB.bufferOrientation);
+                        if (MXResult.isSuccess(imageRotate)) {
+                            MxImage mxImage = imageRotate.getData();
+                            MXResult<List<MXFace>> detectFace = MXFaceIdAPI.getInstance().mxDetectFace(
+                                    mxImage.buffer, mxImage.width, mxImage.height);//MR90 40--100ms
+                            if (MXResult.isSuccess(detectFace)) {
+                                List<RectF> list = new ArrayList<>();
+                                List<MXFace> data = detectFace.getData();
+                                for (MXFace mxFace : data) {
+                                    RectF faceRectF = mxFace.getFaceRectF();
+                                    faceRectF.left=faceRectF.left*2;
+                                    faceRectF.top=faceRectF.top*2;
+                                    faceRectF.right=faceRectF.right*2;
+                                    faceRectF.bottom=faceRectF.bottom*2;
+                                    list.add(faceRectF);
+                                }
+                                if (!ListUtils.isNullOrEmpty(data)) {
+                                    this.StartCountdown.postValue(true);
+                                }
+                                boolean b = this.CurrentMxImage_Rgb.compareAndSet(null, new AbstractMap.SimpleEntry<>(mxImage, MXFaceIdAPI.getInstance().getMaxFace(data)));
+                                emitter.onNext(list);
+                                return;
                             }
-                            if (!ListUtils.isNullOrEmpty(data)) {
-                                this.StartCountdown.postValue(true);
-                            }
-                            boolean b = this.CurrentMxImage_Rgb.compareAndSet(null, new AbstractMap.SimpleEntry<>(mxImage, MXFaceIdAPI.getInstance().getMaxFace(data)));
-                            emitter.onNext(list);
-                            return;
                         }
                     }
                 }
@@ -196,24 +204,28 @@ public class PreviewViewModel extends ViewModel implements CameraPreviewCallback
                 //SystemClock.sleep(250);
                 MXResult<byte[]> mxResult = MXImageToolsAPI.getInstance().YUV2RGB(frame.buffer, frame.width, frame.height);//MR90 10ms
                 if (MXResult.isSuccess(mxResult)) {
-                    MXResult<MxImage> imageRotate = MXImageToolsAPI.getInstance().ImageRotate(
-                            new MxImage(frame.width, frame.height, mxResult.getData()), CameraConfig.Camera_NIR.bufferOrientation);//MR90 15ms
-                    if (MXResult.isSuccess(imageRotate)) {
-                        MxImage mxImage = imageRotate.getData();
-                        MXResult<List<MXFace>> detectFace = MXFaceIdAPI.getInstance().mxDetectFaceNir(
-                                mxImage.buffer, mxImage.width, mxImage.height);//MR90 40--100ms
-                        if (MXResult.isSuccess(detectFace)) {
-                            //String path = "/sdcard/1/" + System.currentTimeMillis() + ".jpeg";
-                            //MXResult<?> imageSave = MXImageToolsAPI.getInstance().ImageSave(path, mxImage.buffer, mxImage.width, mxImage.height, 3);
-                            //Timber.e(TAG, "imageSave: " + imageSave);
-                            List<RectF> list = new ArrayList<>();
-                            List<MXFace> data = detectFace.getData();
-                            for (MXFace mxFace : data) {
-                                list.add(mxFace.getFaceRectF());
+                    MXResult<MxImage> imageZoom = MXImageToolsAPI.getInstance().ImageZoom(new MxImage(frame.width, frame.height, mxResult.getData()),
+                            frame.width / 2, frame.height / 2);
+                    if (MXResult.isSuccess(imageZoom)) {
+                        MXResult<MxImage> imageRotate = MXImageToolsAPI.getInstance().ImageRotate(
+                                imageZoom.getData(), CameraConfig.Camera_NIR.bufferOrientation);//MR90 15ms
+                        if (MXResult.isSuccess(imageRotate)) {
+                            MxImage mxImage = imageRotate.getData();
+                            MXResult<List<MXFace>> detectFace = MXFaceIdAPI.getInstance().mxDetectFaceNir(
+                                    mxImage.buffer, mxImage.width, mxImage.height);//MR90 40--100ms
+                            if (MXResult.isSuccess(detectFace)) {
+                                //String path = "/sdcard/1/" + System.currentTimeMillis() + ".jpeg";
+                                //MXResult<?> imageSave = MXImageToolsAPI.getInstance().ImageSave(path, mxImage.buffer, mxImage.width, mxImage.height, 3);
+                                //Timber.e(TAG, "imageSave: " + imageSave);
+                                List<RectF> list = new ArrayList<>();
+                                List<MXFace> data = detectFace.getData();
+                                for (MXFace mxFace : data) {
+                                    list.add(mxFace.getFaceRectF());
+                                }
+                                boolean b = this.CurrentMxImage_Nir.compareAndSet(null, new AbstractMap.SimpleEntry<>(mxImage, MXFaceIdAPI.getInstance().getMaxFace(data)));
+                                emitter.onNext(list);
+                                return;
                             }
-                            boolean b = this.CurrentMxImage_Nir.compareAndSet(null, new AbstractMap.SimpleEntry<>(mxImage, MXFaceIdAPI.getInstance().getMaxFace(data)));
-                            emitter.onNext(list);
-                            return;
                         }
                     }
                 }

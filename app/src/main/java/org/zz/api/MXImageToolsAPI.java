@@ -101,6 +101,21 @@ public class MXImageToolsAPI {
         return MXResult.CreateSuccess(new MxImage(width[0], height[0], out));
     }
 
+    public MXResult<MxImage> ImageZoom(MxImage input, int room_width,int room_height) {
+        if (input == null || input.isBufferEmpty() ||
+                !input.isSizeLegal() ||
+                (room_width<=0||room_height<=0)) {
+            return MXResult.CreateFail(-1, "图片缩放参数不合法");
+        }
+        byte[] out = new byte[room_width * room_height * 3];
+        int imageZoom = this.mMxImageTool.Zoom(input.buffer, input.width, input.height,
+                3, room_width, room_height, out);
+        if (imageZoom != 1) {
+            return MXResult.CreateFail(-2, "图片缩放操作失败");
+        }
+        return MXResult.CreateSuccess(new MxImage(room_width, room_height, out));
+    }
+
 
     /**
      * @param input - 输入	RGB图像缓冲区
